@@ -1,0 +1,18 @@
+{
+  "validation": {
+    "form_invalid": "Vui lòng nhập đầy đủ thông tin",
+    "required": "Vui lòng nhập thông tin này",
+    "edit_invalid": "Thông tin thay đổi không hợp lệ, vui lòng kiểm tra lại",
+    "email_format_invalid": "Email không hợp lệ",
+    "insurance_salary_le_base_salary": "Tiền bảo hiểm phải nhỏ hơn hoặc bằng lương cơ bản",
+    "expiry_must_be_after_effective": "Ngày hết hạn phải sau ngày có hiệu lực",
+    "signed_date_must_be_after_effective_date": "Ngày kí phải có sau ngày hiệu lực",
+    "signed_date_must_be_before_expiry_date": "Ngày kí phải có trước ngày hết hạn",
+    "positive": "Giá trị phải lớn hơn 0",
+    "minLength": "Nhập ít nhất {min} ký tự",
+    "maxLength": "Nhập tối đa {max} ký tự",
+    "min": "Giá trị phải ít nhất {min}",
+    "max": "Giá trị phải tối đa {max}",
+    "invalid_json": "JSON không hợp lệ"
+  }
+}

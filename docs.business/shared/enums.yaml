@@ -1,0 +1,10 @@
+# Enums tập trung - source of truth cho các value set dùng trong domain.yaml.
+
+registry_status:
+  description: >
+    Trạng thái vòng đời của một bản ghi Registry (App/Service/Domain/Resource).
+    Deprecated dùng để báo hiệu sắp ngừng dùng nhưng vẫn đọc được, trước khi chuyển hẳn sang Inactive.
+  values:
+    - Active
+    - Inactive
+    - Deprecated

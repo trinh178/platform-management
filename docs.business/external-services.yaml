@@ -1,0 +1,94 @@
+# External Services
+#
+# Danh sách các service bên ngoài mà Platform Management (PLM) tích hợp.
+# Mỗi service liệt kê rõ: base URL, API cần thiết, caller và request/response shape.
+
+services:
+
+  # ─── IAM Service ─────────────────────────────────────────────────────────────
+  iam:
+    description: >
+      Quản lý xác thực người dùng và phân quyền.
+      PLM dùng JWT do IAM phát hành — backend tự verify bằng public key, không gọi API mỗi request.
+    base_url: https://apigateway.hvanexus.trinhpb.site/iam
+
+    apis:
+      - method: POST
+        path: /auth/sign-in
+        caller: frontend
+        description: Đăng nhập, nhận accessToken + refreshToken
+        request:
+          content_type: application/json
+          body:
+            username: string
+            password: string
+        response:
+          accessToken: string
+          accessTokenExpiry: number       # Unix ms
+          refreshToken: string
+          refreshTokenExpiry: number
+
+      - method: POST
+        path: /auth/refresh
+        caller: frontend
+        description: Làm mới access token khi hết hạn
+        request:
+          content_type: application/json
+          body:
+            refreshToken: string
+        response:
+          accessToken: string
+          accessTokenExpiry: number
+          refreshToken: string
+          refreshTokenExpiry: number
+
+      - method: GET
+        path: /users/me
+        caller: frontend
+        description: Lấy thông tin user hiện tại + danh sách permissions sau khi login
+        response:
+          id: uuid
+          username: string
+          email: string
+          roles: string[]
+          permissions: string[]           # VD: ["PLM.REGISTRY.APP.CREATE", ...]
+
+  # ─── Asset Service ───────────────────────────────────────────────────────────
+  asset:
+    description: >
+      Quản lý lưu trữ file/binary dùng chung toàn hệ thống (asset-storage, AppCode AST).
+      PLM dùng để upload Organization Logo và Favicon trong Settings.
+      Frontend không gọi trực tiếp — upload đi qua PLM backend, backend forward lên Asset Service
+      và lưu lại assetId (= Asset.id) trong OrganizationSetting/BrandingSetting.
+    base_url: https://apigateway.hvanexus.trinhpb.site/asset-service
+
+    apis:
+      - method: POST
+        path: /assets/upload
+        caller: backend
+        description: >
+          Upload file lên storage, nhận Asset object.
+          PLM gọi khi xử lý update_organization_setting (logo) hoặc update_branding_setting (logo/favicon).
+        request:
+          content_type: multipart/form-data
+          body:
+            file: binary
+            category: string              # VD: ORGANIZATION_LOGO, BRANDING_LOGO, BRANDING_FAVICON
+        response:
+          id: uuid                        # → lưu thành assetId
+          fileName: string
+          mimeType: string
+          fileSize: number
+          url: string                     # public URL để hiển thị
+          status: string
+
+      - method: DELETE
+        path: /assets/:id
+        caller: backend
+        description: >
+          Xóa file khỏi storage khi thay logo/favicon mới hoặc xóa giá trị đang cấu hình.
+        response: 204 No Content
+
+    business_risks:
+      - Nếu Asset Service lỗi khi upload, PLM phải giữ nguyên logo/favicon hiện tại, không set assetId rỗng.
+      - Nếu assetId đã lưu bị xóa phía Asset Service ngoài luồng PLM (thao tác trực tiếp trên Asset Service), URL hiển thị có thể lỗi; PLM không tự phát hiện việc này trong phạm vi hiện tại.

@@ -1,0 +1,126 @@
+{
+  "datatableGuide": {
+    "title": "DataTable Guide",
+    "hero": {
+      "title": "DataTable Playground",
+      "description": "All shared DataTable components — DataTableServer, DataTableStatic, and DataTablePlain — with a live interactive demo, column helper catalog, and copy-ready usage examples.",
+      "badgeLive": "Live examples",
+      "badgeServer": "Server-side",
+      "badgeSticky": "Sticky columns",
+      "badgePlain": "Plain table"
+    },
+    "tabs": {
+      "playground": "Playground",
+      "catalog": "Column catalog",
+      "usage": "Usage",
+      "plain": "Plain table"
+    },
+    "playground": {
+      "search": "Search employees...",
+      "create": "Add employee",
+      "export": "Export",
+      "stateTitle": "Table state",
+      "listRequest": "listRequest",
+      "selectedRows": "Selected rows"
+    },
+    "field": {
+      "code": "Code",
+      "fullName": "Full name",
+      "jobLevel": "Job level",
+      "jobLevelIntern": "Intern",
+      "jobLevelJunior": "Junior",
+      "jobLevelSenior": "Senior",
+      "status": "Status",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "statusOnLeave": "On leave",
+      "hireDate": "Hire date",
+      "isActive": "Active",
+      "managerName": "Manager"
+    },
+    "catalogHeader": {
+      "factory": "Factory / helper",
+      "required": "Required props",
+      "description": "Description",
+      "defaultMeta": "Default meta"
+    },
+    "catalog": {
+      "helper": {
+        "description": "Creates a fresh typed ColumnHelper per call — avoids singleton-mutation bugs. Auto-sets meta.isCustomCell = true when a cell renderer is provided."
+      },
+      "accessor": {
+        "description": "Raw accessor column. Omit cell to use the default renderValue path; provide cell for custom rendering (isCustomCell set automatically)."
+      },
+      "select": {
+        "description": "Checkbox column. Header shows Select All only when enableMultiRowSelection is true."
+      },
+      "actions": {
+        "description": "Trigger-only 3-dot dropdown. Pass render for menu items; omit for a placeholder empty menu while the feature is being built."
+      },
+      "status": {
+        "description": "Badge column. status(row) returns the display label. statusClassName(row) is optional — add Tailwind classes for custom badge colors."
+      },
+      "tick": {
+        "description": "CircleCheck / CircleX icon. getTicked(row) overrides the default !!getValue() boolean check."
+      },
+      "date": {
+        "description": "Formats value with formatDate(). Renders — when value is null or undefined. Default value must be a Date object."
+      }
+    },
+    "metaHeader": {
+      "prop": "Prop",
+      "type": "Type",
+      "description": "Description"
+    },
+    "meta": {
+      "align": "Text alignment applied to both the header cell and every data cell in this column.",
+      "className": "Extra Tailwind classes appended to every data cell in this column.",
+      "headerClassName": "Extra Tailwind classes appended only to the header cell.",
+      "sticky": "Pins the column to the left or right edge. Offset is computed from actual DOM widths via useLayoutEffect — no manual size config needed."
+    },
+    "usage": {
+      "server": {
+        "title": "Server-side setup",
+        "description": "DataTableServer manages pagination, search, filter, and sort state and fires onChangeListRequest whenever any of them change. Use placeholderData to keep previous data visible while fetching."
+      },
+      "client": {
+        "title": "Client-side (static data)",
+        "description": "DataTableStatic handles filtering, sorting, and optional pagination entirely client-side. No API call needed — pass the data array directly."
+      },
+      "columns": {
+        "title": "Column definitions",
+        "description": "Use getColumnHelper() for a fresh typed helper. Columns with a cell prop get meta.isCustomCell = true automatically — the table renderer uses flexRender instead of renderValue."
+      },
+      "factories": {
+        "title": "Column factories",
+        "description": "createStatusColumn, createTickColumn, and createDateColumn wrap an accessor with a typed cell renderer and sensible defaults. Pass extra ColumnDef props via the spread rest."
+      },
+      "filters": {
+        "title": "Faceted filters",
+        "description": "Define filterFields with an id that matches the API filter field name and an options array. Pass to either DataTableServer or DataTableStatic."
+      },
+      "sticky": {
+        "title": "Sticky columns",
+        "description": "Set meta.sticky on any column definition. createSelectColumn defaults to sticky: left and createActionsColumn to sticky: right. The DataTable reads meta.sticky automatically — no extra prop needed."
+      },
+      "actionsRender": {
+        "title": "actionsRender — accessing selected rows",
+        "description": "actionsRender receives the table instance and isLoading flag. Use table.getSelectedRowModel() to read selected rows and enable or disable bulk actions."
+      },
+      "tableMeta": {
+        "title": "TableMeta — passing callbacks into cells",
+        "description": "Use meta to inject router or mutation callbacks into cell renderers so columns stay portable and don't close over stale props."
+      },
+      "plain": {
+        "title": "Plain table (DataTablePlain)",
+        "description": "DataTablePlain is for sub-tables inside forms or detail views. No toolbar, no pagination — supports custom cell renderers (inline inputs, buttons) and an optional footer row."
+      }
+    },
+    "plain": {
+      "demoTitle": "Live demo",
+      "totalActive": "Active employees",
+      "whenTitle": "When to use DataTablePlain",
+      "whenDescription": "Use DataTablePlain when you need a simple embedded table without toolbar features. It uses the same ui/table components as DataTableServer and DataTableStatic — styling is always consistent."
+    }
+  }
+}

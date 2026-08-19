@@ -1,0 +1,56 @@
+# Conventions chung - áp dụng cho toàn bộ domain.yaml của Platform Management.
+
+api_casing: camelCase
+
+audit_fields_ref: shared/entities.yaml#AuditFields
+
+registry_code_format:
+  description: >
+    Quy ước định dạng code cho các entity Registry. Code là định danh ổn định, do người tạo nhập
+    có chủ đích (không phải sequence tự sinh), dùng làm AppCode/ServiceCode trong permission key
+    và trong chuẩn cross-service reference của toàn platform.
+  pattern: UPPER_SNAKE_CASE
+  applies_to:
+    - App.appCode
+    - Service.serviceCode
+    - Domain.domainCode
+    - Resource.resourceCode
+  uniqueness_scope:
+    App.appCode: global
+    Service.serviceCode: global
+    Domain.domainCode: trong phạm vi serviceId
+    Resource.resourceCode: trong phạm vi domainId
+
+list_contracts:
+  list_request:
+    fields:
+      pageIndex: number?              # 1-based, default 1
+      pageSize: number?               # default 20
+      searchTerm: string?
+      filters:
+        type: object[]?
+        item:
+          field: string
+          operator: string?           # FilterOperator, default Equal
+          value: string?              # cho operator giá trị đơn (Equal, Contains, ...)
+          values: string[]?           # cho operator danh sách (In, NotIn, Between)
+      sorts:
+        type: object[]?
+        item:
+          field: string
+          direction: string?          # Ascending | Descending, default Descending
+  list_response:
+    fields:
+      items: T[]
+      pageIndex: number
+      pageSize: number
+      totalItems: number
+      totalPages: number
+
+file_upload:
+  strategy: external_file_service
+  stored_fields:
+    - assetId    # ID trả về từ storage service
+    - fileName
+    - mimeType
+    - url

@@ -1,0 +1,84 @@
+{
+  "common": {
+    "label": {
+      "overview": "Overview",
+      "action": "Action",
+      "no": "No.",
+      "no_data": "No data",
+      "optional": "optional",
+      "hour": "Hour",
+      "minute": "Minute"
+    },
+    "control": {
+      "create": "Create",
+      "add": "Add",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel",
+      "clear": "Clear value",
+      "reset": "Reset",
+      "clear_filter": "Clear filter",
+      "generate": "Generate",
+      "search": "Search",
+      "close": "Close",
+      "submit": "Submit",
+      "request": "Request",
+      "approve": "Approve",
+      "reject": "Reject",
+      "view": "View",
+      "details": "Details",
+      "now": "Now",
+      "done": "Done"
+    },
+    "constants": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "notify": {
+      "loading": "Processing",
+      "success": "Processed successfully",
+      "error": "Processing failed",
+      "update_success": "Updated successfully",
+      "create_success": "Created successfully",
+      "delete_success": "Deleted successfully"
+    },
+    "table": {
+      "columns": "Columns",
+      "customize_columns": "Customize columns",
+      "rows_per_page": "Rows per page",
+      "row_selected": "Selected {count} of {total} rows",
+      "items_selected": "{count} selected",
+      "current_page": "Page {page} / {total}",
+      "no_results": "No results found"
+    },
+    "filter": {
+      "apply": "Apply",
+      "all": "All",
+      "yes": "Yes",
+      "no": "No",
+      "operator": "Operator",
+      "valuePlaceholder": "Enter value",
+      "from": "From",
+      "to": "To",
+      "min": "Min",
+      "max": "Max",
+      "op": {
+        "equal": "Equals",
+        "notEqual": "Not equal",
+        "greaterThan": "Greater than",
+        "greaterThanOrEqual": "Greater or equal",
+        "lessThan": "Less than",
+        "lessThanOrEqual": "Less or equal",
+        "contains": "Contains",
+        "startsWith": "Starts with",
+        "endsWith": "Ends with",
+        "in": "In",
+        "notIn": "Not in",
+        "between": "Between",
+        "isNull": "Is empty",
+        "isNotNull": "Is not empty"
+      }
+    }
+  }
+}

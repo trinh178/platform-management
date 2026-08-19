@@ -1,0 +1,28 @@
+{
+  "projectIdentity": {
+    "packageName": "platform-management-web",
+    "ci": {
+      "workflowName": "Build and Deploy Platform Management Web",
+      "IMAGE_NAME": "hvanexus_platform_management_web",
+      "RUNTIME_ENV_FILE": "/home/hvanexus-infras/apps/platform-management-web/.env"
+    }
+  },
+  "appBranding": {
+    "vi": {
+      "name": "Quản lý Nền tảng",
+      "description": "Quản lý tập trung ứng dụng, dịch vụ và cấu hình nền tảng trong hệ thống HVA Nexus.",
+      "shortName": "PM",
+      "iconAlt": "Quản lý Nền tảng icon"
+    },
+    "en": {
+      "name": "Platform Management",
+      "description": "Centralized management of applications, services, and platform configuration across HVA Nexus.",
+      "shortName": "PM",
+      "iconAlt": "Platform Management icon"
+    },
+    "themeHue": 190
+  },
+  "env": {
+    "NEXT_PUBLIC_APP_KEY": "platform-management"
+  }
+}

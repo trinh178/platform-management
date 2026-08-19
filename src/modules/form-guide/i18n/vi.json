@@ -1,0 +1,430 @@
+{
+  "formGuide": {
+    "title": "Hướng dẫn Field Input",
+    "hero": {
+      "title": "Field Input Playground",
+      "description": "Module này gom toàn bộ field input dùng chung, chạy trực tiếp với react-hook-form và có bảng hướng dẫn chọn component phù hợp.",
+      "badgeLive": "Ví dụ chạy thật",
+      "badgeInline": "Inline edit",
+      "badgeAsync": "Async select"
+    },
+    "tabs": {
+      "playground": "Playground",
+      "catalog": "Danh mục field",
+      "usage": "Cách dùng",
+      "base": "FieldInputBase"
+    },
+    "mode": {
+      "title": "Chọn mode hiển thị",
+      "view": "View",
+      "edit": "Edit",
+      "inline": "Inline edit",
+      "description": {
+        "view": "Tất cả field chuyển sang read-only để kiểm tra giao diện xem chi tiết.",
+        "edit": "Tất cả field cho nhập trực tiếp và update ngay vào react-hook-form.",
+        "inline": "Tất cả field dùng nút edit/save/cancel, chỉ commit value sau khi bấm Save."
+      }
+    },
+    "sections": {
+      "text": "Text và giá trị tự sinh",
+      "numeric": "Số và tiền tệ",
+      "dateTime": "Ngày và giờ",
+      "choice": "Lựa chọn và trạng thái",
+      "select": "Select primitive",
+      "entitySelect": "Select entity",
+      "comboTree": "Combobox và tree",
+      "location": "Địa chỉ và quốc gia",
+      "files": "File và avatar",
+      "tables": "Table input",
+      "groupInlineEdit": "Group inline edit"
+    },
+    "field": {
+      "text": "Text",
+      "textDescription": "Ví dụ helper text hiển thị bên dưới input.",
+      "textTooltip": "Ví dụ tooltip hiện ra khi hover vào icon ⓘ bên cạnh label.",
+      "textarea": "Textarea",
+      "number": "Number",
+      "sliderNumber": "Slider số",
+      "numeric": "Numeric string",
+      "masked": "Masked input",
+      "password": "Password",
+      "percent": "Phần trăm",
+      "year": "Năm",
+      "email": "Email",
+      "phoneNumber": "Số điện thoại",
+      "currency": "Tiền tệ",
+      "date": "Ngày",
+      "dateTime": "Ngày giờ",
+      "time": "Giờ",
+      "dateRange": "Khoảng ngày",
+      "select": "Select",
+      "combobox": "Combobox",
+      "multiCombobox": "Multi combobox",
+      "multiSelect": "Multi select",
+      "radioGroup": "Radio group",
+      "checkboxGroup": "Checkbox group",
+      "constant": "Constant",
+      "treeSelect": "Tree select",
+      "switch": "Switch",
+      "address": "Địa chỉ",
+      "country": "Quốc gia",
+      "generatedText": "Generated text",
+      "asyncSelect": "Async select",
+      "asyncMultiSelect": "Async multi select",
+      "entitySelect": "Entity select",
+      "entityMultiSelect": "Entity multi select",
+      "entityAsyncSelect": "Entity async select",
+      "entityAsyncMultiSelect": "Entity async multi select",
+      "avatar": "Avatar",
+      "fileUpload": "File upload",
+      "fileUploadMultiple": "Nhiều file",
+      "entityTable": "Entity table",
+      "arrayTable": "Array table",
+      "alphaText": "Alpha text",
+      "personName": "Tên người",
+      "treeEntitySelect": "Tree entity select",
+      "json": "JSON"
+    },
+    "entityTable": {
+      "col": {
+        "name": "Tên",
+        "qty": "SL"
+      }
+    },
+    "arrayTable": {
+      "col": {
+        "name": "Tên",
+        "note": "Ghi chú"
+      }
+    },
+    "placeholder": {
+      "searchOption": "Tìm option",
+      "searchEntity": "Tìm nhân viên",
+      "combobox": "Nhập hoặc chọn option",
+      "fileUpload": "Chọn hoặc kéo file vào"
+    },
+    "preview": {
+      "title": "Form values",
+      "badge": "watch()"
+    },
+    "control": {
+      "showErrors": "Hiển thị lỗi",
+      "clearErrors": "Xóa lỗi",
+      "reset": "Đặt lại",
+      "chooseFile": "Chọn file",
+      "chooseAvatar": "Chọn avatar",
+      "submit": "Submit"
+    },
+    "errorShowcase": {
+      "message": "Lỗi validate ví dụ từ field input guide."
+    },
+    "catalogHeader": {
+      "component": "Component",
+      "valueType": "Kiểu value",
+      "useCase": "Khi dùng",
+      "note": "Lưu ý"
+    },
+    "catalog": {
+      "text": {
+        "useCase": "Text ngắn như mã nhân viên, họ tên, mã chứng chỉ.",
+        "note": "Có inputProps cho placeholder/className."
+      },
+      "textarea": {
+        "useCase": "Nội dung dài, ghi chú, mô tả.",
+        "note": "Phù hợp field nhiều dòng."
+      },
+      "number": {
+        "useCase": "Số năm kinh nghiệm, lương, số ngày phép, đơn giá dạng number.",
+        "note": "Lưu number | undefined, hỗ trợ số thập phân, min/max, prefix/suffix và format theo locale."
+      },
+      "sliderNumber": {
+        "useCase": "Các giá trị có giới hạn rõ như ngưỡng, trọng số, điểm, tỷ lệ hoàn thành hoặc mức cấu hình.",
+        "note": "Lưu number | undefined. Dùng khi khoảng giá trị rõ ràng; bật showInput nếu cần nhập chính xác bằng bàn phím."
+      },
+      "numeric": {
+        "useCase": "Chuỗi chỉ gồm chữ số như CCCD, mã số.",
+        "note": "Giữ value là string, không mất số 0 đầu và có thể giới hạn maxLength."
+      },
+      "masked": {
+        "useCase": "Chuỗi có format cố định như mã số thuế, serial, custom id.",
+        "note": "Hiển thị theo mask nhưng mặc định lưu raw string."
+      },
+      "password": {
+        "useCase": "Mật khẩu hoặc secret.",
+        "note": "Wrapper của text với nút hiện/ẩn."
+      },
+      "percent": {
+        "useCase": "Tỷ lệ, chiết khấu, thuế suất, phần trăm hoàn thành.",
+        "note": "Lưu number và hiển thị suffix phần trăm."
+      },
+      "year": {
+        "useCase": "Giá trị chỉ có năm như năm sản xuất, đời xe, năm tài chính hoặc năm hợp đồng.",
+        "note": "Lưu number | undefined và chỉ nhận tối đa 4 chữ số."
+      },
+      "email": {
+        "useCase": "Email liên hệ.",
+        "note": "Wrapper của text với inputMode email."
+      },
+      "phone": {
+        "useCase": "Số điện thoại.",
+        "note": "Lưu số điện thoại dạng string, không mất số 0 đầu và có thể bind mã quốc gia được chọn vào field khác."
+      },
+      "currency": {
+        "useCase": "Số tiền, chi phí, doanh thu.",
+        "note": "Có symbol tiền tệ và lưu number."
+      },
+      "date": {
+        "useCase": "Ngày sinh, ngày vào làm, ngày hết hạn hợp đồng.",
+        "note": "Default value nên là Date hoặc undefined."
+      },
+      "dateTime": {
+        "useCase": "Thời điểm chính xác như check-in, lịch phỏng vấn và log.",
+        "note": "Lưu Date có giờ và phút."
+      },
+      "time": {
+        "useCase": "Giá trị chỉ có giờ như ca làm, giờ check-in, khung giờ phỏng vấn.",
+        "note": "Mặc định lưu chuỗi HH:mm."
+      },
+      "dateRange": {
+        "useCase": "Khoảng thời gian như hợp đồng lao động, thử việc, báo cáo và filter.",
+        "note": "Lưu object với from/to Date optional."
+      },
+      "select": {
+        "useCase": "Option dạng label/value.",
+        "note": "Lưu primitive value vào form field."
+      },
+      "combobox": {
+        "useCase": "Field có suggestion nhưng vẫn cho nhập tự do.",
+        "note": "Lưu primitive string; chọn option thì lưu option.value."
+      },
+      "multiCombobox": {
+        "useCase": "Field có nhiều suggestion và vẫn cho thêm giá trị tự do.",
+        "note": "Lưu string[]; Enter thêm giá trị custom và click option để toggle chọn."
+      },
+      "multiSelect": {
+        "useCase": "Chọn nhiều option như dịch vụ, vai trò hoặc tag.",
+        "note": "Lưu string[] và clear về mảng rỗng."
+      },
+      "radioGroup": {
+        "useCase": "Chọn một giá trị từ danh sách ngắn cần hiển thị sẵn.",
+        "note": "Lưu primitive string và clear về chuỗi rỗng."
+      },
+      "checkboxGroup": {
+        "useCase": "Chọn nhiều giá trị từ danh sách ngắn cần hiển thị sẵn.",
+        "note": "Lưu string[] và clear về mảng rỗng."
+      },
+      "constant": {
+        "useCase": "Enum từ CONST_* có label i18n.",
+        "note": "Tự translate label bằng useConstWithTranslations."
+      },
+      "tree": {
+        "useCase": "Dữ liệu phân cấp như nhóm danh mục.",
+        "note": "Lưu value của node được chọn."
+      },
+      "switch": {
+        "useCase": "Boolean on/off.",
+        "note": "Dùng cho active, enabled, default flag."
+      },
+      "address": {
+        "useCase": "Địa chỉ Việt Nam tỉnh/huyện/xã.",
+        "note": "Lưu AddressCode."
+      },
+      "country": {
+        "useCase": "Chọn quốc gia.",
+        "note": "Wrapper có sẵn countries.json và searchable."
+      },
+      "generated": {
+        "useCase": "Mã tự sinh như employeeCode, requestCode.",
+        "note": "Truyền getGeneratedText, có thể autoGenerateIfEmpty."
+      },
+      "async": {
+        "useCase": "Dropdown tìm kiếm remote.",
+        "note": "Truyền loadOptions và optional loadOption."
+      },
+      "asyncMulti": {
+        "useCase": "Dropdown tìm kiếm remote và chọn nhiều id.",
+        "note": "Lưu string[] và dùng loadOption để resolve label đang chọn."
+      },
+      "entity": {
+        "useCase": "Field lưu object entity đang được chọn.",
+        "note": "Truyền options là entity object kèm getOptionValue/getOptionLabel."
+      },
+      "entityMulti": {
+        "useCase": "Field lưu nhiều object entity đang được chọn.",
+        "note": "Truyền options là entity object kèm getOptionValue/getOptionLabel."
+      },
+      "entityAsync": {
+        "useCase": "Dropdown entity remote có search và lưu object entity đang chọn.",
+        "note": "Truyền loadOptions/loadOption trả về entity object kèm getOptionValue/getOptionLabel."
+      },
+      "entityAsyncMulti": {
+        "useCase": "Dropdown entity remote có search và lưu nhiều object entity đang chọn.",
+        "note": "Truyền loadOptions/loadOption trả về entity object kèm getOptionValue/getOptionLabel."
+      },
+      "avatar": {
+        "useCase": "Ảnh đại diện một người như avatar user hoặc ảnh nhân viên.",
+        "note": "Lưu metadata ảnh nhẹ và kèm File object cho ảnh mới chọn."
+      },
+      "fileUpload": {
+        "useCase": "Đính kèm một hoặc nhiều file như hợp đồng lao động, bằng cấp, hình ảnh.",
+        "note": "Lưu metadata nhẹ và kèm File object cho file mới chọn."
+      },
+      "entityTable": {
+        "useCase": "Sub-table có thể chỉnh sửa trong form: danh sách phụ tùng, dịch vụ, hàng hóa.",
+        "note": "Lưu TRow[]. Layout SectionPanel với thanh title/actions. Cột số thứ tự tự thêm ở đầu bảng. Dropdown tìm kiếm tích hợp sẵn, chọn entity → thêm full object vào bảng. Cột xóa tự thêm ở EDIT mode. Trùng id bị chặn bởi getRowValue."
+      },
+      "arrayTable": {
+        "useCase": "Sub-table trong form khi mỗi row cần dialog form riêng để tạo/sửa: bằng cấp, tài liệu, dòng hàng tùy chỉnh.",
+        "note": "Lưu TRow[]. Mở dialog CRUD cho từng row. Truyền renderEditor để render form row và rowFormOptions để validate riêng."
+      },
+      "alphaText": {
+        "useCase": "Field họ tên, tên riêng, tên quốc gia — chỉ nhận chữ cái và dấu cách, lọc số và ký tự đặc biệt.",
+        "note": "Props: allowSpaces (default true), allowDiacritics (default true — cho ký tự tiếng Việt), maxLength."
+      },
+      "personName": {
+        "useCase": "Tên người như firstName, lastName, middleName — wrapper semantic của AlphaText.",
+        "note": "Tự bật allowSpaces và allowDiacritics. Dùng thay AlphaText để code rõ nghĩa hơn."
+      },
+      "treeEntitySelect": {
+        "useCase": "Tree phân cấp từ entity object như cây đơn vị tổ chức, cây danh mục.",
+        "note": "Khác TreeSelect (dùng label/value): nhận entity object, lưu full entity vào form. Truyền options, getOptionValue, getOptionLabel, getOptionChildren."
+      },
+      "json": {
+        "useCase": "Config, metadata, payload tùy biến dạng JSON string.",
+        "note": "Tự format đẹp khi blur nếu JSON hợp lệ. View mode render pre monospace. Props: rows (default 6)."
+      }
+    },
+    "usage": {
+      "common": {
+        "title": "Field cơ bản",
+        "description": "Mọi field nhận label, form, name và tự kết nối với react-hook-form qua FieldInputBase."
+      },
+      "number": {
+        "title": "Number input",
+        "description": "Dùng cho giá trị cần validate number, tính toán, min/max, số thập phân hoặc prefix/suffix đơn vị."
+      },
+      "numeric": {
+        "title": "Numeric string",
+        "description": "Dùng cho chuỗi chỉ gồm chữ số như id, serial, mã số khi cần giữ số 0 đầu."
+      },
+      "phone": {
+        "title": "Phone number",
+        "description": "Dùng cho field số điện thoại cần giữ số 0 đầu, lọc dữ liệu paste về chuỗi sạch và có thể chọn mã quốc gia."
+      },
+      "inline": {
+        "title": "Inline edit trong details page",
+        "description": "Bật useEditButton để field dùng draft value, validate rồi mới gọi onEditSave."
+      },
+      "async": {
+        "title": "Async select",
+        "description": "Dùng cho các field lưu id nhưng cần hiển thị label từ API hoặc danh sách tìm kiếm."
+      },
+      "multiSelect": {
+        "title": "Multi select",
+        "description": "Dùng khi form field lưu nhiều id hoặc mã primitive."
+      },
+      "combobox": {
+        "title": "Combobox",
+        "description": "Dùng khi user có thể chọn suggestion hoặc nhập giá trị mới."
+      },
+      "multiCombobox": {
+        "title": "Multi combobox",
+        "description": "Dùng khi user có thể chọn nhiều suggestion và thêm giá trị tự do."
+      },
+      "asyncMulti": {
+        "title": "Async multi select",
+        "description": "Dùng khi form field lưu nhiều id và label được load từ remote search."
+      },
+      "fileUpload": {
+        "title": "File upload",
+        "description": "Dùng cho field đính kèm; upload File khi submit hoặc trước submit, rồi lưu metadata/id từ API."
+      },
+      "avatar": {
+        "title": "Avatar upload",
+        "description": "Dùng cho một ảnh đại diện; preview URL có sẵn và giữ File mới chọn để submit."
+      },
+      "masked": {
+        "title": "Masked input",
+        "description": "Dùng khi user cần thấy format cố định nhưng form vẫn lưu primitive string sạch."
+      },
+      "choiceGroup": {
+        "title": "Choice groups",
+        "description": "Dùng radio khi chọn một giá trị hiển thị sẵn và checkbox group khi chọn nhiều giá trị hiển thị sẵn."
+      },
+      "time": {
+        "title": "Time input",
+        "description": "Dùng khi form chỉ cần giờ và phút, không cần ngày."
+      },
+      "year": {
+        "title": "Year input",
+        "description": "Dùng khi form lưu năm dạng number và không cần ngày/tháng."
+      },
+      "constant": {
+        "title": "Constant select",
+        "description": "Dùng với CONST_* typed value để giữ enum type-safe và label có i18n."
+      },
+      "entityTable": {
+        "title": "Entity table",
+        "description": "Dùng khi form field lưu danh sách row entity. Truyền columns, loadOptions, getRowValue và getRowLabel. Component render SectionPanel với cột số thứ tự, dropdown tìm kiếm để thêm row, nút xóa từng row ở EDIT mode và clear về mảng rỗng."
+      },
+      "arrayTable": {
+        "title": "Array table (dialog CRUD)",
+        "description": "Dùng khi mỗi row cần dialog form riêng để tạo hoặc sửa. Truyền columns, createDefaultRow và renderEditor. Hỗ trợ validate row riêng qua rowFormOptions hoặc validateRow."
+      },
+      "arrayTableSection": {
+        "title": "Array table bên trong SubSection",
+        "description": "Khi dùng FieldInputArrayTable bên trong SubSection, bỏ prop label để xóa khoảng trống của base label. SubSection cung cấp title và slot actions trên cùng hàng, giữ layout nhất quán với các section khác trong form."
+      },
+      "fieldGroupInlineEdit": {
+        "title": "FieldGroupInlineEdit",
+        "description": "Dùng khi nhiều field phải được chỉnh sửa và lưu cùng nhau như một nhóm hợp lệ. Tự quản lý snapshot/restore khi hủy và cung cấp callback getValue có type trong onSave để component cha không cần gọi form.getValues trực tiếp."
+      }
+    },
+    "base": {
+      "propsTitle": "Props chung (FieldInputBaseProps)",
+      "propsDescription": "Tất cả field input đều kế thừa các props này từ FieldInputBase. Props đặc thù của từng component được thêm vào qua generic TExtendsProps.",
+      "propCol": {
+        "prop": "Prop",
+        "type": "Kiểu",
+        "default": "Mặc định",
+        "description": "Mô tả"
+      },
+      "props": {
+        "label": "Truyền string để hiển thị label. \"\" ẩn label nhưng giữ khoảng trống (để căn grid). Bỏ prop thì xóa khoảng trống hoàn toàn.",
+        "description": "Helper text hiển thị bên dưới input.",
+        "tooltip": "Icon ⓘ bên cạnh label, hover thì hiện text này trong tooltip.",
+        "required": "Hiển thị dấu hoa thị đỏ (*) sau label để đánh dấu field là bắt buộc.",
+        "form": "Instance UseFormReturn của form cha.",
+        "name": "Đường dẫn field trong object form values.",
+        "mode": "VIEW render read-only. EDIT render cho nhập liệu.",
+        "inlineEdit": "Hiện nút Pencil. Value chỉ commit sau khi bấm Save.",
+        "onInlineSave": "Gọi sau khi Save trong inline-edit với (name, value). Dùng để gọi API update.",
+        "loading": "Thay toolbar bằng spinner. Truyền flag isPending của mutation.",
+        "disabled": "Disable field và toàn bộ toolbar controls.",
+        "clearable": "Hiện nút X để set value về clearValue.",
+        "clearValue": "Value gán khi bấm X. Mặc định undefined. Override theo field (ví dụ '' cho text, [] cho array).",
+        "isClearableValue": "Custom check để biết field có value cần clear không. Mặc định coi undefined / null / '' / false / [] / empty-object là rỗng.",
+        "clearButtonPlacement": "'base' đặt nút X trong toolbar base. 'manual' để render component tự đặt qua renderClearButton().",
+        "resetButtonPlacement": "'base' đặt RotateCcw trong toolbar base. 'manual' để render component tự đặt qua renderResetButton().",
+        "editButtonPlacement": "'base' đặt Pencil/Save/Cancel trong toolbar base. 'manual' để render component tự đặt qua renderEditButton() / renderSaveButton() / renderCancelButton().",
+        "onValueChange": "Gọi mỗi khi value thay đổi, trừ lúc đang edit draft trong inline-edit.",
+        "placeholder": "Chuyển xuống render component.",
+        "className": "Áp dụng lên wrapper Field ngoài cùng.",
+        "fieldControlsClassName": "Merge vào wrapper overlay của toolbar base."
+      },
+      "createMinimalTitle": "1. Custom field tối giản",
+      "createMinimalDescription": "Khai báo ExtendsProps cho props riêng của component, viết wrapper mỏng gắn RenderComponent, rồi viết hàm render thuần nhận field state được inject.",
+      "createWithControlTitle": "2. Có component control bên phải",
+      "createWithControlDescription": "Khi field có nút riêng bên phải (calendar, chevron, generate), spread componentControlStyle và componentControlClassName lên nút đó. Base tự tính offset và dịch nút sang trái khi toolbar xuất hiện.",
+      "createManualTitle": "3. Manual button placement",
+      "createManualDescription": "Đặt tất cả *Placement thành 'manual' và gọi các render function từ bên trong render component. Dùng khi toolbar overlay của base bị lệch vị trí — ví dụ trong layout SectionPanel như FieldInputArrayTable."
+    },
+    "constants": {
+      "priority": {
+        "low": "Thấp",
+        "medium": "Trung bình",
+        "high": "Cao"
+      }
+    }
+  }
+}

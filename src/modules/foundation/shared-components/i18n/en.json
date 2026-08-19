@@ -1,0 +1,16 @@
+{
+  "components": {
+    "address_picker": {
+      "province": "Province/City",
+      "district": "District",
+      "ward": "Ward/Commune",
+      "btn_ok": "OK",
+      "btn_cancel": "Cancel",
+      "select": "Select",
+      "find": "Find"
+    },
+    "entity_table": {
+      "add_placeholder": "Search to add a row"
+    }
+  }
+}

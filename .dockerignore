@@ -1,0 +1,38 @@
+# Build artifacts
+node_modules
+.next
+out
+coverage
+
+# Version control
+.git
+.gitignore
+.gitattributes
+.github
+
+# Editor & local tooling
+.husky
+.vscode
+.idea
+.claude
+.turbo
+.eslintcache
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Environment
+# .env*
+# !.env.example
+# .npmrc
+
+# Docs & project meta
+*.md
+docs.*
+
+# Logs & OS artifacts
+*.log
+npm-debug.log*
+.DS_Store

@@ -1,0 +1,327 @@
+name: SETTINGS
+
+description: >
+  Quản lý cấu hình mang tính platform-level dùng chung cho toàn bộ HVA Nexus: thông tin tổ chức,
+  giá trị mặc định hệ thống, ngôn ngữ/định dạng hiển thị và nhận diện thương hiệu. Mỗi nhóm cấu hình
+  là một bản ghi singleton - không có khái niệm tạo mới/xóa, chỉ xem và cập nhật.
+
+scope:
+  includes:
+    - thông tin tổ chức sử dụng platform (Organization)
+    - giá trị mặc định cấp platform như timezone/currency (General)
+    - ngôn ngữ hỗ trợ và định dạng hiển thị (Localization)
+    - nhận diện thương hiệu dùng chung trên platform (Branding)
+  excludes:
+    - metadata App/Service/Domain/Resource (REGISTRY)
+    - cấu hình nghiệp vụ riêng của từng app/service (thuộc chính app/service đó, ví dụ định mức nhiên liệu thuộc FTM)
+    - user preference cá nhân (thuộc IAM hoặc chính app đang hiển thị)
+
+entities:
+  OrganizationSetting:
+    description: >
+      Thông tin tổ chức sở hữu/vận hành platform. Bản ghi singleton, được khởi tạo sẵn (seed)
+      khi triển khai platform lần đầu.
+    audit: true
+    fields:
+      id: uuid
+      name: string                         # tên hiển thị của tổ chức
+      legalName: string?                   # tên pháp lý đầy đủ, dùng cho chứng từ/hợp đồng
+      logoAssetId: uuid?                    # logo chính thức của tổ chức, xem shared/entities.yaml#AssetRef
+      website: string?
+      contactEmail: string?
+      contactPhone: string?
+      address: string?
+      note: string?
+
+    constraints:
+      - single OrganizationSetting record
+
+  GeneralSetting:
+    description: >
+      Giá trị mặc định cấp platform không thuộc phạm vi ngôn ngữ/định dạng hiển thị (đã có ở
+      LocalizationSetting). Các service khác có thể tham khảo giá trị này làm default khi
+      chưa cấu hình riêng, không bị PLM ép buộc áp dụng.
+    audit: true
+    fields:
+      id: uuid
+      defaultTimezone: string              # IANA timezone name, ví dụ Asia/Ho_Chi_Minh
+      defaultCurrency: string              # mã tiền tệ ISO 4217, ví dụ VND
+      note: string?
+
+    constraints:
+      - single GeneralSetting record
+
+  LocalizationSetting:
+    description: >
+      Cấu hình ngôn ngữ hỗ trợ và định dạng hiển thị dùng chung toàn platform. Là nguồn duy nhất
+      cho ngôn ngữ mặc định và định dạng ngày - GeneralSetting không lặp lại các field này.
+    audit: true
+    fields:
+      id: uuid
+      supportedLanguages: string[]         # mã ngôn ngữ BCP-47/ISO 639-1, ví dụ [vi, en]
+      defaultLanguage: string              # phải nằm trong supportedLanguages
+      dateFormat: string                   # pattern hiển thị ngày, ví dụ DD/MM/YYYY
+      timeFormat: string                   # pattern hiển thị giờ, ví dụ HH:mm
+      numberFormat: string                 # pattern phân tách hàng nghìn/thập phân, ví dụ #,##0.##
+      currencyFormat: string               # pattern hiển thị tiền tệ, ví dụ #,##0 ₫
+      note: string?
+
+    constraints:
+      - single LocalizationSetting record
+      - defaultLanguage in supportedLanguages
+      - supportedLanguages not empty
+
+  BrandingSetting:
+    description: >
+      Nhận diện thương hiệu dùng chung trên platform (cho product UI). Có thể khác với nhận diện
+      pháp lý của tổ chức ở OrganizationSetting - ví dụ khi platform hiển thị dưới một tên/logo sản phẩm riêng.
+    audit: true
+    fields:
+      id: uuid
+      platformName: string                 # tên hiển thị của platform trên UI, ví dụ "HVA Nexus"
+      logoAssetId: uuid?                    # nếu để trống, UI dùng OrganizationSetting.logoAssetId
+      faviconAssetId: uuid?
+      brandConfig: json?                    # cấu hình mở rộng như bảng màu/theme - schema tuỳ nhu cầu hiển thị, không cố định ở mức business doc
+      note: string?
+
+    constraints:
+      - single BrandingSetting record
+
+flows:
+  - name: view_organization_setting
+    description: Xem thông tin tổ chức hiện tại
+    actor: platform_viewer
+    permission: PLM.SETTINGS.ORGANIZATION.VIEW
+    api:
+      method: GET
+      path: /settings/organization
+    output:
+      - organization_setting
+
+  - name: update_organization_setting
+    description: Cập nhật thông tin tổ chức
+    actor: platform_admin
+    permission: PLM.SETTINGS.ORGANIZATION.UPDATE
+    api:
+      method: PUT
+      path: /settings/organization
+    input:
+      - name
+      - legalName        # optional
+      - logoAssetId        # optional
+      - website              # optional
+      - contactEmail          # optional
+      - contactPhone            # optional
+      - address                  # optional
+      - note                      # optional
+    output:
+      - organization_setting
+
+  - name: view_general_setting
+    description: Xem giá trị mặc định cấp platform
+    actor: platform_viewer
+    permission: PLM.SETTINGS.GENERAL.VIEW
+    api:
+      method: GET
+      path: /settings/general
+    output:
+      - general_setting
+
+  - name: update_general_setting
+    description: Cập nhật giá trị mặc định cấp platform
+    actor: platform_admin
+    permission: PLM.SETTINGS.GENERAL.UPDATE
+    api:
+      method: PUT
+      path: /settings/general
+    input:
+      - defaultTimezone
+      - defaultCurrency
+      - note        # optional
+    output:
+      - general_setting
+
+  - name: view_localization_setting
+    description: Xem cấu hình ngôn ngữ và định dạng hiển thị
+    actor: platform_viewer
+    permission: PLM.SETTINGS.LOCALIZATION.VIEW
+    api:
+      method: GET
+      path: /settings/localization
+    output:
+      - localization_setting
+
+  - name: update_localization_setting
+    description: Cập nhật cấu hình ngôn ngữ và định dạng hiển thị
+    actor: platform_admin
+    permission: PLM.SETTINGS.LOCALIZATION.UPDATE
+    api:
+      method: PUT
+      path: /settings/localization
+    input:
+      - supportedLanguages
+      - defaultLanguage
+      - dateFormat
+      - timeFormat
+      - numberFormat
+      - currencyFormat
+      - note        # optional
+    output:
+      - localization_setting
+
+  - name: view_branding_setting
+    description: Xem cấu hình thương hiệu
+    actor: platform_viewer
+    permission: PLM.SETTINGS.BRANDING.VIEW
+    api:
+      method: GET
+      path: /settings/branding
+    output:
+      - branding_setting
+
+  - name: update_branding_setting
+    description: Cập nhật cấu hình thương hiệu
+    actor: platform_admin
+    permission: PLM.SETTINGS.BRANDING.UPDATE
+    api:
+      method: PUT
+      path: /settings/branding
+    input:
+      - platformName
+      - logoAssetId        # optional
+      - faviconAssetId       # optional
+      - brandConfig             # optional
+      - note                      # optional
+    output:
+      - branding_setting
+
+rules:
+  - name: settings_are_seeded_singletons
+    description: >
+      Cả 4 nhóm Settings đều được khởi tạo sẵn (seed) khi triển khai platform lần đầu.
+      Domain không có flow tạo/xóa - chỉ view/update.
+    condition: exactly one record exists per setting entity at all times
+    on_violation: reject create/delete operation on any Settings entity
+
+  - name: single_organization_setting
+    description: Chỉ tồn tại một bản ghi OrganizationSetting
+    condition: single OrganizationSetting record
+    on_violation: update existing record instead of creating new
+
+  - name: single_general_setting
+    description: Chỉ tồn tại một bản ghi GeneralSetting
+    condition: single GeneralSetting record
+    on_violation: update existing record instead of creating new
+
+  - name: single_localization_setting
+    description: Chỉ tồn tại một bản ghi LocalizationSetting
+    condition: single LocalizationSetting record
+    on_violation: update existing record instead of creating new
+
+  - name: single_branding_setting
+    description: Chỉ tồn tại một bản ghi BrandingSetting
+    condition: single BrandingSetting record
+    on_violation: update existing record instead of creating new
+
+  - name: default_language_single_source
+    description: >
+      Ngôn ngữ mặc định và định dạng ngày chỉ khai báo tại LocalizationSetting.
+      GeneralSetting cố tình không lặp lại defaultLanguage/dateFormat để tránh 2 nguồn dữ liệu
+      cho cùng một giá trị; GeneralSetting chỉ giữ defaultTimezone và defaultCurrency.
+    condition: defaultLanguage and dateFormat exist only on LocalizationSetting
+    on_violation: remove duplicated field from GeneralSetting and point to LocalizationSetting
+
+  - name: default_language_must_be_supported
+    description: defaultLanguage phải là một trong các giá trị của supportedLanguages
+    condition: LocalizationSetting.defaultLanguage in LocalizationSetting.supportedLanguages
+    on_violation: block update_localization_setting
+
+  - name: branding_logo_fallback_to_organization
+    description: >
+      Nếu BrandingSetting.logoAssetId để trống, giao diện dùng OrganizationSetting.logoAssetId
+      làm logo hiển thị mặc định. Cho phép platform hiển thị logo sản phẩm riêng khác với logo
+      pháp lý của tổ chức khi cần.
+    condition: BrandingSetting.logoAssetId == null
+    on_action: rendering app shell logo
+    effect: resolve display logo from OrganizationSetting.logoAssetId
+
+  - name: logo_upload_via_asset_service
+    description: >
+      logoAssetId/faviconAssetId chỉ được set từ assetId trả về bởi Asset Service sau khi upload
+      thành công - client không tự đặt giá trị assetId tuỳ ý.
+    condition: logoAssetId/faviconAssetId reference an existing Asset uploaded via external-services.yaml#asset
+    on_violation: reject request with unknown/unverified assetId
+
+features:
+  - name: organization_setting
+    type: page
+    description: Cấu hình thông tin tổ chức
+    route:
+      path: /settings/organization
+    permissions:
+      - PLM.SETTINGS.ORGANIZATION.VIEW
+      - PLM.SETTINGS.ORGANIZATION.UPDATE
+    flows:
+      - view_organization_setting
+      - update_organization_setting
+
+  - name: general_setting
+    type: page
+    description: Cấu hình giá trị mặc định cấp platform
+    route:
+      path: /settings/general
+    permissions:
+      - PLM.SETTINGS.GENERAL.VIEW
+      - PLM.SETTINGS.GENERAL.UPDATE
+    flows:
+      - view_general_setting
+      - update_general_setting
+
+  - name: localization_setting
+    type: page
+    description: Cấu hình ngôn ngữ và định dạng hiển thị
+    route:
+      path: /settings/localization
+    permissions:
+      - PLM.SETTINGS.LOCALIZATION.VIEW
+      - PLM.SETTINGS.LOCALIZATION.UPDATE
+    flows:
+      - view_localization_setting
+      - update_localization_setting
+
+  - name: branding_setting
+    type: page
+    description: Cấu hình thương hiệu
+    route:
+      path: /settings/branding
+    permissions:
+      - PLM.SETTINGS.BRANDING.VIEW
+      - PLM.SETTINGS.BRANDING.UPDATE
+    flows:
+      - view_branding_setting
+      - update_branding_setting
+
+permissions:
+  - key: PLM.SETTINGS.ORGANIZATION.VIEW
+    description: Xem thông tin tổ chức
+
+  - key: PLM.SETTINGS.ORGANIZATION.UPDATE
+    description: Cập nhật thông tin tổ chức
+
+  - key: PLM.SETTINGS.GENERAL.VIEW
+    description: Xem giá trị mặc định cấp platform
+
+  - key: PLM.SETTINGS.GENERAL.UPDATE
+    description: Cập nhật giá trị mặc định cấp platform
+
+  - key: PLM.SETTINGS.LOCALIZATION.VIEW
+    description: Xem cấu hình ngôn ngữ và định dạng hiển thị
+
+  - key: PLM.SETTINGS.LOCALIZATION.UPDATE
+    description: Cập nhật cấu hình ngôn ngữ và định dạng hiển thị
+
+  - key: PLM.SETTINGS.BRANDING.VIEW
+    description: Xem cấu hình thương hiệu
+
+  - key: PLM.SETTINGS.BRANDING.UPDATE
+    description: Cập nhật cấu hình thương hiệu

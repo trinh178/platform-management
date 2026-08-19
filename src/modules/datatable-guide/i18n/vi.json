@@ -1,0 +1,126 @@
+{
+  "datatableGuide": {
+    "title": "Hướng dẫn DataTable",
+    "hero": {
+      "title": "DataTable Playground",
+      "description": "Toàn bộ DataTable dùng chung — DataTableServer, DataTableStatic và DataTablePlain — với demo chạy thật, bảng tra cứu column helper và ví dụ code copy sẵn.",
+      "badgeLive": "Ví dụ chạy thật",
+      "badgeServer": "Server-side",
+      "badgeSticky": "Sticky columns",
+      "badgePlain": "Bảng đơn giản"
+    },
+    "tabs": {
+      "playground": "Playground",
+      "catalog": "Danh mục column",
+      "usage": "Cách dùng",
+      "plain": "Bảng đơn giản"
+    },
+    "playground": {
+      "search": "Tìm kiếm nhân viên...",
+      "create": "Thêm nhân viên",
+      "export": "Xuất",
+      "stateTitle": "Trạng thái table",
+      "listRequest": "listRequest",
+      "selectedRows": "Dòng đã chọn"
+    },
+    "field": {
+      "code": "Mã",
+      "fullName": "Họ tên",
+      "jobLevel": "Cấp độ",
+      "jobLevelIntern": "Thực tập",
+      "jobLevelJunior": "Junior",
+      "jobLevelSenior": "Senior",
+      "status": "Trạng thái",
+      "statusActive": "Đang làm",
+      "statusInactive": "Nghỉ việc",
+      "statusOnLeave": "Nghỉ phép",
+      "hireDate": "Ngày vào làm",
+      "isActive": "Đang làm việc",
+      "managerName": "Quản lý"
+    },
+    "catalogHeader": {
+      "factory": "Factory / helper",
+      "required": "Props bắt buộc",
+      "description": "Mô tả",
+      "defaultMeta": "Meta mặc định"
+    },
+    "catalog": {
+      "helper": {
+        "description": "Tạo ColumnHelper mới mỗi lần gọi — tránh lỗi singleton mutation. Tự động set meta.isCustomCell = true khi column có cell renderer."
+      },
+      "accessor": {
+        "description": "Column accessor thông thường. Bỏ qua cell để dùng đường dẫn renderValue mặc định; thêm cell để render tùy chỉnh (isCustomCell tự động được set)."
+      },
+      "select": {
+        "description": "Column checkbox. Header hiển thị Select All chỉ khi enableMultiRowSelection là true."
+      },
+      "actions": {
+        "description": "Dropdown 3 chấm chỉ có trigger. Truyền render để thêm menu items; bỏ qua để có menu placeholder trống trong lúc xây dựng tính năng."
+      },
+      "status": {
+        "description": "Column badge trạng thái. status(row) trả về nhãn hiển thị. statusClassName(row) tùy chọn — thêm Tailwind class để custom màu badge."
+      },
+      "tick": {
+        "description": "Icon CircleCheck / CircleX. getTicked(row) ghi đè logic boolean mặc định !!getValue()."
+      },
+      "date": {
+        "description": "Format giá trị bằng formatDate(). Hiển thị — khi giá trị là null hoặc undefined. Giá trị mặc định phải là đối tượng Date."
+      }
+    },
+    "metaHeader": {
+      "prop": "Prop",
+      "type": "Kiểu",
+      "description": "Mô tả"
+    },
+    "meta": {
+      "align": "Căn chỉnh văn bản áp dụng cho cả ô header và mỗi ô dữ liệu trong cột.",
+      "className": "Tailwind class bổ sung cho mỗi ô dữ liệu trong cột này.",
+      "headerClassName": "Tailwind class bổ sung chỉ cho ô header.",
+      "sticky": "Ghim cột sang trái hoặc phải. Offset được tính từ DOM thực tế qua useLayoutEffect — không cần cấu hình size thủ công."
+    },
+    "usage": {
+      "server": {
+        "title": "Cài đặt server-side",
+        "description": "DataTableServer quản lý trạng thái pagination, search, filter và sort; gọi onChangeListRequest mỗi khi có thay đổi. Dùng placeholderData để giữ dữ liệu cũ khi đang tải."
+      },
+      "client": {
+        "title": "Client-side (dữ liệu tĩnh)",
+        "description": "DataTableStatic xử lý filter, sort và phân trang tùy chọn hoàn toàn client-side. Không cần gọi API — truyền trực tiếp mảng dữ liệu."
+      },
+      "columns": {
+        "title": "Khai báo columns",
+        "description": "Dùng getColumnHelper() để có helper có kiểu. Column nào có cell prop sẽ tự động được set meta.isCustomCell = true — table renderer dùng flexRender thay vì renderValue."
+      },
+      "factories": {
+        "title": "Column factories",
+        "description": "createStatusColumn, createTickColumn và createDateColumn bọc accessor với cell renderer có kiểu và các giá trị mặc định hợp lý. Truyền thêm ColumnDef props qua spread rest."
+      },
+      "filters": {
+        "title": "Faceted filters",
+        "description": "Khai báo filterFields với id trùng với tên field filter của API và mảng options. Truyền cho DataTableServer hoặc DataTableStatic."
+      },
+      "sticky": {
+        "title": "Sticky columns",
+        "description": "Đặt meta.sticky trên bất kỳ column nào. createSelectColumn mặc định sticky: left và createActionsColumn mặc định sticky: right. DataTable tự đọc meta.sticky — không cần prop thêm."
+      },
+      "actionsRender": {
+        "title": "actionsRender — truy cập dòng đã chọn",
+        "description": "actionsRender nhận table instance và isLoading flag. Dùng table.getSelectedRowModel() để đọc dòng đã chọn và bật/tắt bulk actions."
+      },
+      "tableMeta": {
+        "title": "TableMeta — truyền callback vào cell",
+        "description": "Dùng meta để inject router hoặc mutation callback vào cell renderer, giữ columns portable và không đóng closure trên props cũ."
+      },
+      "plain": {
+        "title": "Bảng đơn giản (DataTablePlain)",
+        "description": "DataTablePlain dùng cho sub-table nhúng trong form hoặc detail view. Không toolbar, không pagination — hỗ trợ cell render tùy chỉnh (input inline, button) và footer row tùy chọn."
+      }
+    },
+    "plain": {
+      "demoTitle": "Demo trực tiếp",
+      "totalActive": "Nhân viên đang làm việc",
+      "whenTitle": "Khi nào dùng DataTablePlain",
+      "whenDescription": "Dùng DataTablePlain khi cần table đơn giản không có toolbar, nhúng trong form hoặc detail view. Cùng dùng ui/table components với DataTableServer và DataTableStatic — style luôn nhất quán."
+    }
+  }
+}

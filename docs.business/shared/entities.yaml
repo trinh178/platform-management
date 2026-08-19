@@ -1,0 +1,49 @@
+# Shared entities - dùng chung cho nhiều domain.
+#
+# Domain.yaml tham chiếu bằng: object(EntityName)  # see shared/entities.yaml
+
+AuditFields:
+  description: >
+    Các field audit chuẩn - mixin cho mọi entity có audit: true.
+  fields:
+    createdBy: uuid
+    createdOnUtc: datetime
+    modifiedBy: uuid?
+    modifiedOnUtc: datetime?
+
+AppPreview:
+  description: >
+    Shape rút gọn của App dùng cho nested response (AppServiceMapping) hoặc danh sách lựa chọn nhanh.
+  fields:
+    id: uuid
+    appCode: string
+    name: string
+    status: enum(registry_status)
+
+ServicePreview:
+  description: >
+    Shape rút gọn của Service dùng cho nested response (AppServiceMapping, Domain) hoặc danh sách lựa chọn nhanh.
+  fields:
+    id: uuid
+    serviceCode: string
+    name: string
+    status: enum(registry_status)
+
+DomainPreview:
+  description: >
+    Shape rút gọn của Domain dùng cho nested response (Resource) hoặc danh sách lựa chọn nhanh.
+  fields:
+    id: uuid
+    domainCode: string
+    name: string
+    serviceId: uuid
+
+AssetRef:
+  description: >
+    Metadata file đã upload qua Asset Service - dùng cho logo/favicon trong Settings.
+    Xem tích hợp chi tiết tại external-services.yaml#asset.
+  fields:
+    assetId: uuid                      # ID trả về từ Asset Service
+    fileName: string
+    mimeType: string?
+    url: string?

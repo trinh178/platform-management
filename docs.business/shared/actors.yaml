@@ -1,0 +1,4 @@
+actors:
+  - platform_admin
+  - platform_viewer
+  - external_application

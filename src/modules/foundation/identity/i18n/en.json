@@ -1,0 +1,22 @@
+{
+  "identity": {
+    "no_authentication": {
+      "title": "Authentication required",
+      "description": "You need to sign in to access this page.",
+      "sign_in": "Sign in"
+    },
+    "auth": {
+      "sign_in": "Sign in",
+      "session_expired": "Your session has expired. Please sign in again",
+      "welcome_back": "Welcome back",
+      "sign_in_subtitle": "Sign in to {appName}",
+      "email": "Email",
+      "email_placeholder": "you@company.com",
+      "password": "Password",
+      "contact_admin": "Contact the administrator if you do not have an account.",
+      "signing_in": "Signing in...",
+      "sign_in_success": "Sign in successful",
+      "sign_in_failure": "Sign in failed"
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "employee": {
+    "title": "Employees",
+    "page": {
+      "create": "Create employee",
+      "details": "Employee details"
+    },
+    "sections": {
+      "basic": {
+        "title": "Basic information",
+        "general": "General information",
+        "id": "Citizen ID",
+        "education": "Education, qualifications"
+      },
+      "contact": {
+        "title": "Contact information",
+        "general": "General information",
+        "permanent": "Permanent address",
+        "current": "Current residence",
+        "emergency": "Emergency contact"
+      },
+      "jobInfo": {
+        "title": "Job information",
+        "work": "Work information",
+        "org": "Organization & Position"
+      },
+      "qualifications": {
+        "title": "Qualification information"
+      },
+      "documents": {
+        "title": "Attached documents"
+      }
+    },
+    "fields": {
+      "employeeCode": "Employee Code",
+      "createdBy": "Created By",
+      "modifiedBy": "Modified By",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "fullName": "Full Name",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "placeOfBirth": "Place of Birth",
+      "placeOfOrigin": "Place of Origin",
+      "maritalStatus": "Marital Status",
+      "ethnicity": "Ethnicity",
+      "religion": "Religion",
+      "nationality": "Nationality",
+      "idNumber": "ID Number",
+      "idDateOfIssue": "Date of Issue",
+      "idPlaceOfIssue": "Place of Issue",
+      "idDateOfExpiry": "Date of Expiry",
+      "educationLevel": "Education Level",
+      "qualificationLevel": "Qualification Level",
+      "institution": "Institution",
+      "major": "Major",
+      "graduationYear": "Graduation Year",
+      "classification": "Classification",
+      "contact": {
+        "personalPhoneNumber": "Personal Phone Number",
+        "officePhoneNumber": "Office Phone Number",
+        "personalEmail": "Personal Email",
+        "officeEmail": "Office Email",
+        "permanentCountry": "Permanent Country",
+        "permanentAddress": "Permanent Address",
+        "permanentStreet": "Street Address",
+        "registrationBookNumber": "Household Registration Book Number",
+        "currentCountry": "Current Country",
+        "currentAddress": "Current Address",
+        "currentStreet": "Street Address",
+        "emergencyFullName": "Emergency Contact Name",
+        "emergencyRelationship": "Relationship",
+        "emergencyPhoneNumber": "Phone Number",
+        "emergencyAddFullName": "Additional Emergency Contact Name",
+        "emergencyAddRelationship": "Relationship",
+        "emergencyAddPhoneNumber": "Phone Number"
+      },
+      "jobInfo": {
+        "status": "Status",
+        "hireDate": "Hire Date",
+        "probationDate": "Probation Date",
+        "officialDate": "Official Date",
+        "organizationUnit": "Organization Unit",
+        "jobPosition": "Job Position"
+      },
+      "qualification": {
+        "type": "Type",
+        "institution": "Institution",
+        "major": "Major",
+        "level": "Level",
+        "issueDate": "Issue date",
+        "expiryDate": "Expiry date",
+        "note": "Note"
+      },
+      "document": {
+        "name": "Document name",
+        "fileName": "File name",
+        "note": "Note"
+      }
+    },
+    "constants": {
+      "gender": {
+        "male": "Male",
+        "female": "Female"
+      },
+      "marital": {
+        "single": "Single",
+        "married": "Married",
+        "divorced": "Divorced"
+      },
+      "qualification": {
+        "education": "Education",
+        "certification": "Certification"
+      },
+      "jobStatus": {
+        "active": "Active",
+        "onProbation": "On Probation",
+        "inactive": "Inactive"
+      }
+    },
+    "controls": {
+      "search": "Search employee",
+      "searchDocument": "Search documents"
+    },
+    "createdDialog": {
+      "title": "Employee created successfully",
+      "description": "The employee has been created in the system",
+      "defaultFullName": "New employee",
+      "summary": "Employee has been created successfully",
+      "nextAction": {
+        "title": "Choose next action",
+        "description": "You can continue to set up the necessary information for the employee.",
+        "addOnboarding": "Add onboarding for employee",
+        "createContract": "Create contract for employee",
+        "viewEmployee": "View employee"
+      }
+    },
+    "deleteConfirm": {
+      "title": "Delete employee",
+      "description": "Are you sure you want to delete this employee? This action cannot be undone."
+    }
+  }
+}

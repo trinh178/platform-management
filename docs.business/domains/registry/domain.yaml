@@ -1,0 +1,834 @@
+name: REGISTRY
+
+description: >
+  Quản lý metadata cấu trúc của platform: App, Service, Domain, Resource và quan hệ App-Service.
+  REGISTRY là nguồn định danh (identity) cho toàn bộ chuẩn cross-service reference của HVA Nexus
+  (ReferenceService/ReferenceDomain/ReferenceResource), nhưng không sở hữu business data thực tế
+  của App/Service nào - dữ liệu đó vẫn thuộc service sở hữu.
+
+scope:
+  includes:
+    - đăng ký và quản lý vòng đời metadata App (frontend/application)
+    - đăng ký và quản lý vòng đời metadata Service (backend service)
+    - quản lý quan hệ many-to-many giữa App và Service (App-Service Mapping)
+    - đăng ký và quản lý Domain thuộc một Service
+    - đăng ký và quản lý Resource thuộc một Domain
+    - resolve/tra cứu metadata định danh cho chuẩn cross-service reference (ReferenceService/ReferenceDomain/ReferenceResource)
+  excludes:
+    - cấu hình platform-level như Organization, General, Localization, Branding (SETTINGS)
+    - business data thực tế của App/Service (thuộc chính service đó sở hữu)
+    - user, role, permission, policy (IAM)
+    - audit log (Audit Service)
+    - dữ liệu được trỏ tới bởi ReferenceId (thuộc service sở hữu dữ liệu đó, PLM chỉ xác định metadata Service/Domain/Resource)
+
+entities:
+  App:
+    description: >
+      Metadata định danh một application/frontend trong platform. App và Service là hai entity
+      độc lập, không có quan hệ ownership - chỉ liên kết qua AppServiceMapping.
+    audit: true
+    fields:
+      id: uuid
+      appCode: string                      # UPPER_SNAKE_CASE, duy nhất toàn platform, ví dụ FTM, IAM, WATS
+      name: string
+      description: string?
+      version: string?                     # version hiện đang triển khai, ví dụ 1.4.0
+      status: enum(registry_status)
+      metadata: json?                      # thông tin mở rộng tuỳ app, không có schema cố định
+      note: string?
+
+    constraints:
+      - appCode unique
+      - appCode matches UPPER_SNAKE_CASE
+
+  Service:
+    description: >
+      Metadata định danh một backend service trong platform.
+    audit: true
+    fields:
+      id: uuid
+      serviceCode: string                  # UPPER_SNAKE_CASE, duy nhất toàn platform, ví dụ HRM_EM, FLEET_MNG
+      name: string
+      description: string?
+      version: string?
+      status: enum(registry_status)
+      metadata: json?
+      note: string?
+
+    constraints:
+      - serviceCode unique
+      - serviceCode matches UPPER_SNAKE_CASE
+
+  AppServiceMapping:
+    description: >
+      Quan hệ many-to-many giữa App và Service - một App có thể dùng nhiều Service,
+      một Service có thể được dùng bởi nhiều App.
+    audit: true
+    fields:
+      id: uuid
+      appId: uuid
+      serviceId: uuid
+      note: string?
+
+      app: object(AppPreview)?             # response-only, see shared/entities.yaml
+      service: object(ServicePreview)?     # response-only, see shared/entities.yaml
+
+    constraints:
+      - appId + serviceId unique
+
+  Domain:
+    description: >
+      Metadata định danh và phân loại business capability thuộc một Service. Đây là entity nghiệp vụ
+      "Domain" trong mô hình Registry - khác với khái niệm domain.yaml dùng để tổ chức tài liệu nghiệp vụ.
+    audit: true
+    fields:
+      id: uuid
+      serviceId: uuid
+      domainCode: string                   # UPPER_SNAKE_CASE, duy nhất trong phạm vi serviceId, ví dụ FUEL_ENTRY
+      name: string
+      description: string?
+      status: enum(registry_status)
+      note: string?
+
+      service: object(ServicePreview)?     # response-only, see shared/entities.yaml
+
+    constraints:
+      - domainCode unique within serviceId
+      - domainCode matches UPPER_SNAKE_CASE
+
+  Resource:
+    description: >
+      Metadata định danh một Resource thuộc Domain. Resource là thành phần trong chuẩn cross-service
+      reference (ReferenceService/ReferenceDomain/ReferenceResource/ReferenceId) - xem README.md mục 10.
+    audit: true
+    fields:
+      id: uuid
+      domainId: uuid
+      resourceCode: string                 # UPPER_SNAKE_CASE, duy nhất trong phạm vi domainId, ví dụ EMPLOYEE
+      name: string
+      description: string?
+      status: enum(registry_status)
+      note: string?
+
+      domain: object(DomainPreview)?       # response-only, see shared/entities.yaml
+
+    constraints:
+      - resourceCode unique within domainId
+      - resourceCode matches UPPER_SNAKE_CASE
+
+flows:
+  # App
+  - name: create_app
+    description: Đăng ký App mới vào Registry
+    actor: platform_admin
+    permission: PLM.REGISTRY.APP.CREATE
+    api:
+      method: POST
+      path: /registry/apps
+    input:
+      - appCode
+      - name
+      - description       # optional
+      - version            # optional
+      - status              # default Active nếu không truyền
+      - metadata            # optional
+      - note                 # optional
+    output:
+      - app
+
+  - name: update_app
+    description: Cập nhật metadata App
+    actor: platform_admin
+    permission: PLM.REGISTRY.APP.UPDATE
+    api:
+      method: PUT
+      path: /registry/apps/:id
+    input:
+      - appId
+      - fields
+    output:
+      - app
+
+  - name: delete_app
+    description: >
+      Xóa App khỏi Registry theo id. Chỉ cho phép khi App không còn AppServiceMapping nào.
+    actor: platform_admin
+    permission: PLM.REGISTRY.APP.DELETE
+    api:
+      method: DELETE
+      path: /registry/apps/:id
+    input:
+      - appId
+
+  - name: view_app
+    description: Xem chi tiết App
+    actor: platform_viewer
+    permission: PLM.REGISTRY.APP.VIEW
+    api:
+      method: GET
+      path: /registry/apps/:id
+    input:
+      - appId
+    output:
+      - app
+
+  - name: list_apps
+    description: Danh sách App, có search theo appCode/tên và filter theo trạng thái
+    actor: platform_viewer
+    permission: PLM.REGISTRY.APP.VIEW
+    api:
+      method: GET
+      path: /registry/apps
+    input:
+      - list_request
+    output:
+      - list_response
+
+  - name: list_app_options
+    description: Danh sách App Active rút gọn phục vụ chọn nhanh khi tạo App-Service Mapping
+    actor: platform_viewer
+    permission: PLM.REGISTRY.APP.VIEW
+    api:
+      method: GET
+      path: /registry/apps/options
+    input:
+      - keyword          # optional
+    output:
+      - app_options       # danh sách App rút gọn: id, appCode, name, status
+
+  # Service
+  - name: create_service
+    description: Đăng ký Service mới vào Registry
+    actor: platform_admin
+    permission: PLM.REGISTRY.SERVICE.CREATE
+    api:
+      method: POST
+      path: /registry/services
+    input:
+      - serviceCode
+      - name
+      - description       # optional
+      - version             # optional
+      - status               # default Active nếu không truyền
+      - metadata              # optional
+      - note                   # optional
+    output:
+      - service
+
+  - name: update_service
+    description: Cập nhật metadata Service
+    actor: platform_admin
+    permission: PLM.REGISTRY.SERVICE.UPDATE
+    api:
+      method: PUT
+      path: /registry/services/:id
+    input:
+      - serviceId
+      - fields
+    output:
+      - service
+
+  - name: delete_service
+    description: >
+      Xóa Service khỏi Registry theo id. Chỉ cho phép khi Service không còn AppServiceMapping
+      và không còn Domain nào.
+    actor: platform_admin
+    permission: PLM.REGISTRY.SERVICE.DELETE
+    api:
+      method: DELETE
+      path: /registry/services/:id
+    input:
+      - serviceId
+
+  - name: view_service
+    description: Xem chi tiết Service
+    actor: platform_viewer
+    permission: PLM.REGISTRY.SERVICE.VIEW
+    api:
+      method: GET
+      path: /registry/services/:id
+    input:
+      - serviceId
+    output:
+      - service
+
+  - name: list_services
+    description: Danh sách Service, có search theo serviceCode/tên và filter theo trạng thái
+    actor: platform_viewer
+    permission: PLM.REGISTRY.SERVICE.VIEW
+    api:
+      method: GET
+      path: /registry/services
+    input:
+      - list_request
+    output:
+      - list_response
+
+  - name: list_service_options
+    description: >
+      Danh sách Service Active rút gọn phục vụ chọn nhanh khi tạo App-Service Mapping hoặc Domain.
+    actor: platform_viewer
+    permission: PLM.REGISTRY.SERVICE.VIEW
+    api:
+      method: GET
+      path: /registry/services/options
+    input:
+      - keyword          # optional
+    output:
+      - service_options   # danh sách Service rút gọn: id, serviceCode, name, status
+
+  # App-Service Mapping
+  - name: assign_service_to_app
+    description: Gán một Service cho một App
+    actor: platform_admin
+    permission: PLM.REGISTRY.APP_SERVICE_MAPPING.ASSIGN
+    api:
+      method: POST
+      path: /registry/app-service-mappings
+    input:
+      - appId
+      - serviceId
+      - note              # optional
+    output:
+      - app_service_mapping
+
+  - name: unassign_service_from_app
+    description: Gỡ một Service khỏi một App
+    actor: platform_admin
+    permission: PLM.REGISTRY.APP_SERVICE_MAPPING.UNASSIGN
+    api:
+      method: DELETE
+      path: /registry/app-service-mappings/:id
+    input:
+      - appServiceMappingId
+
+  - name: list_app_service_mappings
+    description: Danh sách App-Service Mapping, filter theo appId hoặc serviceId
+    actor: platform_viewer
+    permission: PLM.REGISTRY.APP_SERVICE_MAPPING.VIEW
+    api:
+      method: GET
+      path: /registry/app-service-mappings
+    input:
+      - appId              # optional
+      - serviceId           # optional
+      - list_request
+    output:
+      - list_response
+
+  # Domain
+  - name: create_domain
+    description: Đăng ký Domain mới thuộc một Service
+    actor: platform_admin
+    permission: PLM.REGISTRY.DOMAIN.CREATE
+    api:
+      method: POST
+      path: /registry/domains
+    input:
+      - serviceId
+      - domainCode
+      - name
+      - description       # optional
+      - status              # default Active nếu không truyền
+      - note                 # optional
+    output:
+      - domain
+
+  - name: update_domain
+    description: Cập nhật metadata Domain
+    actor: platform_admin
+    permission: PLM.REGISTRY.DOMAIN.UPDATE
+    api:
+      method: PUT
+      path: /registry/domains/:id
+    input:
+      - domainId
+      - fields
+    output:
+      - domain
+
+  - name: delete_domain
+    description: >
+      Xóa Domain khỏi Registry theo id. Chỉ cho phép khi Domain không còn Resource nào.
+    actor: platform_admin
+    permission: PLM.REGISTRY.DOMAIN.DELETE
+    api:
+      method: DELETE
+      path: /registry/domains/:id
+    input:
+      - domainId
+
+  - name: view_domain
+    description: Xem chi tiết Domain kèm nested service object (ServicePreview)
+    actor: platform_viewer
+    permission: PLM.REGISTRY.DOMAIN.VIEW
+    api:
+      method: GET
+      path: /registry/domains/:id
+    input:
+      - domainId
+    output:
+      - domain
+
+  - name: list_domains
+    description: Danh sách Domain, có search theo domainCode/tên và filter theo serviceId/trạng thái
+    actor: platform_viewer
+    permission: PLM.REGISTRY.DOMAIN.VIEW
+    api:
+      method: GET
+      path: /registry/domains
+    input:
+      - list_request
+    output:
+      - list_response
+
+  - name: list_domain_options
+    description: Danh sách Domain Active rút gọn thuộc một Service, phục vụ chọn nhanh khi tạo Resource
+    actor: platform_viewer
+    permission: PLM.REGISTRY.DOMAIN.VIEW
+    api:
+      method: GET
+      path: /registry/domains/options
+    input:
+      - serviceId
+      - keyword          # optional
+    output:
+      - domain_options     # danh sách Domain rút gọn: id, domainCode, name, status
+
+  # Resource
+  - name: create_resource
+    description: Đăng ký Resource mới thuộc một Domain
+    actor: platform_admin
+    permission: PLM.REGISTRY.RESOURCE.CREATE
+    api:
+      method: POST
+      path: /registry/resources
+    input:
+      - domainId
+      - resourceCode
+      - name
+      - description       # optional
+      - status              # default Active nếu không truyền
+      - note                 # optional
+    output:
+      - resource
+
+  - name: update_resource
+    description: Cập nhật metadata Resource
+    actor: platform_admin
+    permission: PLM.REGISTRY.RESOURCE.UPDATE
+    api:
+      method: PUT
+      path: /registry/resources/:id
+    input:
+      - resourceId
+      - fields
+    output:
+      - resource
+
+  - name: delete_resource
+    description: Xóa Resource khỏi Registry theo id
+    actor: platform_admin
+    permission: PLM.REGISTRY.RESOURCE.DELETE
+    api:
+      method: DELETE
+      path: /registry/resources/:id
+    input:
+      - resourceId
+
+  - name: view_resource
+    description: Xem chi tiết Resource kèm nested domain object (DomainPreview)
+    actor: platform_viewer
+    permission: PLM.REGISTRY.RESOURCE.VIEW
+    api:
+      method: GET
+      path: /registry/resources/:id
+    input:
+      - resourceId
+    output:
+      - resource
+
+  - name: list_resources
+    description: Danh sách Resource, có search theo resourceCode/tên và filter theo domainId/trạng thái
+    actor: platform_viewer
+    permission: PLM.REGISTRY.RESOURCE.VIEW
+    api:
+      method: GET
+      path: /registry/resources
+    input:
+      - list_request
+    output:
+      - list_response
+
+  # Cross-service reference resolution
+  - name: get_reference_metadata
+    description: >
+      Xác nhận một bộ ReferenceService/ReferenceDomain/ReferenceResource có tồn tại trong Registry
+      và trả metadata định danh (tên, mô tả, trạng thái) để service khác hiển thị nhãn cho reference.
+      KHÔNG trả về business data tại ReferenceId - service gọi flow này tự tra cứu dữ liệu đó
+      từ service sở hữu.
+    actor: external_application
+    permission: PLM.REGISTRY.RESOURCE.VIEW
+    api:
+      method: GET
+      path: /registry/references/resolve
+    input:
+      - referenceService     # = Service.serviceCode
+      - referenceDomain      # = Domain.domainCode
+      - referenceResource    # = Resource.resourceCode
+    output:
+      - reference_metadata   # { service, domain, resource } - mỗi phần tử gồm code/name/status
+
+rules:
+  - name: app_code_unique_and_format
+    description: appCode phải duy nhất toàn platform và theo định dạng UPPER_SNAKE_CASE
+    condition: appCode unique AND appCode matches UPPER_SNAKE_CASE
+    on_violation: block create_app / update_app
+
+  - name: service_code_unique_and_format
+    description: serviceCode phải duy nhất toàn platform và theo định dạng UPPER_SNAKE_CASE
+    condition: serviceCode unique AND serviceCode matches UPPER_SNAKE_CASE
+    on_violation: block create_service / update_service
+
+  - name: domain_code_unique_within_service
+    description: domainCode chỉ cần duy nhất trong phạm vi Service sở hữu, không cần duy nhất toàn platform
+    condition: domainCode unique within serviceId AND domainCode matches UPPER_SNAKE_CASE
+    on_violation: block create_domain / update_domain
+
+  - name: resource_code_unique_within_domain
+    description: resourceCode chỉ cần duy nhất trong phạm vi Domain sở hữu
+    condition: resourceCode unique within domainId AND resourceCode matches UPPER_SNAKE_CASE
+    on_violation: block create_resource / update_resource
+
+  - name: app_service_independent_entities
+    description: >
+      App và Service là hai entity độc lập, không có quan hệ ownership trực tiếp; chỉ liên kết
+      thông qua AppServiceMapping.
+    condition: App.serviceIds and Service.appIds are derived only via AppServiceMapping, never stored inline
+    on_violation: reject any direct App-Service ownership field
+
+  - name: app_service_mapping_unique
+    description: Không cho phép trùng cặp (appId, serviceId)
+    condition: (appId, serviceId) unique
+    on_violation: block assign_service_to_app
+
+  - name: domain_requires_existing_service
+    description: serviceId phải tồn tại trước khi tạo Domain
+    condition: Registry.service.exists(serviceId) = true
+    on_violation: block create_domain
+
+  - name: resource_requires_existing_domain
+    description: domainId phải tồn tại trước khi tạo Resource
+    condition: Registry.domain.exists(domainId) = true
+    on_violation: block create_resource
+
+  - name: delete_requires_no_dependents
+    description: >
+      Không cho xóa một bản ghi Registry khi vẫn còn bản ghi con phụ thuộc:
+      App còn AppServiceMapping, Service còn AppServiceMapping hoặc Domain, Domain còn Resource.
+    condition: >
+      delete_app -> App has no AppServiceMapping;
+      delete_service -> Service has no AppServiceMapping AND Service has no Domain;
+      delete_domain -> Domain has no Resource
+    on_violation: block delete_app / delete_service / delete_domain
+
+  - name: only_active_selectable_for_new_links
+    description: >
+      Khi tạo liên kết mới (AppServiceMapping, Domain, Resource), danh sách chọn (options) chỉ hiển thị
+      App/Service/Domain đang Active. Bản ghi Inactive/Deprecated vẫn xem được ở trang chi tiết
+      nhưng không dùng để tạo liên kết mới.
+    condition: list_app_options / list_service_options / list_domain_options only return status = Active
+    on_violation: exclude non-Active record from options list
+
+  - name: registry_owns_metadata_only
+    description: >
+      Platform Management chỉ lưu metadata định danh của App/Service/Domain/Resource, không lưu
+      business data thực tế mà các entity này đại diện.
+    condition: App/Service/Domain/Resource fields are limited to identity/lifecycle metadata (no business payload fields)
+    on_violation: move business data field to owning service's own domain
+
+  - name: reference_resolution_is_metadata_only
+    description: >
+      get_reference_metadata chỉ xác nhận và mô tả Service/Domain/Resource, không truy vấn hay trả về
+      dữ liệu tại ReferenceId - service gọi phải tự tra cứu dữ liệu đó từ service sở hữu.
+    condition: get_reference_metadata response contains no field derived from ReferenceId
+    on_violation: strip business data from response
+
+features:
+  - name: app_list
+    type: page
+    description: Danh sách App trong Registry
+    route:
+      path: /registry/apps
+    permissions:
+      - PLM.REGISTRY.APP.VIEW
+    flows:
+      - list_apps
+      - list_app_options
+
+  - name: app_detail
+    type: page
+    description: Chi tiết App kèm danh sách Service đang dùng qua AppServiceMapping
+    route:
+      path: /registry/apps/details
+    permissions:
+      - PLM.REGISTRY.APP.VIEW
+      - PLM.REGISTRY.APP_SERVICE_MAPPING.VIEW
+    flows:
+      - view_app
+      - list_app_service_mappings
+
+  - name: create_app
+    type: page
+    description: Đăng ký App mới
+    route:
+      path: /registry/apps/create
+    permissions:
+      - PLM.REGISTRY.APP.CREATE
+    flows:
+      - create_app
+
+  - name: update_app
+    type: action
+    description: Cập nhật App
+    permissions:
+      - PLM.REGISTRY.APP.UPDATE
+    flows:
+      - update_app
+
+  - name: delete_app
+    type: action
+    description: Xóa App
+    permissions:
+      - PLM.REGISTRY.APP.DELETE
+    flows:
+      - delete_app
+
+  - name: service_list
+    type: page
+    description: Danh sách Service trong Registry
+    route:
+      path: /registry/services
+    permissions:
+      - PLM.REGISTRY.SERVICE.VIEW
+    flows:
+      - list_services
+      - list_service_options
+
+  - name: service_detail
+    type: page
+    description: Chi tiết Service kèm danh sách Domain và App đang dùng
+    route:
+      path: /registry/services/details
+    permissions:
+      - PLM.REGISTRY.SERVICE.VIEW
+      - PLM.REGISTRY.DOMAIN.VIEW
+      - PLM.REGISTRY.APP_SERVICE_MAPPING.VIEW
+    flows:
+      - view_service
+      - list_domains
+      - list_app_service_mappings
+
+  - name: create_service
+    type: page
+    description: Đăng ký Service mới
+    route:
+      path: /registry/services/create
+    permissions:
+      - PLM.REGISTRY.SERVICE.CREATE
+    flows:
+      - create_service
+
+  - name: update_service
+    type: action
+    description: Cập nhật Service
+    permissions:
+      - PLM.REGISTRY.SERVICE.UPDATE
+    flows:
+      - update_service
+
+  - name: delete_service
+    type: action
+    description: Xóa Service
+    permissions:
+      - PLM.REGISTRY.SERVICE.DELETE
+    flows:
+      - delete_service
+
+  - name: app_service_mapping
+    type: page
+    description: Quản lý quan hệ App-Service (gán/gỡ Service cho App)
+    route:
+      path: /registry/app-service-mapping
+    permissions:
+      - PLM.REGISTRY.APP_SERVICE_MAPPING.VIEW
+      - PLM.REGISTRY.APP_SERVICE_MAPPING.ASSIGN
+      - PLM.REGISTRY.APP_SERVICE_MAPPING.UNASSIGN
+    flows:
+      - list_app_service_mappings
+      - list_app_options
+      - list_service_options
+      - assign_service_to_app
+      - unassign_service_from_app
+
+  - name: domain_list
+    type: page
+    description: Danh sách Domain trong Registry
+    route:
+      path: /registry/domains
+    permissions:
+      - PLM.REGISTRY.DOMAIN.VIEW
+    flows:
+      - list_domains
+
+  - name: domain_detail
+    type: page
+    description: Chi tiết Domain kèm danh sách Resource
+    route:
+      path: /registry/domains/details
+    permissions:
+      - PLM.REGISTRY.DOMAIN.VIEW
+      - PLM.REGISTRY.RESOURCE.VIEW
+    flows:
+      - view_domain
+      - list_resources
+
+  - name: create_domain
+    type: page
+    description: Đăng ký Domain mới thuộc một Service
+    route:
+      path: /registry/domains/create
+    permissions:
+      - PLM.REGISTRY.DOMAIN.CREATE
+    flows:
+      - create_domain
+      - list_service_options
+
+  - name: update_domain
+    type: action
+    description: Cập nhật Domain
+    permissions:
+      - PLM.REGISTRY.DOMAIN.UPDATE
+    flows:
+      - update_domain
+
+  - name: delete_domain
+    type: action
+    description: Xóa Domain
+    permissions:
+      - PLM.REGISTRY.DOMAIN.DELETE
+    flows:
+      - delete_domain
+
+  - name: resource_list
+    type: page
+    description: Danh sách Resource trong Registry
+    route:
+      path: /registry/resources
+    permissions:
+      - PLM.REGISTRY.RESOURCE.VIEW
+    flows:
+      - list_resources
+
+  - name: resource_detail
+    type: page
+    description: Chi tiết Resource
+    route:
+      path: /registry/resources/details
+    permissions:
+      - PLM.REGISTRY.RESOURCE.VIEW
+    flows:
+      - view_resource
+
+  - name: create_resource
+    type: page
+    description: Đăng ký Resource mới thuộc một Domain
+    route:
+      path: /registry/resources/create
+    permissions:
+      - PLM.REGISTRY.RESOURCE.CREATE
+    flows:
+      - create_resource
+      - list_domain_options
+
+  - name: update_resource
+    type: action
+    description: Cập nhật Resource
+    permissions:
+      - PLM.REGISTRY.RESOURCE.UPDATE
+    flows:
+      - update_resource
+
+  - name: delete_resource
+    type: action
+    description: Xóa Resource
+    permissions:
+      - PLM.REGISTRY.RESOURCE.DELETE
+    flows:
+      - delete_resource
+
+  - name: resolve_reference_metadata
+    type: action
+    description: API cho service khác resolve metadata của một cross-service reference
+    permissions:
+      - PLM.REGISTRY.RESOURCE.VIEW
+    flows:
+      - get_reference_metadata
+
+permissions:
+  - key: PLM.REGISTRY.APP.CREATE
+    description: Đăng ký App mới
+
+  - key: PLM.REGISTRY.APP.UPDATE
+    description: Cập nhật App
+
+  - key: PLM.REGISTRY.APP.DELETE
+    description: Xóa App
+
+  - key: PLM.REGISTRY.APP.VIEW
+    description: Xem App
+
+  - key: PLM.REGISTRY.SERVICE.CREATE
+    description: Đăng ký Service mới
+
+  - key: PLM.REGISTRY.SERVICE.UPDATE
+    description: Cập nhật Service
+
+  - key: PLM.REGISTRY.SERVICE.DELETE
+    description: Xóa Service
+
+  - key: PLM.REGISTRY.SERVICE.VIEW
+    description: Xem Service
+
+  - key: PLM.REGISTRY.APP_SERVICE_MAPPING.ASSIGN
+    description: Gán Service cho App
+
+  - key: PLM.REGISTRY.APP_SERVICE_MAPPING.UNASSIGN
+    description: Gỡ Service khỏi App
+
+  - key: PLM.REGISTRY.APP_SERVICE_MAPPING.VIEW
+    description: Xem quan hệ App-Service
+
+  - key: PLM.REGISTRY.DOMAIN.CREATE
+    description: Đăng ký Domain mới
+
+  - key: PLM.REGISTRY.DOMAIN.UPDATE
+    description: Cập nhật Domain
+
+  - key: PLM.REGISTRY.DOMAIN.DELETE
+    description: Xóa Domain
+
+  - key: PLM.REGISTRY.DOMAIN.VIEW
+    description: Xem Domain
+
+  - key: PLM.REGISTRY.RESOURCE.CREATE
+    description: Đăng ký Resource mới
+
+  - key: PLM.REGISTRY.RESOURCE.UPDATE
+    description: Cập nhật Resource
+
+  - key: PLM.REGISTRY.RESOURCE.DELETE
+    description: Xóa Resource
+
+  - key: PLM.REGISTRY.RESOURCE.VIEW
+    description: Xem Resource / resolve cross-service reference metadata

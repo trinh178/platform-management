@@ -1,0 +1,18 @@
+{
+  "validation": {
+    "required": "Please enter this information",
+    "form_invalid": "Please fill in all required information",
+    "edit_invalid": "Invalid changes, please check again",
+    "email_format_invalid": "Invalid email address",
+    "insurance_salary_le_base_salary": "Insurance salary must be equal or less than base salary",
+    "expiry_must_be_after_effective": "Expiry date must be after effective date",
+    "signed_date_must_be_after_effective_date": "Signed date must be after effective date",
+    "signed_date_must_be_before_expiry_date": "Signed date must be before expiry date",
+    "positive": "Value must be greater than 0",
+    "minLength": "Enter at least {min} characters",
+    "maxLength": "Enter no more than {max} characters",
+    "min": "Value must be at least {min}",
+    "max": "Value must be at most {max}",
+    "invalid_json": "Invalid JSON"
+  }
+}

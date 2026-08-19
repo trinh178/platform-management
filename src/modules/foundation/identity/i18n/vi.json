@@ -1,0 +1,22 @@
+{
+  "identity": {
+    "no_authentication": {
+      "title": "Yêu cầu đăng nhập",
+      "description": "Bạn cần đăng nhập để truy cập trang này.",
+      "sign_in": "Đăng nhập"
+    },
+    "auth": {
+      "sign_in": "Đăng nhập",
+      "session_expired": "Phiên đăng nhập của bạn đã hết hạn vui lòng đăng nhập lại",
+      "welcome_back": "Chào mừng quay lại",
+      "sign_in_subtitle": "Đăng nhập vào {appName}",
+      "email": "Email",
+      "email_placeholder": "you@company.com",
+      "password": "Mật khẩu",
+      "contact_admin": "Liên hệ quản trị viên nếu bạn chưa có tài khoản.",
+      "signing_in": "Đang đăng nhập...",
+      "sign_in_success": "Đăng nhập thành công",
+      "sign_in_failure": "Đăng nhập thất bại"
+    }
+  }
+}

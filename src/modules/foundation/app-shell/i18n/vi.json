@@ -1,0 +1,44 @@
+{
+  "app_shell": {
+    "common": {
+      "public": "Công khai",
+      "select_language": "Chọn ngôn ngữ"
+    },
+    "nav_menu": {
+      "group": {
+        "general": "Chung",
+        "system": "Hệ thống",
+        "setting": "Thiết lập",
+        "developer": "Developer"
+      }
+    },
+    "no_permission": {
+      "title": "Không có quyền truy cập",
+      "description": "Bạn không có quyền xem trang này. Liên hệ quản trị viên nếu bạn cho rằng đây là nhầm lẫn.",
+      "back_home": "Về trang chủ"
+    },
+    "no_accessible_routes": {
+      "eyebrow": "Yêu cầu phân quyền",
+      "authenticated_title": "Tài khoản chưa được cấp quyền truy cập",
+      "unauthenticated_title": "Bạn cần đăng nhập để tiếp tục",
+      "authenticated_description": "Tài khoản của bạn đã đăng nhập, nhưng chưa được cấp quyền truy cập vào bất kỳ trang chức năng nào.",
+      "unauthenticated_description": "Vui lòng đăng nhập bằng tài khoản đã được cấp quyền truy cập hệ thống.",
+      "permission_title": "Cần thiết lập phân quyền",
+      "permission_description": "Liên hệ quản trị viên để cấp ít nhất một quyền truy cập cấp trang cho tài khoản của bạn.",
+      "sign_in": "Đến trang đăng nhập",
+      "sign_out": "Đăng xuất"
+    },
+    "not_found": {
+      "title": "Không tìm thấy trang",
+      "description": "Trang bạn đang tìm kiếm không tồn tại hoặc đã bị di chuyển.",
+      "back_home": "Về trang chủ"
+    },
+    "user_menu": {
+      "account": "Tài khoản",
+      "notifications": "Thông báo",
+      "log_out": "Đăng xuất",
+      "unknown_user": "Người dùng",
+      "unknown_email": "Chưa có email"
+    }
+  }
+}

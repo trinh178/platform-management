@@ -1,0 +1,40 @@
+# Actor -> Permissions mapping - source of truth.
+#
+# Mỗi actor được gán trực tiếp permissions, không qua role trung gian.
+# Wildcard "*" = full access, chỉ dùng cho platform_admin.
+
+actors:
+  platform_admin:
+    description: Quản trị nền tảng - toàn quyền Registry và Settings
+    permissions:
+      - "*"
+
+  platform_viewer:
+    description: >
+      Nhân sự nội bộ (support, vận hành, dev team của app/service khác) cần tra cứu Registry/Settings
+      để đối chiếu AppCode, cấu trúc Domain/Resource hoặc cấu hình platform hiện tại - không có quyền chỉnh sửa.
+    permissions:
+      - PLM.REGISTRY.APP.VIEW
+      - PLM.REGISTRY.SERVICE.VIEW
+      - PLM.REGISTRY.DOMAIN.VIEW
+      - PLM.REGISTRY.RESOURCE.VIEW
+      - PLM.REGISTRY.APP_SERVICE_MAPPING.VIEW
+      - PLM.SETTINGS.ORGANIZATION.VIEW
+      - PLM.SETTINGS.GENERAL.VIEW
+      - PLM.SETTINGS.LOCALIZATION.VIEW
+      - PLM.SETTINGS.BRANDING.VIEW
+
+  external_application:
+    description: >
+      Ứng dụng/service khác trong HVA Nexus gọi sang để đọc registry metadata (resolve cross-service
+      reference) hoặc đọc platform settings dùng chung (branding, localization) cho UI của chính nó.
+      Không có quyền chỉnh sửa.
+    permissions:
+      - PLM.REGISTRY.APP.VIEW
+      - PLM.REGISTRY.SERVICE.VIEW
+      - PLM.REGISTRY.DOMAIN.VIEW
+      - PLM.REGISTRY.RESOURCE.VIEW
+      - PLM.SETTINGS.ORGANIZATION.VIEW
+      - PLM.SETTINGS.GENERAL.VIEW
+      - PLM.SETTINGS.LOCALIZATION.VIEW
+      - PLM.SETTINGS.BRANDING.VIEW

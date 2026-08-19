@@ -1,0 +1,8 @@
+{
+  "app": {
+    "name": "Platform Management",
+    "description": "Centralized management of applications, services, and platform configuration across HVA Nexus.",
+    "shortName": "PM",
+    "iconAlt": "Platform Management icon"
+  }
+}

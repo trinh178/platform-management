@@ -1,0 +1,16 @@
+#nprogress {
+  position: relative;
+  z-index: 9999999;
+}
+
+#nprogress .bar {
+  background: var(--primary) !important;
+  height: 3px;
+  box-shadow: 0 0 8px var(--primary);
+}
+
+#nprogress .peg {
+  box-shadow:
+    0 0 10px var(--primary),
+    0 0 5px var(--primary) !important;
+}

@@ -1,0 +1,430 @@
+{
+  "formGuide": {
+    "title": "Field Input Guide",
+    "hero": {
+      "title": "Field Input Playground",
+      "description": "This module gathers every shared field input, runs them with react-hook-form, and explains when to choose each component.",
+      "badgeLive": "Live examples",
+      "badgeInline": "Inline edit",
+      "badgeAsync": "Async select"
+    },
+    "tabs": {
+      "playground": "Playground",
+      "catalog": "Field catalog",
+      "usage": "Usage",
+      "base": "FieldInputBase"
+    },
+    "mode": {
+      "title": "Display mode",
+      "view": "View",
+      "edit": "Edit",
+      "inline": "Inline edit",
+      "description": {
+        "view": "All fields are read-only so you can inspect details-page behavior.",
+        "edit": "All fields are directly editable and update react-hook-form immediately.",
+        "inline": "All fields use edit/save/cancel buttons and commit values only after Save."
+      }
+    },
+    "sections": {
+      "text": "Text and generated values",
+      "numeric": "Numbers and amounts",
+      "dateTime": "Date and time",
+      "choice": "Choices and state",
+      "select": "Select inputs",
+      "entitySelect": "Entity selects",
+      "comboTree": "Combobox and tree",
+      "location": "Address and country",
+      "files": "Files and avatar",
+      "tables": "Table inputs",
+      "groupInlineEdit": "Group inline edit"
+    },
+    "field": {
+      "text": "Text",
+      "textDescription": "Example helper text shown below the input.",
+      "textTooltip": "Example tooltip shown when hovering the ⓘ icon next to the label.",
+      "textarea": "Textarea",
+      "number": "Number",
+      "sliderNumber": "Slider number",
+      "numeric": "Numeric string",
+      "masked": "Masked input",
+      "password": "Password",
+      "percent": "Percent",
+      "year": "Year",
+      "email": "Email",
+      "phoneNumber": "Phone number",
+      "currency": "Currency",
+      "date": "Date",
+      "dateTime": "Date time",
+      "time": "Time",
+      "dateRange": "Date range",
+      "select": "Select",
+      "combobox": "Combobox",
+      "multiCombobox": "Multi combobox",
+      "multiSelect": "Multi select",
+      "radioGroup": "Radio group",
+      "checkboxGroup": "Checkbox group",
+      "constant": "Constant",
+      "treeSelect": "Tree select",
+      "switch": "Switch",
+      "address": "Address",
+      "country": "Country",
+      "generatedText": "Generated text",
+      "asyncSelect": "Async select",
+      "asyncMultiSelect": "Async multi select",
+      "entitySelect": "Entity select",
+      "entityMultiSelect": "Entity multi select",
+      "entityAsyncSelect": "Entity async select",
+      "entityAsyncMultiSelect": "Entity async multi select",
+      "avatar": "Avatar",
+      "fileUpload": "File upload",
+      "fileUploadMultiple": "Multiple files",
+      "entityTable": "Entity table",
+      "arrayTable": "Array table",
+      "alphaText": "Alpha text",
+      "personName": "Person name",
+      "treeEntitySelect": "Tree entity select",
+      "json": "JSON"
+    },
+    "entityTable": {
+      "col": {
+        "name": "Name",
+        "qty": "Qty"
+      }
+    },
+    "arrayTable": {
+      "col": {
+        "name": "Name",
+        "note": "Note"
+      }
+    },
+    "placeholder": {
+      "searchOption": "Search option",
+      "searchEntity": "Search employee",
+      "combobox": "Type or choose an option",
+      "fileUpload": "Choose or drop a file"
+    },
+    "preview": {
+      "title": "Form values",
+      "badge": "watch()"
+    },
+    "control": {
+      "showErrors": "Show errors",
+      "clearErrors": "Clear errors",
+      "reset": "Reset",
+      "chooseFile": "Choose file",
+      "chooseAvatar": "Choose avatar",
+      "submit": "Submit"
+    },
+    "errorShowcase": {
+      "message": "Example validation error shown by the field input guide."
+    },
+    "catalogHeader": {
+      "component": "Component",
+      "valueType": "Value type",
+      "useCase": "Use case",
+      "note": "Note"
+    },
+    "catalog": {
+      "text": {
+        "useCase": "Short text such as employee codes, names, and certificate numbers.",
+        "note": "Supports inputProps for placeholder and className."
+      },
+      "textarea": {
+        "useCase": "Long content, notes, and descriptions.",
+        "note": "Use for multiline fields."
+      },
+      "number": {
+        "useCase": "Years of experience, salary, leave days, and numeric values.",
+        "note": "Stores number | undefined, supports decimal input, min/max, prefix/suffix, and locale formatting."
+      },
+      "sliderNumber": {
+        "useCase": "Bounded settings such as thresholds, weights, scores, completion ratios, and level-style numeric values.",
+        "note": "Stores number | undefined. Use when the range is clear; enable showInput when precise keyboard entry matters."
+      },
+      "numeric": {
+        "useCase": "Digit-only strings such as identity numbers.",
+        "note": "Keeps value as string, preserves leading zeroes, and can limit maxLength."
+      },
+      "masked": {
+        "useCase": "Formatted strings such as tax codes, serial numbers, or custom ids.",
+        "note": "Displays a mask while storing the raw string by default."
+      },
+      "password": {
+        "useCase": "Password or secret fields.",
+        "note": "Text wrapper with a show/hide control."
+      },
+      "percent": {
+        "useCase": "Rates, discounts, tax percentages, and completion ratios.",
+        "note": "Stores a number and renders a percent suffix."
+      },
+      "year": {
+        "useCase": "Year-only values such as manufacture year, model year, fiscal year, or contract year.",
+        "note": "Stores number | undefined and accepts up to four digits."
+      },
+      "email": {
+        "useCase": "Contact emails.",
+        "note": "Text wrapper with email inputMode."
+      },
+      "phone": {
+        "useCase": "Phone numbers.",
+        "note": "Stores the phone number as a string, preserves leading zeroes, and can bind a selectable country code to another form field."
+      },
+      "currency": {
+        "useCase": "Amounts, costs, and revenue.",
+        "note": "Adds a currency symbol and stores a number."
+      },
+      "date": {
+        "useCase": "Birthdays, hire dates, and contract expiry dates.",
+        "note": "Default value should be Date or undefined."
+      },
+      "dateTime": {
+        "useCase": "Exact timestamps such as check-ins, interview schedules, and logs.",
+        "note": "Stores a Date value with hour and minute."
+      },
+      "time": {
+        "useCase": "Time-only values such as shifts, check-in hours, and interview windows.",
+        "note": "Stores an HH:mm string by default."
+      },
+      "dateRange": {
+        "useCase": "Periods such as employment contracts, probation periods, reports, and filters.",
+        "note": "Stores an object with optional from/to Date values."
+      },
+      "select": {
+        "useCase": "Options shaped as label/value.",
+        "note": "Stores primitive value in the form field."
+      },
+      "combobox": {
+        "useCase": "Fields that can use suggestions but still allow free text.",
+        "note": "Stores a primitive string; selecting an option stores option.value."
+      },
+      "multiCombobox": {
+        "useCase": "Fields that can use multiple suggestions and custom values.",
+        "note": "Stores string[]; Enter adds a custom value and option click toggles selection."
+      },
+      "multiSelect": {
+        "useCase": "Choose multiple options such as services, roles, or tags.",
+        "note": "Stores a string[] value and clears to an empty array."
+      },
+      "radioGroup": {
+        "useCase": "Choose one value from a short visible list.",
+        "note": "Stores a primitive string and clears to an empty string."
+      },
+      "checkboxGroup": {
+        "useCase": "Choose multiple values from a short visible list.",
+        "note": "Stores string[] and clears to an empty array."
+      },
+      "constant": {
+        "useCase": "Enums from CONST_* with i18n labels.",
+        "note": "Translates labels via useConstWithTranslations."
+      },
+      "tree": {
+        "useCase": "Hierarchical data such as category groups.",
+        "note": "Stores the selected node value."
+      },
+      "switch": {
+        "useCase": "Boolean on/off fields.",
+        "note": "Use for active, enabled, and default flags."
+      },
+      "address": {
+        "useCase": "Vietnamese province/district/ward address.",
+        "note": "Stores AddressCode."
+      },
+      "country": {
+        "useCase": "Country selection.",
+        "note": "Wrapper with countries.json and searchable enabled."
+      },
+      "generated": {
+        "useCase": "Generated codes such as employeeCode or requestCode.",
+        "note": "Pass getGeneratedText; optionally autoGenerateIfEmpty."
+      },
+      "async": {
+        "useCase": "Remote searchable dropdowns.",
+        "note": "Pass loadOptions and optional loadOption."
+      },
+      "asyncMulti": {
+        "useCase": "Remote searchable dropdowns that store multiple ids.",
+        "note": "Stores string[] and resolves selected labels with loadOption."
+      },
+      "entity": {
+        "useCase": "Fields that store the selected entity object.",
+        "note": "Pass options as entity objects plus getOptionValue/getOptionLabel."
+      },
+      "entityMulti": {
+        "useCase": "Fields that store multiple selected entity objects.",
+        "note": "Pass options as entity objects plus getOptionValue/getOptionLabel."
+      },
+      "entityAsync": {
+        "useCase": "Remote searchable entity dropdowns that store the selected entity object.",
+        "note": "Pass loadOptions/loadOption returning entity objects plus getOptionValue/getOptionLabel."
+      },
+      "entityAsyncMulti": {
+        "useCase": "Remote searchable entity dropdowns that store multiple selected entity objects.",
+        "note": "Pass loadOptions/loadOption returning entity objects plus getOptionValue/getOptionLabel."
+      },
+      "avatar": {
+        "useCase": "Single profile image fields such as user avatar or employee photo.",
+        "note": "Stores lightweight image metadata and includes the File object for newly selected images."
+      },
+      "fileUpload": {
+        "useCase": "Attach one or many files such as employment contracts, certificates, or photos.",
+        "note": "Stores lightweight file metadata and includes the File object for newly selected files."
+      },
+      "entityTable": {
+        "useCase": "Editable sub-tables in forms: line items, service lists, related parts.",
+        "note": "Stores TRow[]. SectionPanel layout with title/actions bar. Row number column auto-prepended. Built-in search dropdown adds full row objects. Delete column auto-added in EDIT mode. Duplicates are prevented by getRowValue."
+      },
+      "arrayTable": {
+        "useCase": "Embedded sub-tables where each row requires a form dialog: qualifications, documents, custom line items.",
+        "note": "Stores TRow[]. Opens a CRUD dialog per row. Pass renderEditor to render the row form and rowFormOptions for row-level validation."
+      },
+      "alphaText": {
+        "useCase": "Name fields, country names, or any field that should only accept letters and spaces, rejecting digits and special characters.",
+        "note": "Props: allowSpaces (default true), allowDiacritics (default true — accepts Vietnamese diacritics), maxLength."
+      },
+      "personName": {
+        "useCase": "Person name fields such as firstName, lastName, middleName — a semantic wrapper of AlphaText.",
+        "note": "Automatically enables allowSpaces and allowDiacritics. Prefer over AlphaText for clearer intent."
+      },
+      "treeEntitySelect": {
+        "useCase": "Hierarchical entity trees such as the organization unit tree or category tree.",
+        "note": "Unlike TreeSelect (label/value pairs): accepts entity objects and stores the full selected entity in the form. Pass options, getOptionValue, getOptionLabel, and getOptionChildren."
+      },
+      "json": {
+        "useCase": "Config, metadata, or custom payload fields stored as a JSON string.",
+        "note": "Auto-formats on blur when the JSON is valid. View mode renders a monospace pre block. Props: rows (default 6)."
+      }
+    },
+    "usage": {
+      "common": {
+        "title": "Basic field",
+        "description": "Every field receives label, form, and name, then connects to react-hook-form through FieldInputBase."
+      },
+      "number": {
+        "title": "Number input",
+        "description": "Use for values that need numeric validation, calculation, min/max, decimal precision, or unit prefix/suffix."
+      },
+      "numeric": {
+        "title": "Numeric string",
+        "description": "Use for digit-only strings such as ids, serial numbers, and codes where leading zeroes must be preserved."
+      },
+      "phone": {
+        "title": "Phone number",
+        "description": "Use for phone fields that should preserve leading zeroes, filter pasted input into a clean string, and optionally select a country code."
+      },
+      "inline": {
+        "title": "Inline edit on details pages",
+        "description": "Enable useEditButton so the field uses a draft value, validates, then calls onEditSave."
+      },
+      "async": {
+        "title": "Async select",
+        "description": "Use for fields that store ids but need labels from an API or search list."
+      },
+      "multiSelect": {
+        "title": "Multi select",
+        "description": "Use when the form field stores multiple primitive ids or codes."
+      },
+      "combobox": {
+        "title": "Combobox",
+        "description": "Use when the user may pick a suggested option or type a new custom value."
+      },
+      "multiCombobox": {
+        "title": "Multi combobox",
+        "description": "Use when the user may pick multiple suggestions and add custom values."
+      },
+      "asyncMulti": {
+        "title": "Async multi select",
+        "description": "Use when the form field stores multiple ids and the labels come from remote search."
+      },
+      "fileUpload": {
+        "title": "File upload",
+        "description": "Use for attachment fields; upload the File object in submit or before submit, then store metadata/id from the API."
+      },
+      "avatar": {
+        "title": "Avatar upload",
+        "description": "Use for one profile image; preview existing URLs and keep new File objects ready for submit."
+      },
+      "masked": {
+        "title": "Masked input",
+        "description": "Use when the user should see a fixed format while the form stores a clean primitive string."
+      },
+      "choiceGroup": {
+        "title": "Choice groups",
+        "description": "Use radio for one visible choice and checkbox group for multiple visible choices."
+      },
+      "time": {
+        "title": "Time input",
+        "description": "Use when the form needs only hour and minute, without a date."
+      },
+      "year": {
+        "title": "Year input",
+        "description": "Use when the form stores a year as a number and does not need a full date."
+      },
+      "constant": {
+        "title": "Constant select",
+        "description": "Use with CONST_* typed values for type-safe enums and i18n labels."
+      },
+      "entityTable": {
+        "title": "Entity table",
+        "description": "Use when a form field stores a list of entity rows. Pass columns, loadOptions, getRowValue, and getRowLabel. The component renders a SectionPanel with a row-number column, a search dropdown to add rows, a delete button per row in EDIT mode, and clears to an empty array."
+      },
+      "arrayTable": {
+        "title": "Array table (dialog CRUD)",
+        "description": "Use when each row needs a dedicated form dialog to create or update. Pass columns, createDefaultRow, and renderEditor. Supports optional row-level validation via rowFormOptions or validateRow."
+      },
+      "arrayTableSection": {
+        "title": "Array table inside SubSection",
+        "description": "When FieldInputArrayTable is used inside a SubSection, omit the label prop so the base label space is removed. SubSection provides the title and optional actions slot on the same row, keeping the layout consistent with other form sections."
+      },
+      "fieldGroupInlineEdit": {
+        "title": "FieldGroupInlineEdit",
+        "description": "Use when multiple fields must be edited and saved as a valid group. Manages snapshot/restore for cancel and exposes a typed getValue callback in onSave so the parent never calls form.getValues directly."
+      }
+    },
+    "base": {
+      "propsTitle": "Shared props (FieldInputBaseProps)",
+      "propsDescription": "All field inputs inherit these props from FieldInputBase. Component-specific props are added on top via the TExtendsProps generic.",
+      "propCol": {
+        "prop": "Prop",
+        "type": "Type",
+        "default": "Default",
+        "description": "Description"
+      },
+      "props": {
+        "label": "String shows a label. \"\" hides it but keeps the space (grid alignment). Omit removes the space entirely.",
+        "description": "Helper text rendered below the input.",
+        "tooltip": "Info icon next to the label that shows this text in a tooltip on hover.",
+        "required": "Shows a red asterisk (*) after the label text to mark the field as required.",
+        "form": "The parent UseFormReturn instance.",
+        "name": "Field path inside the form values object.",
+        "mode": "VIEW renders read-only. EDIT renders interactive.",
+        "inlineEdit": "Shows a Pencil button. Value only commits after Save.",
+        "onInlineSave": "Called after Save in inline-edit mode with (name, value). Use to trigger the update API.",
+        "loading": "Replaces toolbar with a spinner. Pass the mutation isPending flag.",
+        "disabled": "Disables the field and all toolbar controls.",
+        "clearable": "Shows an X button that sets the value to clearValue.",
+        "clearValue": "Value assigned when X is clicked. Default undefined. Override per field (e.g. '' for text, [] for arrays).",
+        "isClearableValue": "Custom check for whether the field has a value to clear. Default treats undefined / null / '' / false / [] / empty-object as empty.",
+        "clearButtonPlacement": "'base' puts the X in the base toolbar. 'manual' lets the render component place it via renderClearButton().",
+        "resetButtonPlacement": "'base' puts RotateCcw in the base toolbar. 'manual' lets the render component place it via renderResetButton().",
+        "editButtonPlacement": "'base' puts Pencil/Save/Cancel in the base toolbar. 'manual' lets the render component place them via renderEditButton() / renderSaveButton() / renderCancelButton().",
+        "onValueChange": "Fires whenever the value changes outside of inline-edit draft.",
+        "placeholder": "Forwarded to the render component.",
+        "className": "Applied to the outer Field wrapper.",
+        "fieldControlsClassName": "Merged onto the base toolbar overlay wrapper."
+      },
+      "createMinimalTitle": "1. Minimal custom field",
+      "createMinimalDescription": "Define ExtendsProps for component-specific props, write a thin wrapper that attaches RenderComponent, then write a pure render function that uses the injected field state.",
+      "createWithControlTitle": "2. With right-side component control",
+      "createWithControlDescription": "When the field has its own right-side button (calendar, chevron, generate), spread componentControlStyle and componentControlClassName onto it. The base shifts it left when the toolbar overlay appears.",
+      "createManualTitle": "3. Manual button placement",
+      "createManualDescription": "Set all *Placement props to 'manual' and call the render functions from inside the render component. Use this when the base toolbar overlay would be misplaced — for example in a SectionPanel layout like FieldInputArrayTable."
+    },
+    "constants": {
+      "priority": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    }
+  }
+}

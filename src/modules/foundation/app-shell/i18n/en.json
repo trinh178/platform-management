@@ -1,0 +1,44 @@
+{
+  "app_shell": {
+    "common": {
+      "public": "Public",
+      "select_language": "Select language"
+    },
+    "nav_menu": {
+      "group": {
+        "general": "General",
+        "system": "System",
+        "setting": "Settings",
+        "developer": "Developer"
+      }
+    },
+    "no_permission": {
+      "title": "Access denied",
+      "description": "You don't have permission to view this page. Contact your administrator if you think this is a mistake.",
+      "back_home": "Back to home"
+    },
+    "no_accessible_routes": {
+      "eyebrow": "Access required",
+      "authenticated_title": "Your account has not been granted access",
+      "unauthenticated_title": "Sign in to continue",
+      "authenticated_description": "Your account is signed in, but it has not been granted access to any workspace page yet.",
+      "unauthenticated_description": "Sign in with an account that has access to this workspace.",
+      "permission_title": "Permission setup needed",
+      "permission_description": "Ask an administrator to assign at least one page-level permission to your account.",
+      "sign_in": "Go to sign in",
+      "sign_out": "Sign out"
+    },
+    "not_found": {
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or has been moved.",
+      "back_home": "Back to home"
+    },
+    "user_menu": {
+      "account": "Account",
+      "notifications": "Notifications",
+      "log_out": "Log out",
+      "unknown_user": "User",
+      "unknown_email": "No email"
+    }
+  }
+}

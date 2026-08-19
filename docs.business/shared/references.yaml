@@ -1,0 +1,19 @@
+# Reference types - danh sách entity của Platform Management có thể được tham chiếu cross-domain/cross-service.
+#
+# Rule:
+# - Naming: snake_case của Entity name.
+# - reference_id trỏ tới row cụ thể trong entity, không phải toàn bộ domain.
+# - Thêm reference mới -> bổ sung vào đây trước khi dùng trong domain.yaml.
+#
+# Lưu ý: App/Service/Domain/Resource ở đây vừa là entity nghiệp vụ của Platform Management,
+# vừa là "từ điển" mà TOÀN BỘ service khác trong platform dùng để tạo chuẩn cross-service reference
+# của riêng họ (ReferenceService/ReferenceDomain/ReferenceResource - xem README.md mục 10).
+# Hai vai trò này khác nhau: entity dưới đây có thể bị tham chiếu bởi id (uuid) từ domain khác,
+# trong khi ReferenceService/ReferenceDomain/ReferenceResource dùng code (appCode/domainCode/resourceCode)
+# làm định danh ổn định, không dùng id nội bộ.
+
+reference_types:
+  - app
+  - service
+  - domain
+  - resource

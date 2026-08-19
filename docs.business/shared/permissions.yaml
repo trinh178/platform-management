@@ -1,0 +1,17 @@
+# Permission system - source of truth cho danh sách Action chuẩn.
+# Mọi permission key trong domain.yaml phải dùng action thuộc danh sách dưới đây.
+
+pattern: <AppCode>.<Domain>.<Resource>.<Action>
+
+app_code: PLM
+
+actions:
+  # CRUD cơ bản
+  - CREATE       # Tạo mới resource
+  - UPDATE       # Cập nhật resource
+  - DELETE       # Xóa resource
+  - VIEW         # Xem / đọc resource
+
+  # Quan hệ App-Service
+  - ASSIGN       # Gán Service cho App
+  - UNASSIGN     # Gỡ Service khỏi App

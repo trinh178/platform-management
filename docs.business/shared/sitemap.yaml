@@ -1,0 +1,10 @@
+# Sitemap - base path của từng domain.
+
+pattern: /<domain>/<feature>
+
+rules:
+  - domain: registry
+    base_path: /registry
+
+  - domain: settings
+    base_path: /settings

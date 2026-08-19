@@ -1,0 +1,84 @@
+{
+  "common": {
+    "label": {
+      "overview": "Tổng quan",
+      "action": "Thao tác",
+      "no": "STT",
+      "no_data": "Không có dữ liệu",
+      "optional": "tùy chọn",
+      "hour": "Giờ",
+      "minute": "Phút"
+    },
+    "control": {
+      "create": "Tạo",
+      "add": "Thêm",
+      "edit": "Sửa",
+      "delete": "Xóa",
+      "save": "Lưu",
+      "cancel": "Hủy",
+      "clear": "Xóa giá trị",
+      "reset": "Đặt lại",
+      "clear_filter": "Xóa bộ lọc",
+      "generate": "Tạo mới",
+      "search": "Tìm kiếm",
+      "close": "Đóng",
+      "submit": "Gửi",
+      "request": "Yêu cầu",
+      "approve": "Chấp thuận",
+      "reject": "Từ chối",
+      "view": "Xem",
+      "details": "Chi tiết",
+      "now": "Hiện tại",
+      "done": "Xong"
+    },
+    "constants": {
+      "yes": "Đã có",
+      "no": "Chưa có"
+    },
+    "notify": {
+      "loading": "Đang xử lý",
+      "success": "Xử lý thành công",
+      "error": "Xử lý thất bại",
+      "update_success": "Cập nhật thành công",
+      "create_success": "Tạo mới thành công",
+      "delete_success": "Xóa thành công"
+    },
+    "table": {
+      "columns": "Cột",
+      "customize_columns": "Tùy chỉnh cột",
+      "rows_per_page": "Số dòng mỗi trang",
+      "row_selected": "Đã chọn {count} trên {total} dòng",
+      "items_selected": "Đã chọn {count}",
+      "current_page": "Trang {page} / {total}",
+      "no_results": "Không tìm thấy kết quả"
+    },
+    "filter": {
+      "apply": "Áp dụng",
+      "all": "Tất cả",
+      "yes": "Có",
+      "no": "Không",
+      "operator": "Toán tử",
+      "valuePlaceholder": "Nhập giá trị",
+      "from": "Từ",
+      "to": "Đến",
+      "min": "Tối thiểu",
+      "max": "Tối đa",
+      "op": {
+        "equal": "Bằng",
+        "notEqual": "Khác",
+        "greaterThan": "Lớn hơn",
+        "greaterThanOrEqual": "Lớn hơn hoặc bằng",
+        "lessThan": "Nhỏ hơn",
+        "lessThanOrEqual": "Nhỏ hơn hoặc bằng",
+        "contains": "Chứa",
+        "startsWith": "Bắt đầu bằng",
+        "endsWith": "Kết thúc bằng",
+        "in": "Thuộc",
+        "notIn": "Không thuộc",
+        "between": "Trong khoảng",
+        "isNull": "Trống",
+        "isNotNull": "Có giá trị"
+      }
+    }
+  }
+}

@@ -1,0 +1,171 @@
+/*
+  App theme
+  - Change this file when starting a new app.
+  - App surfaces use a quiet cyan/teal oklch hue family.
+  - Chart colors intentionally use complementary hues for contrast.
+*/
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 8px;
+  background-color: var(--secondary);
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  background-color: var(--primary);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--app-primary-hover);
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-content: var(--sidebar-content);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  --app-primary-hover: oklch(0.44 0.23 190);
+  --app-icon-gradient-from: oklch(0.36 0.18 190);
+  --app-icon-gradient-via: oklch(0.511 0.254 190);
+  --app-icon-gradient-to: oklch(0.72 0.14 190);
+
+  --background: oklch(0.99 0.004 190);
+  --foreground: oklch(0.14 0.015 190);
+
+  --card: oklch(1 0 190);
+  --card-foreground: oklch(0.14 0.015 190);
+
+  --popover: oklch(1 0 190);
+  --popover-foreground: oklch(0.14 0.015 190);
+
+  --primary: oklch(0.511 0.254 190);
+  --primary-foreground: oklch(1 0 190);
+
+  --secondary: oklch(0.965 0.013 190);
+  --secondary-foreground: oklch(0.3 0.06 190);
+
+  --muted: oklch(0.965 0.013 190);
+  --muted-foreground: oklch(0.55 0.025 190);
+
+  --accent: oklch(0.94 0.02 190);
+  --accent-foreground: oklch(0.511 0.254 190);
+
+  --destructive: oklch(0.52 0.25 22);
+
+  --border: oklch(0.9 0.02 190);
+  --input: oklch(0.9 0.02 190);
+  --ring: oklch(0.511 0.254 190);
+
+  --chart-1: oklch(0.511 0.254 190);
+  --chart-2: oklch(0.62 0.18 48);
+  --chart-3: oklch(0.64 0.15 160);
+  --chart-4: oklch(0.58 0.2 330);
+  --chart-5: oklch(0.7 0.13 210);
+
+  --sidebar: oklch(0.2 0.08 190);
+  --sidebar-foreground: oklch(0.94 0.01 190);
+  --sidebar-primary: oklch(0.511 0.254 190);
+  --sidebar-primary-foreground: oklch(1 0 190);
+  --sidebar-accent: oklch(0.28 0.13 190);
+  --sidebar-accent-foreground: oklch(0.94 0.01 190);
+  --sidebar-border: oklch(0.3 0.09 190);
+  --sidebar-ring: oklch(0.511 0.254 190);
+  --sidebar-content: oklch(0.99 0.004 190);
+}
+
+.dark {
+  --app-primary-hover: oklch(0.72 0.22 190);
+  --app-icon-gradient-from: oklch(0.42 0.16 190);
+  --app-icon-gradient-via: oklch(0.64 0.24 190);
+  --app-icon-gradient-to: oklch(0.78 0.13 190);
+
+  --background: oklch(0.14 0.02 190);
+  --foreground: oklch(0.95 0.008 190);
+
+  --card: oklch(0.185 0.025 190);
+  --card-foreground: oklch(0.95 0.008 190);
+
+  --popover: oklch(0.185 0.025 190);
+  --popover-foreground: oklch(0.95 0.008 190);
+
+  --primary: oklch(0.64 0.24 190);
+  --primary-foreground: oklch(0.1 0.01 190);
+
+  --secondary: oklch(0.23 0.035 190);
+  --secondary-foreground: oklch(0.95 0.008 190);
+
+  --muted: oklch(0.23 0.035 190);
+  --muted-foreground: oklch(0.64 0.03 190);
+
+  --accent: oklch(0.26 0.06 190);
+  --accent-foreground: oklch(0.64 0.24 190);
+
+  --destructive: oklch(0.63 0.23 22);
+
+  --border: oklch(1 0 190 / 10%);
+  --input: oklch(1 0 190 / 15%);
+  --ring: oklch(0.64 0.24 190);
+
+  --chart-1: oklch(0.64 0.24 190);
+  --chart-2: oklch(0.68 0.175 48);
+  --chart-3: oklch(0.68 0.145 160);
+  --chart-4: oklch(0.65 0.185 330);
+  --chart-5: oklch(0.73 0.125 210);
+
+  --sidebar: oklch(0.12 0.04 190);
+  --sidebar-foreground: oklch(0.94 0.01 190);
+  --sidebar-primary: oklch(0.64 0.24 190);
+  --sidebar-primary-foreground: oklch(0.1 0.01 190);
+  --sidebar-accent: oklch(0.21 0.07 190);
+  --sidebar-accent-foreground: oklch(0.94 0.01 190);
+  --sidebar-border: oklch(1 0 190 / 10%);
+  --sidebar-ring: oklch(0.64 0.24 190);
+  --sidebar-content: oklch(0.11 0.02 190);
+}

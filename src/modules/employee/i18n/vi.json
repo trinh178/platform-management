@@ -1,0 +1,143 @@
+{
+  "employee": {
+    "title": "Nhân viên",
+    "page": {
+      "create": "Tạo nhân viên mới",
+      "details": "Chi tiết nhân viên"
+    },
+    "sections": {
+      "basic": {
+        "title": "Thông tin cơ bản",
+        "general": "Thông tin chung",
+        "id": "CCCD",
+        "education": "Trình độ, bằng cấp"
+      },
+      "contact": {
+        "title": "Thông tin liên hệ",
+        "general": "Thông tin chung",
+        "permanent": "Thường trú",
+        "current": "Chỗ ở hiện tại",
+        "emergency": "Liên hệ khẩn cấp"
+      },
+      "jobInfo": {
+        "title": "Thông tin công việc",
+        "work": "Thông tin làm việc",
+        "org": "Đơn vị & Chức vụ"
+      },
+      "qualifications": {
+        "title": "Thông tin bằng cấp"
+      },
+      "documents": {
+        "title": "Tài liệu đính kèm"
+      }
+    },
+    "fields": {
+      "employeeCode": "Mã nhân viên",
+      "createdBy": "Người tạo",
+      "modifiedBy": "Người cập nhật",
+      "firstName": "Tên",
+      "lastName": "Họ",
+      "fullName": "Họ và tên",
+      "dateOfBirth": "Ngày sinh",
+      "gender": "Giới tính",
+      "placeOfBirth": "Nơi sinh",
+      "placeOfOrigin": "Quê quán",
+      "maritalStatus": "Tình trạng hôn nhân",
+      "ethnicity": "Dân tộc",
+      "religion": "Tôn giáo",
+      "nationality": "Quốc tịch",
+      "idNumber": "Số CCCD/CMND",
+      "idDateOfIssue": "Ngày cấp",
+      "idPlaceOfIssue": "Nơi cấp",
+      "idDateOfExpiry": "Ngày hết hạn",
+      "educationLevel": "Trình độ học vấn",
+      "qualificationLevel": "Trình độ chuyên môn",
+      "institution": "Trường đào tạo",
+      "major": "Chuyên ngành",
+      "graduationYear": "Năm tốt nghiệp",
+      "classification": "Xếp loại",
+      "contact": {
+        "personalPhoneNumber": "Số ĐT cá nhân",
+        "officePhoneNumber": "Số ĐT công ty",
+        "personalEmail": "Email cá nhân",
+        "officeEmail": "Email công ty",
+        "permanentCountry": "Quốc gia thường trú",
+        "permanentAddress": "Địa chỉ thường trú",
+        "permanentStreet": "Số nhà/đường",
+        "registrationBookNumber": "Số sổ hộ khẩu",
+        "currentCountry": "Quốc gia hiện tại",
+        "currentAddress": "Địa chỉ hiện tại",
+        "currentStreet": "Số nhà/đường",
+        "emergencyFullName": "Họ và tên người thân",
+        "emergencyRelationship": "Mối quan hệ",
+        "emergencyPhoneNumber": "Số điện thoại",
+        "emergencyAddFullName": "Họ và tên người thân khác",
+        "emergencyAddRelationship": "Mối quan hệ",
+        "emergencyAddPhoneNumber": "Số điện thoại"
+      },
+      "jobInfo": {
+        "status": "Trạng thái",
+        "hireDate": "Ngày tuyển dụng",
+        "probationDate": "Ngày thử việc",
+        "officialDate": "Ngày chính thức",
+        "organizationUnit": "Đơn vị công tác",
+        "jobPosition": "Chức vụ"
+      },
+      "qualification": {
+        "type": "Loại",
+        "institution": "Tổ chức cấp",
+        "major": "Chuyên ngành",
+        "level": "Cấp độ, trình độ",
+        "issueDate": "Ngày cấp",
+        "expiryDate": "Ngày hết hạn",
+        "note": "Ghi chú"
+      },
+      "document": {
+        "name": "Tên tài liệu",
+        "fileName": "Tên tệp",
+        "note": "Ghi chú"
+      }
+    },
+    "constants": {
+      "gender": {
+        "male": "Nam",
+        "female": "Nữ"
+      },
+      "marital": {
+        "single": "Độc thân",
+        "married": "Đã có gia đình",
+        "divorced": "Ly hôn"
+      },
+      "qualification": {
+        "education": "Bằng cấp",
+        "certification": "Chứng chỉ"
+      },
+      "jobStatus": {
+        "active": "Đang làm việc",
+        "onProbation": "Đang thử việc",
+        "inactive": "Nghỉ việc"
+      }
+    },
+    "controls": {
+      "search": "Tìm kiếm nhân viên",
+      "searchDocument": "Tìm kiếm tài liệu"
+    },
+    "createdDialog": {
+      "title": "Tạo nhân viên thành công",
+      "description": "Hồ sơ nhân viên đã được tạo trong hệ thống",
+      "defaultFullName": "Nhân viên mới",
+      "summary": "Hồ sơ đã được tạo thành công",
+      "nextAction": {
+        "title": "Lựa chọn hành động tiếp theo",
+        "description": "Bạn có thể tiếp tục thiết lập các thông tin cần thiết cho nhân viên.",
+        "addOnboarding": "Thêm onboarding cho nhân viên",
+        "createContract": "Tạo hợp đồng cho nhân viên",
+        "viewEmployee": "Xem hồ sơ nhân viên"
+      }
+    },
+    "deleteConfirm": {
+      "title": "Xóa nhân viên",
+      "description": "Bạn có chắc muốn xóa nhân viên này không? Hành động này không thể hoàn tác."
+    }
+  }
+}

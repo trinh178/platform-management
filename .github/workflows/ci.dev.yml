@@ -1,0 +1,71 @@
+name: Build and Deploy Platform Management Web
+
+on:
+  push:
+    branches:
+      - dev
+
+env:
+  IMAGE_NAME: hvanexus_platform_management_web
+  SERVICE_NAME: fuel_tracking_web
+  BUILD_ENV_FILE: /tmp/fuel-tracking-web-${{ github.run_id }}.env
+  NPMRC_FILE: /tmp/fuel-tracking-web-${{ github.run_id }}.npmrc
+  RUNTIME_ENV_FILE: /home/hvanexus-infras/apps/platform-management-web/.env
+  DOCKER_COMPOSE_FILE: /home/hvanexus-infras/docker-compose.dev.yml
+  DOCKER_BUILDKIT: '1'
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, hva-nexus-vps]
+    environment: development
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Create environment file for build
+        run: |
+          cat > "$BUILD_ENV_FILE" <<EOF
+          APP_URL=${{ vars.APP_URL }}
+          APIGATEWAY_BASE_URL=${{ vars.APIGATEWAY_BASE_URL }}
+          NEXT_PUBLIC_APIGATEWAY_IAM=${{ vars.NEXT_PUBLIC_APIGATEWAY_IAM }}
+          NEXT_PUBLIC_APIGATEWAY_HRM_EM=${{ vars.NEXT_PUBLIC_APIGATEWAY_HRM_EM }}
+          NEXT_PUBLIC_APIGATEWAY_FTM=${{ vars.NEXT_PUBLIC_APIGATEWAY_FTM }}
+          NEXT_PUBLIC_APIPROXY_BASE_URL=${{ vars.NEXT_PUBLIC_APIPROXY_BASE_URL }}
+          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL=${{ vars.NEXTAUTH_URL }}
+          NEXTAUTH_COOKIE_DOMAIN=${{ vars.NEXTAUTH_COOKIE_DOMAIN }}
+          NEXT_PUBLIC_SIGNIN_URL=${{ vars.NEXT_PUBLIC_SIGNIN_URL }}
+          NEXT_PUBLIC_WEB_SHARED_REMOTE_BASE_URL=${{ vars.NEXT_PUBLIC_WEB_SHARED_REMOTE_BASE_URL }}
+          NEXT_PUBLIC_APP_KEY=${{ vars.NEXT_PUBLIC_APP_KEY }}
+          NEXT_PUBLIC_MOCK_API=${{ vars.NEXT_PUBLIC_MOCK_API }}
+          NEXT_PUBLIC_SINGLE_APP=${{ vars.NEXT_PUBLIC_SINGLE_APP }}
+          EOF
+
+      - name: Create .npmrc
+        run: |
+          cat > "$NPMRC_FILE" <<EOF
+          //npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}
+          @hva-nexus:registry=https://npm.pkg.github.com
+          EOF
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --secret id=npmrc,src="$NPMRC_FILE" \
+            --secret id=env,src="$BUILD_ENV_FILE" \
+            -t "$IMAGE_NAME" \
+            .
+
+      - name: Copy environment file to runtime path
+        run: cp "$BUILD_ENV_FILE" "$RUNTIME_ENV_FILE"
+
+      - name: Deploy
+        run: docker compose -f "$DOCKER_COMPOSE_FILE" up -d "$SERVICE_NAME"
+
+      - name: Remove build secrets
+        if: always()
+        run: rm -f "$BUILD_ENV_FILE" "$NPMRC_FILE"
+
+      - name: Clean up old images
+        run: docker image prune -f

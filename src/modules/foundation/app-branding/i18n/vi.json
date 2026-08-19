@@ -1,0 +1,8 @@
+{
+  "app": {
+    "name": "Quản lý Nền tảng",
+    "description": "Quản lý tập trung ứng dụng, dịch vụ và cấu hình nền tảng trong hệ thống HVA Nexus.",
+    "shortName": "PM",
+    "iconAlt": "Quản lý Nền tảng icon"
+  }
+}

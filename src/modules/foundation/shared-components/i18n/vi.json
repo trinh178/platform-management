@@ -1,0 +1,16 @@
+{
+  "components": {
+    "address_picker": {
+      "province": "Tỉnh/Thành phố",
+      "district": "Quận/Huyện",
+      "ward": "Phường/Xã",
+      "btn_ok": "Xác nhận",
+      "btn_cancel": "Hủy",
+      "select": "Chọn",
+      "find": "Tìm kiếm"
+    },
+    "entity_table": {
+      "add_placeholder": "Tìm để thêm dòng mới"
+    }
+  }
+}
