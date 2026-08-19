@@ -1,0 +1,52 @@
+{
+  "registry": {
+    "app": {
+      "title": "Ứng dụng",
+      "page": {
+        "create": "Đăng ký ứng dụng",
+        "details": "Chi tiết ứng dụng"
+      },
+      "controls": {
+        "search": "Tìm kiếm ứng dụng..."
+      },
+      "fields": {
+        "appCode": "Mã ứng dụng",
+        "name": "Tên ứng dụng",
+        "description": "Mô tả",
+        "version": "Phiên bản",
+        "status": "Trạng thái",
+        "metadata": "Metadata",
+        "note": "Ghi chú",
+        "createdOnUtc": "Ngày tạo"
+      },
+      "placeholder": {
+        "version": "VD: 1.4.0"
+      },
+      "tooltip": {
+        "appCode": "Định danh duy nhất của ứng dụng trong toàn platform, viết hoa và nối bằng dấu gạch dưới. VD: FTM, HRM_EM.",
+        "metadata": "Thông tin mở rộng dạng JSON, không có schema cố định."
+      },
+      "constants": {
+        "status": {
+          "active": "Đang hoạt động",
+          "inactive": "Ngừng hoạt động",
+          "deprecated": "Sắp ngừng dùng"
+        }
+      },
+      "sections": {
+        "basic": {
+          "title": "Thông tin ứng dụng",
+          "general": "Thông tin chung",
+          "advanced": "Thông tin bổ sung"
+        }
+      },
+      "validation": {
+        "appCodeFormat": "Mã ứng dụng phải viết hoa, chỉ gồm chữ cái, số và dấu gạch dưới, bắt đầu bằng chữ cái. VD: FTM, HRM_EM."
+      },
+      "deleteConfirm": {
+        "title": "Xóa ứng dụng",
+        "description": "Bạn có chắc chắn muốn xóa ứng dụng này khỏi Registry không? Hành động này không thể hoàn tác."
+      }
+    }
+  }
+}

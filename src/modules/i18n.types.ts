@@ -7,6 +7,7 @@ import common from '@/modules/foundation/common/i18n/vi.json';
 import identity from '@/modules/foundation/identity/i18n/vi.json';
 import sharedComponents from '@/modules/foundation/shared-components/i18n/vi.json';
 import validation from '@/modules/foundation/validation/i18n/vi.json';
+import registry from '@/modules/registry/i18n/vi.json';
 
 export type I18nMessagesType = typeof app &
   typeof appShell &
@@ -16,4 +17,5 @@ export type I18nMessagesType = typeof app &
   typeof validation &
   typeof formGuide &
   typeof datatableGuide &
-  typeof employee;
+  typeof employee &
+  typeof registry;

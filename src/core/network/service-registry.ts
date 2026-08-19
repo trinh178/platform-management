@@ -16,6 +16,10 @@ const SERVICE_REGISTRY = {
     prefix: process.env.NEXT_PUBLIC_APIGATEWAY_HRM_EM!,
     directUrl: process.env.HRMEM_DIRECT_URL,
   },
+  plm: {
+    prefix: process.env.NEXT_PUBLIC_APIGATEWAY_PLM!,
+    directUrl: process.env.PLM_DIRECT_URL,
+  },
 } as const satisfies Record<string, ServiceEntry>;
 
 export type ServiceKey = keyof typeof SERVICE_REGISTRY;

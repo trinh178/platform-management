@@ -3,6 +3,7 @@ import employee from './employee/route-paths';
 import formGuide from './form-guide/route-paths';
 import appShell from './foundation/app-shell/route-paths';
 import identity from './foundation/identity/route-paths';
+import registry from './registry/route-paths';
 
 const routePaths = {
   ...identity,
@@ -10,6 +11,7 @@ const routePaths = {
   ...formGuide,
   ...datatableGuide,
   ...employee,
+  ...registry,
 };
 
 export default routePaths;

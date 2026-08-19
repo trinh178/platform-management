@@ -4,6 +4,7 @@
  */
 import './iam-http-request';
 import './hrmem-http-request';
+import './plm-http-request';
 
 let mockRoutesPromise: Promise<unknown> | undefined;
 
@@ -18,6 +19,7 @@ export function ensureMockRoutesReady(): Promise<unknown> {
   mockRoutesPromise ??= Promise.all([
     import('@/mock/iam'),
     import('@/mock/hrmem'),
+    import('@/mock/plm'),
   ]);
 
   return mockRoutesPromise;

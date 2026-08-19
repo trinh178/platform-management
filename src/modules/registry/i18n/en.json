@@ -1,0 +1,52 @@
+{
+  "registry": {
+    "app": {
+      "title": "Apps",
+      "page": {
+        "create": "Register app",
+        "details": "App details"
+      },
+      "controls": {
+        "search": "Search apps..."
+      },
+      "fields": {
+        "appCode": "App code",
+        "name": "App name",
+        "description": "Description",
+        "version": "Version",
+        "status": "Status",
+        "metadata": "Metadata",
+        "note": "Note",
+        "createdOnUtc": "Created on"
+      },
+      "placeholder": {
+        "version": "e.g. 1.4.0"
+      },
+      "tooltip": {
+        "appCode": "Unique identifier of the app across the whole platform, upper snake case. e.g. FTM, HRM_EM.",
+        "metadata": "Extended JSON information with no fixed schema."
+      },
+      "constants": {
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive",
+          "deprecated": "Deprecated"
+        }
+      },
+      "sections": {
+        "basic": {
+          "title": "App information",
+          "general": "General",
+          "advanced": "Additional information"
+        }
+      },
+      "validation": {
+        "appCodeFormat": "App code must be upper snake case letters, digits and underscores, starting with a letter. e.g. FTM, HRM_EM."
+      },
+      "deleteConfirm": {
+        "title": "Delete app",
+        "description": "Are you sure you want to remove this app from the Registry? This action cannot be undone."
+      }
+    }
+  }
+}

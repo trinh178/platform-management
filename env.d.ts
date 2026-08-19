@@ -6,11 +6,13 @@ declare global {
       NEXT_PUBLIC_APIGATEWAY_IAM: string;
       NEXT_PUBLIC_APIGATEWAY_HRM_EM: string;
       NEXT_PUBLIC_APIGATEWAY_FTM: string;
+      NEXT_PUBLIC_APIGATEWAY_PLM: string;
       NEXT_PUBLIC_APIPROXY_BASE_URL: string;
       // Bypass gateway, trỏ thẳng vào service (chỉ server-side, dùng cho dev)
       IAM_DIRECT_URL?: string;
       HRMEM_DIRECT_URL?: string;
       FTM_DIRECT_URL?: string;
+      PLM_DIRECT_URL?: string;
       NEXTAUTH_SECRET: string;
       NEXTAUTH_URL: string;
       NEXTAUTH_COOKIE_DOMAIN: string;
