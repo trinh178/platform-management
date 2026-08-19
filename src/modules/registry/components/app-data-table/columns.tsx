@@ -28,7 +28,7 @@ const columns = [
     meta: { sticky: 'left' },
     cell: ({ row }) => (
       <AppLink
-        href={routePaths.details}
+        href={routePaths.appDetail}
         relative
         params={{ id: row.original.id }}
         className="text-foreground w-fit px-0 text-left underline-offset-4 hover:underline"

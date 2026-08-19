@@ -1,10 +1,14 @@
 import type { DeepPartial } from 'react-hook-form';
-import type { App } from '../types/app';
+import type { App, AppPreview } from '../types/app';
 import type { ListRequest, ListResponse } from '@/shared/types/pagination';
 
 // GET /registry/apps
 export type ListAppsRequest = ListRequest;
 export type ListAppsResponse = ListResponse<App>;
+
+// GET /registry/apps/options
+export type ListAppOptionsRequest = string | undefined;
+export type ListAppOptionsResponse = AppPreview[];
 
 // POST /registry/apps
 export type CreateAppRequest = Omit<App, 'id'>;

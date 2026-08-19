@@ -3,6 +3,8 @@ import type {
   AppDetailsResponse,
   CreateAppRequest,
   CreateAppResponse,
+  ListAppOptionsRequest,
+  ListAppOptionsResponse,
   ListAppsRequest,
   ListAppsResponse,
   RemoveAppRequest,
@@ -17,6 +19,7 @@ const appApi = {
   details,
   update,
   remove,
+  listOptions,
 };
 
 export default appApi;
@@ -70,5 +73,13 @@ function remove(id: RemoveAppRequest) {
   return plmHttpRequest.request({
     method: 'DELETE',
     url: `/registry/apps/${id}`,
+  });
+}
+
+function listOptions(keyword?: ListAppOptionsRequest) {
+  return plmHttpRequest.request<ListAppOptionsResponse>({
+    method: 'GET',
+    url: '/registry/apps/options',
+    params: { keyword },
   });
 }

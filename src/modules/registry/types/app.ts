@@ -13,3 +13,7 @@ export type App = AuditFields & {
   metadata?: string;
   note?: string;
 };
+
+// Shape rút gọn dùng cho nested response (AppServiceMapping.app) hoặc danh
+// sách lựa chọn nhanh (list_app_options) — xem shared/entities.yaml#AppPreview.
+export type AppPreview = Pick<App, 'id' | 'appCode' | 'name' | 'status'>;

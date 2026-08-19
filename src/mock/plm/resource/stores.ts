@@ -1,0 +1,88 @@
+import type { ResourceMock } from './mock-types';
+import { CURRENT_USER_ID } from '@/mock/constants';
+
+// domainId tham chiếu tới src/mock/plm/domain/stores.ts
+const DOMAIN_ID = {
+  FUEL_ENTRY: 'd5a3c003-0000-4c33-ae33-000000000001',
+  EMPLOYEE: 'd5a3c003-0000-4c33-ae33-000000000002',
+  VEHICLE: 'd5a3c003-0000-4c33-ae33-000000000003',
+  ASSET: 'd5a3c003-0000-4c33-ae33-000000000004',
+  USER: 'd5a3c003-0000-4c33-ae33-000000000005',
+  LEGACY_SESSION: 'd5a3c003-0000-4c33-ae33-000000000006',
+};
+
+export const resourceStore: ResourceMock[] = [
+  {
+    id: 'e6b4d004-0000-4d44-bf44-000000000001',
+    domainId: DOMAIN_ID.EMPLOYEE,
+    resourceCode: 'EMPLOYEE',
+    name: 'Employee',
+    description:
+      'Resource định danh hồ sơ nhân sự, dùng cho cross-service reference.',
+    status: 'Active',
+    createdBy: CURRENT_USER_ID,
+    createdOnUtc: '2025-01-23T00:00:00.000Z',
+    modifiedBy: CURRENT_USER_ID,
+    modifiedOnUtc: '2025-05-16T00:00:00.000Z',
+  },
+  {
+    id: 'e6b4d004-0000-4d44-bf44-000000000002',
+    domainId: DOMAIN_ID.FUEL_ENTRY,
+    resourceCode: 'FUEL_LOG',
+    name: 'Fuel Log',
+    description: 'Resource lượt đổ nhiên liệu.',
+    status: 'Active',
+    createdBy: CURRENT_USER_ID,
+    createdOnUtc: '2025-02-21T00:00:00.000Z',
+    modifiedBy: CURRENT_USER_ID,
+    modifiedOnUtc: '2025-07-02T00:00:00.000Z',
+  },
+  {
+    id: 'e6b4d004-0000-4d44-bf44-000000000003',
+    domainId: DOMAIN_ID.VEHICLE,
+    resourceCode: 'VEHICLE',
+    name: 'Vehicle',
+    description: 'Resource định danh phương tiện.',
+    status: 'Active',
+    createdBy: CURRENT_USER_ID,
+    createdOnUtc: '2025-02-17T00:00:00.000Z',
+    modifiedBy: null,
+    modifiedOnUtc: null,
+  },
+  {
+    id: 'e6b4d004-0000-4d44-bf44-000000000004',
+    domainId: DOMAIN_ID.ASSET,
+    resourceCode: 'ASSET_FILE',
+    name: 'Asset File',
+    description: 'Resource file đã upload lên Asset Service.',
+    status: 'Active',
+    createdBy: CURRENT_USER_ID,
+    createdOnUtc: '2025-01-27T00:00:00.000Z',
+    modifiedBy: CURRENT_USER_ID,
+    modifiedOnUtc: '2025-04-03T00:00:00.000Z',
+  },
+  {
+    id: 'e6b4d004-0000-4d44-bf44-000000000005',
+    domainId: DOMAIN_ID.USER,
+    resourceCode: 'USER_ACCOUNT',
+    name: 'User Account',
+    description: 'Resource định danh tài khoản người dùng.',
+    status: 'Active',
+    createdBy: CURRENT_USER_ID,
+    createdOnUtc: '2025-01-07T00:00:00.000Z',
+    modifiedBy: CURRENT_USER_ID,
+    modifiedOnUtc: '2025-06-11T00:00:00.000Z',
+  },
+  {
+    id: 'e6b4d004-0000-4d44-bf44-000000000006',
+    domainId: DOMAIN_ID.LEGACY_SESSION,
+    resourceCode: 'SESSION_TOKEN',
+    name: 'Session Token',
+    description: 'Resource token session thế hệ cũ, đã ngừng dùng.',
+    status: 'Deprecated',
+    createdBy: CURRENT_USER_ID,
+    createdOnUtc: '2021-04-02T00:00:00.000Z',
+    modifiedBy: CURRENT_USER_ID,
+    modifiedOnUtc: '2025-01-01T00:00:00.000Z',
+  },
+];

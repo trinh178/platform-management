@@ -1,3 +1,15 @@
 export type { AppMock } from './app';
 export { appStore } from './app';
+export type { ServiceMock } from './service';
+export { serviceStore } from './service';
+export type { DomainMock } from './domain';
+export { domainStore } from './domain';
+export type { ResourceMock } from './resource';
+export { resourceStore } from './resource';
+export type { AppServiceMappingMock } from './app-service-mapping';
+export { appServiceMappingStore } from './app-service-mapping';
 import './app';
+import './service';
+import './domain';
+import './resource';
+import './app-service-mapping';

@@ -47,6 +47,163 @@
         "title": "Delete app",
         "description": "Are you sure you want to remove this app from the Registry? This action cannot be undone."
       }
+    },
+    "service": {
+      "title": "Services",
+      "page": {
+        "create": "Register service",
+        "details": "Service details"
+      },
+      "controls": {
+        "search": "Search services..."
+      },
+      "fields": {
+        "serviceCode": "Service code",
+        "name": "Service name",
+        "description": "Description",
+        "version": "Version",
+        "status": "Status",
+        "metadata": "Metadata",
+        "note": "Note",
+        "createdOnUtc": "Created on"
+      },
+      "placeholder": {
+        "version": "e.g. 1.4.0"
+      },
+      "tooltip": {
+        "serviceCode": "Unique identifier of the service across the whole platform, upper snake case. e.g. HRM_EM, FLEET_MNG.",
+        "metadata": "Extended JSON information with no fixed schema."
+      },
+      "constants": {
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive",
+          "deprecated": "Deprecated"
+        }
+      },
+      "sections": {
+        "basic": {
+          "title": "Service information",
+          "general": "General",
+          "advanced": "Additional information"
+        }
+      },
+      "validation": {
+        "serviceCodeFormat": "Service code must be upper snake case letters, digits and underscores, starting with a letter. e.g. HRM_EM, FLEET_MNG."
+      },
+      "deleteConfirm": {
+        "title": "Delete service",
+        "description": "Are you sure you want to remove this service from the Registry? This action cannot be undone."
+      }
+    },
+    "domain": {
+      "title": "Domains",
+      "page": {
+        "create": "Register domain",
+        "details": "Domain details"
+      },
+      "controls": {
+        "search": "Search domains..."
+      },
+      "fields": {
+        "serviceId": "Service",
+        "domainCode": "Domain code",
+        "name": "Domain name",
+        "description": "Description",
+        "status": "Status",
+        "note": "Note",
+        "createdOnUtc": "Created on"
+      },
+      "tooltip": {
+        "serviceId": "The Service that owns this domain. Only Active services are shown for selection.",
+        "domainCode": "Unique identifier of the domain within the selected Service, upper snake case. e.g. FUEL_ENTRY, EMPLOYEE."
+      },
+      "constants": {
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive",
+          "deprecated": "Deprecated"
+        }
+      },
+      "sections": {
+        "basic": {
+          "title": "Domain information",
+          "general": "General",
+          "advanced": "Additional information"
+        }
+      },
+      "validation": {
+        "domainCodeFormat": "Domain code must be upper snake case letters, digits and underscores, starting with a letter. e.g. FUEL_ENTRY, EMPLOYEE."
+      },
+      "deleteConfirm": {
+        "title": "Delete domain",
+        "description": "Are you sure you want to remove this domain from the Registry? This action cannot be undone."
+      }
+    },
+    "resource": {
+      "title": "Resources",
+      "page": {
+        "create": "Register resource",
+        "details": "Resource details"
+      },
+      "controls": {
+        "search": "Search resources..."
+      },
+      "fields": {
+        "domainId": "Domain",
+        "resourceCode": "Resource code",
+        "name": "Resource name",
+        "description": "Description",
+        "status": "Status",
+        "note": "Note",
+        "createdOnUtc": "Created on"
+      },
+      "tooltip": {
+        "domainId": "The Domain that owns this resource. Only Active domains are shown for selection.",
+        "resourceCode": "Unique identifier of the resource within the selected Domain, upper snake case. Used in the cross-service reference standard. e.g. EMPLOYEE, VEHICLE."
+      },
+      "constants": {
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive",
+          "deprecated": "Deprecated"
+        }
+      },
+      "sections": {
+        "basic": {
+          "title": "Resource information",
+          "general": "General",
+          "advanced": "Additional information"
+        }
+      },
+      "validation": {
+        "resourceCodeFormat": "Resource code must be upper snake case letters, digits and underscores, starting with a letter. e.g. EMPLOYEE, VEHICLE."
+      },
+      "deleteConfirm": {
+        "title": "Delete resource",
+        "description": "Are you sure you want to remove this resource from the Registry? This action cannot be undone."
+      }
+    },
+    "appServiceMapping": {
+      "title": "App-Service Mapping",
+      "controls": {
+        "search": "Search mappings...",
+        "assign": "Assign Service",
+        "unassign": "Unassign"
+      },
+      "fields": {
+        "appId": "App",
+        "serviceId": "Service",
+        "note": "Note",
+        "createdOnUtc": "Created on"
+      },
+      "assignDialog": {
+        "title": "Assign Service to App"
+      },
+      "unassignConfirm": {
+        "title": "Unassign",
+        "description": "Are you sure you want to remove this app-service link?"
+      }
     }
   }
 }

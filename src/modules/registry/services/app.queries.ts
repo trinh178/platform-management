@@ -12,3 +12,10 @@ export const useAppDetails = createUseQueryPlm<string>()(id => ({
   queryKey: appKeys.details(id),
   queryFn: () => appApi.details(id),
 }));
+
+export const useAppOptions = createUseQueryPlm<string | undefined>()(
+  keyword => ({
+    queryKey: appKeys.options(keyword),
+    queryFn: () => appApi.listOptions(keyword),
+  }),
+);

@@ -47,6 +47,163 @@
         "title": "Xóa ứng dụng",
         "description": "Bạn có chắc chắn muốn xóa ứng dụng này khỏi Registry không? Hành động này không thể hoàn tác."
       }
+    },
+    "service": {
+      "title": "Service",
+      "page": {
+        "create": "Đăng ký service",
+        "details": "Chi tiết service"
+      },
+      "controls": {
+        "search": "Tìm kiếm service..."
+      },
+      "fields": {
+        "serviceCode": "Mã service",
+        "name": "Tên service",
+        "description": "Mô tả",
+        "version": "Phiên bản",
+        "status": "Trạng thái",
+        "metadata": "Metadata",
+        "note": "Ghi chú",
+        "createdOnUtc": "Ngày tạo"
+      },
+      "placeholder": {
+        "version": "VD: 1.4.0"
+      },
+      "tooltip": {
+        "serviceCode": "Định danh duy nhất của service trong toàn platform, viết hoa và nối bằng dấu gạch dưới. VD: HRM_EM, FLEET_MNG.",
+        "metadata": "Thông tin mở rộng dạng JSON, không có schema cố định."
+      },
+      "constants": {
+        "status": {
+          "active": "Đang hoạt động",
+          "inactive": "Ngừng hoạt động",
+          "deprecated": "Sắp ngừng dùng"
+        }
+      },
+      "sections": {
+        "basic": {
+          "title": "Thông tin service",
+          "general": "Thông tin chung",
+          "advanced": "Thông tin bổ sung"
+        }
+      },
+      "validation": {
+        "serviceCodeFormat": "Mã service phải viết hoa, chỉ gồm chữ cái, số và dấu gạch dưới, bắt đầu bằng chữ cái. VD: HRM_EM, FLEET_MNG."
+      },
+      "deleteConfirm": {
+        "title": "Xóa service",
+        "description": "Bạn có chắc chắn muốn xóa service này khỏi Registry không? Hành động này không thể hoàn tác."
+      }
+    },
+    "domain": {
+      "title": "Domain",
+      "page": {
+        "create": "Đăng ký domain",
+        "details": "Chi tiết domain"
+      },
+      "controls": {
+        "search": "Tìm kiếm domain..."
+      },
+      "fields": {
+        "serviceId": "Service",
+        "domainCode": "Mã domain",
+        "name": "Tên domain",
+        "description": "Mô tả",
+        "status": "Trạng thái",
+        "note": "Ghi chú",
+        "createdOnUtc": "Ngày tạo"
+      },
+      "tooltip": {
+        "serviceId": "Service sở hữu domain này. Chỉ hiển thị Service đang Active để chọn.",
+        "domainCode": "Định danh duy nhất của domain trong phạm vi Service đã chọn, viết hoa và nối bằng dấu gạch dưới. VD: FUEL_ENTRY, EMPLOYEE."
+      },
+      "constants": {
+        "status": {
+          "active": "Đang hoạt động",
+          "inactive": "Ngừng hoạt động",
+          "deprecated": "Sắp ngừng dùng"
+        }
+      },
+      "sections": {
+        "basic": {
+          "title": "Thông tin domain",
+          "general": "Thông tin chung",
+          "advanced": "Thông tin bổ sung"
+        }
+      },
+      "validation": {
+        "domainCodeFormat": "Mã domain phải viết hoa, chỉ gồm chữ cái, số và dấu gạch dưới, bắt đầu bằng chữ cái. VD: FUEL_ENTRY, EMPLOYEE."
+      },
+      "deleteConfirm": {
+        "title": "Xóa domain",
+        "description": "Bạn có chắc chắn muốn xóa domain này khỏi Registry không? Hành động này không thể hoàn tác."
+      }
+    },
+    "resource": {
+      "title": "Resource",
+      "page": {
+        "create": "Đăng ký resource",
+        "details": "Chi tiết resource"
+      },
+      "controls": {
+        "search": "Tìm kiếm resource..."
+      },
+      "fields": {
+        "domainId": "Domain",
+        "resourceCode": "Mã resource",
+        "name": "Tên resource",
+        "description": "Mô tả",
+        "status": "Trạng thái",
+        "note": "Ghi chú",
+        "createdOnUtc": "Ngày tạo"
+      },
+      "tooltip": {
+        "domainId": "Domain sở hữu resource này. Chỉ hiển thị Domain đang Active để chọn.",
+        "resourceCode": "Định danh duy nhất của resource trong phạm vi Domain đã chọn, viết hoa và nối bằng dấu gạch dưới. Dùng trong chuẩn cross-service reference. VD: EMPLOYEE, VEHICLE."
+      },
+      "constants": {
+        "status": {
+          "active": "Đang hoạt động",
+          "inactive": "Ngừng hoạt động",
+          "deprecated": "Sắp ngừng dùng"
+        }
+      },
+      "sections": {
+        "basic": {
+          "title": "Thông tin resource",
+          "general": "Thông tin chung",
+          "advanced": "Thông tin bổ sung"
+        }
+      },
+      "validation": {
+        "resourceCodeFormat": "Mã resource phải viết hoa, chỉ gồm chữ cái, số và dấu gạch dưới, bắt đầu bằng chữ cái. VD: EMPLOYEE, VEHICLE."
+      },
+      "deleteConfirm": {
+        "title": "Xóa resource",
+        "description": "Bạn có chắc chắn muốn xóa resource này khỏi Registry không? Hành động này không thể hoàn tác."
+      }
+    },
+    "appServiceMapping": {
+      "title": "Liên kết Ứng dụng - Service",
+      "controls": {
+        "search": "Tìm kiếm liên kết...",
+        "assign": "Gán Service",
+        "unassign": "Gỡ liên kết"
+      },
+      "fields": {
+        "appId": "Ứng dụng",
+        "serviceId": "Service",
+        "note": "Ghi chú",
+        "createdOnUtc": "Ngày tạo"
+      },
+      "assignDialog": {
+        "title": "Gán Service cho Ứng dụng"
+      },
+      "unassignConfirm": {
+        "title": "Gỡ liên kết",
+        "description": "Bạn có chắc chắn muốn gỡ liên kết giữa ứng dụng và service này không?"
+      }
     }
   }
 }

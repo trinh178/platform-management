@@ -1,4 +1,5 @@
 import {
+  buildAppPreview,
   createAppFromBody,
   getAppOrNotFound,
   isAppCodeTaken,
@@ -45,6 +46,26 @@ plmHttpRequest.addMockRoute({
         defaultSort: [{ field: 'createdOnUtc', direction: 'Descending' }],
       }),
     );
+  },
+});
+
+// ─── GET /registry/apps/options (specific — must be BEFORE /:id) ────────────
+plmHttpRequest.addMockRoute({
+  url: /\/registry\/apps\/options(\?.*)?$/,
+  method: 'GET',
+  handler: input => {
+    const sp = new URL(toUrl(input)).searchParams;
+    const keyword = sp.get('keyword')?.trim().toLowerCase();
+    const items = appStore
+      .filter(a => a.status === 'Active')
+      .filter(
+        a =>
+          !keyword ||
+          a.appCode.toLowerCase().includes(keyword) ||
+          a.name.toLowerCase().includes(keyword),
+      )
+      .map(buildAppPreview);
+    return appfetch.json(items);
   },
 });
 

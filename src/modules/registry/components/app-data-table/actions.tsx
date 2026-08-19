@@ -14,7 +14,7 @@ export default function Actions() {
   if (!canCreate) return null;
 
   return (
-    <AppLink href={routePaths.create} relative>
+    <AppLink href={routePaths.appCreate} relative>
       <Button size="sm">
         <IconPlus />
         <span className="hidden lg:inline">{t('common.control.create')}</span>

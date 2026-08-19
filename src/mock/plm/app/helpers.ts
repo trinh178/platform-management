@@ -19,6 +19,15 @@ export function isAppCodeTaken(appCode: string, excludeId?: string) {
   return appStore.some(a => a.appCode === appCode && a.id !== excludeId);
 }
 
+export function buildAppPreview(app: AppMock) {
+  return {
+    id: app.id,
+    appCode: app.appCode,
+    name: app.name,
+    status: app.status,
+  };
+}
+
 export function createAppFromBody(body: Record<string, unknown>): AppMock {
   const id = uuidv4();
   const nowIso = new Date().toISOString();
