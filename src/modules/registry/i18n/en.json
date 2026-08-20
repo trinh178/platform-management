@@ -7,7 +7,8 @@
         "details": "App details"
       },
       "controls": {
-        "search": "Search apps..."
+        "search": "Search apps...",
+        "uploadIcon": "Upload icon"
       },
       "fields": {
         "appCode": "App code",
@@ -16,7 +17,7 @@
         "version": "Version",
         "status": "Status",
         "url": "App URL",
-        "iconUrl": "Icon URL",
+        "iconUrl": "Icon",
         "tags": "Tags",
         "metadata": "Metadata",
         "createdOnUtc": "Created on"
@@ -44,7 +45,8 @@
         }
       },
       "validation": {
-        "appCodeFormat": "App code must be upper snake case letters, digits and underscores, starting with a letter. e.g. FTM, HRM_EM."
+        "appCodeFormat": "App code must be upper snake case letters, digits and underscores, starting with a letter. e.g. FTM, HRM_EM.",
+        "iconTooLarge": "Icon must be at most 2MB"
       },
       "deleteConfirm": {
         "title": "Delete app",

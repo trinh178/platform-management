@@ -7,7 +7,8 @@
         "details": "Chi tiết ứng dụng"
       },
       "controls": {
-        "search": "Tìm kiếm ứng dụng..."
+        "search": "Tìm kiếm ứng dụng...",
+        "uploadIcon": "Tải icon lên"
       },
       "fields": {
         "appCode": "Mã ứng dụng",
@@ -16,7 +17,7 @@
         "version": "Phiên bản",
         "status": "Trạng thái",
         "url": "Đường dẫn ứng dụng",
-        "iconUrl": "Đường dẫn icon",
+        "iconUrl": "Icon",
         "tags": "Thẻ",
         "metadata": "Metadata",
         "createdOnUtc": "Ngày tạo"
@@ -44,7 +45,8 @@
         }
       },
       "validation": {
-        "appCodeFormat": "Mã ứng dụng phải viết hoa, chỉ gồm chữ cái, số và dấu gạch dưới, bắt đầu bằng chữ cái. VD: FTM, HRM_EM."
+        "appCodeFormat": "Mã ứng dụng phải viết hoa, chỉ gồm chữ cái, số và dấu gạch dưới, bắt đầu bằng chữ cái. VD: FTM, HRM_EM.",
+        "iconTooLarge": "Kích thước icon tối đa 2MB"
       },
       "deleteConfirm": {
         "title": "Xóa ứng dụng",

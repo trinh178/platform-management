@@ -1,0 +1,1030 @@
+openapi: 3.0.3
+info:
+  title: Platform Management (PLM) API
+  version: "1.0.0"
+  description: >
+    API surface consumed by the Platform Management frontend through
+    `plmHttpRequest` (src/core/network/plm-http-request.ts, service key `plm`
+    registered in src/core/network/service-registry.ts).
+
+    Generated directly from the frontend's own contract files —
+    `src/modules/registry/services/{app,service,domain,resource,app-service-mapping,asset}.api.ts`
+    and their `*.api-types.ts` — so it reflects the real request/response shapes the
+    frontend already sends and expects, not an independently authored business spec.
+
+    Business rules (uniqueness, cascading-delete guards, Active-only options
+    filtering, ...) are cross-referenced against
+    `docs.business/domains/registry/domain.yaml` and `docs.business/external-services.yaml`
+    where relevant.
+
+servers:
+  - url: "https://apigateway.hvanexus.trinhpb.site/{plmPrefix}"
+    description: >
+      API Gateway. `plmPrefix` is resolved at runtime from
+      NEXT_PUBLIC_APIGATEWAY_PLM (see service-registry.ts) — the value below is
+      illustrative only, not a fixed contract.
+    variables:
+      plmPrefix:
+        default: plm
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: App
+    description: Registry — App entity (frontend/application metadata).
+  - name: Service
+    description: Registry — Service entity (backend service metadata).
+  - name: Domain
+    description: Registry — Domain entity, scoped to a Service.
+  - name: Resource
+    description: Registry — Resource entity, scoped to a Domain.
+  - name: AppServiceMapping
+    description: Registry — many-to-many join between App and Service.
+  - name: Asset
+    description: >
+      File upload, forwarded by PLM backend to the external Asset Service
+      (AppCode AST) — see docs.business/external-services.yaml. Frontend never
+      calls Asset Service directly.
+
+paths:
+  # ─── App ──────────────────────────────────────────────────────────────────
+  /registry/apps:
+    get:
+      tags: [App]
+      operationId: listApps
+      summary: List Apps
+      description: >
+        Supports search (appCode/name) and filtering. `filters[].field` accepts
+        `appCode` or `status`.
+      parameters:
+        - $ref: "#/components/parameters/PageIndexParam"
+        - $ref: "#/components/parameters/PageSizeParam"
+        - $ref: "#/components/parameters/SearchTermParam"
+        - $ref: "#/components/parameters/FiltersParam"
+        - $ref: "#/components/parameters/SortsParam"
+      responses:
+        "200":
+          description: Paged list of Apps.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AppListResponse" }
+    post:
+      tags: [App]
+      operationId: createApp
+      summary: Register a new App
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateAppRequest" }
+      responses:
+        "200":
+          description: Created App.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/App" }
+        "409":
+          description: appCode already taken (code `APP_CODE_TAKEN`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /registry/apps/options:
+    get:
+      tags: [App]
+      operationId: listAppOptions
+      summary: List Active Apps (compact), for pickers (e.g. App-Service Mapping assign)
+      parameters:
+        - name: keyword
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Compact list of Active Apps.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AppPreview" }
+
+  /registry/apps/{id}:
+    parameters:
+      - $ref: "#/components/parameters/IdPathParam"
+    get:
+      tags: [App]
+      operationId: getApp
+      summary: Get App details
+      responses:
+        "200":
+          description: App details.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/App" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [App]
+      operationId: updateApp
+      summary: Update App fields
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateAppRequest" }
+      responses:
+        "200":
+          description: Updated App.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/App" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: appCode already taken (code `APP_CODE_TAKEN`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [App]
+      operationId: deleteApp
+      summary: Delete an App
+      description: Only allowed when the App has no AppServiceMapping left.
+      responses:
+        "204":
+          description: Deleted.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ─── Service ──────────────────────────────────────────────────────────────
+  /registry/services:
+    get:
+      tags: [Service]
+      operationId: listServices
+      summary: List Services
+      description: >
+        Supports search (serviceCode/name) and filtering. `filters[].field`
+        accepts `serviceCode` or `status`.
+      parameters:
+        - $ref: "#/components/parameters/PageIndexParam"
+        - $ref: "#/components/parameters/PageSizeParam"
+        - $ref: "#/components/parameters/SearchTermParam"
+        - $ref: "#/components/parameters/FiltersParam"
+        - $ref: "#/components/parameters/SortsParam"
+      responses:
+        "200":
+          description: Paged list of Services.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ServiceListResponse" }
+    post:
+      tags: [Service]
+      operationId: createService
+      summary: Register a new Service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateServiceRequest" }
+      responses:
+        "200":
+          description: Created Service.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Service" }
+        "409":
+          description: serviceCode already taken (code `SERVICE_CODE_TAKEN`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /registry/services/options:
+    get:
+      tags: [Service]
+      operationId: listServiceOptions
+      summary: List Active Services (compact), for pickers (Domain create, App-Service Mapping assign)
+      parameters:
+        - name: keyword
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Compact list of Active Services.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ServicePreview" }
+
+  /registry/services/{id}:
+    parameters:
+      - $ref: "#/components/parameters/IdPathParam"
+    get:
+      tags: [Service]
+      operationId: getService
+      summary: Get Service details
+      responses:
+        "200":
+          description: Service details.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Service" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Service]
+      operationId: updateService
+      summary: Update Service fields
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateServiceRequest" }
+      responses:
+        "200":
+          description: Updated Service.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Service" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: serviceCode already taken (code `SERVICE_CODE_TAKEN`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [Service]
+      operationId: deleteService
+      summary: Delete a Service
+      description: Only allowed when the Service has no AppServiceMapping and no Domain left.
+      responses:
+        "204":
+          description: Deleted.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ─── Domain ───────────────────────────────────────────────────────────────
+  /registry/domains:
+    get:
+      tags: [Domain]
+      operationId: listDomains
+      summary: List Domains
+      description: >
+        Supports search (domainCode/name) and filtering. `filters[].field`
+        accepts `domainCode` or `serviceId`.
+      parameters:
+        - $ref: "#/components/parameters/PageIndexParam"
+        - $ref: "#/components/parameters/PageSizeParam"
+        - $ref: "#/components/parameters/SearchTermParam"
+        - $ref: "#/components/parameters/FiltersParam"
+        - $ref: "#/components/parameters/SortsParam"
+      responses:
+        "200":
+          description: Paged list of Domains.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DomainListResponse" }
+    post:
+      tags: [Domain]
+      operationId: createDomain
+      summary: Register a new Domain under a Service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateDomainRequest" }
+      responses:
+        "200":
+          description: Created Domain.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Domain" }
+        "400":
+          description: serviceId does not exist (code `SERVICE_NOT_FOUND`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "409":
+          description: domainCode already taken within this Service (code `DOMAIN_CODE_TAKEN`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /registry/domains/options:
+    get:
+      tags: [Domain]
+      operationId: listDomainOptions
+      summary: List Domains (compact), for pickers (Resource create)
+      parameters:
+        - name: serviceId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: keyword
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Compact list of Domains.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/DomainPreview" }
+
+  /registry/domains/{id}:
+    parameters:
+      - $ref: "#/components/parameters/IdPathParam"
+    get:
+      tags: [Domain]
+      operationId: getDomain
+      summary: Get Domain details (includes nested Service preview)
+      responses:
+        "200":
+          description: Domain details.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Domain" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Domain]
+      operationId: updateDomain
+      summary: Update Domain fields
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateDomainRequest" }
+      responses:
+        "200":
+          description: Updated Domain.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Domain" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: domainCode already taken within this Service (code `DOMAIN_CODE_TAKEN`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [Domain]
+      operationId: deleteDomain
+      summary: Delete a Domain
+      description: Only allowed when the Domain has no Resource left.
+      responses:
+        "204":
+          description: Deleted.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ─── Resource ─────────────────────────────────────────────────────────────
+  /registry/resources:
+    get:
+      tags: [Resource]
+      operationId: listResources
+      summary: List Resources
+      description: >
+        Supports search (resourceCode/name) and filtering. `filters[].field`
+        accepts `resourceCode` or `domainId`.
+      parameters:
+        - $ref: "#/components/parameters/PageIndexParam"
+        - $ref: "#/components/parameters/PageSizeParam"
+        - $ref: "#/components/parameters/SearchTermParam"
+        - $ref: "#/components/parameters/FiltersParam"
+        - $ref: "#/components/parameters/SortsParam"
+      responses:
+        "200":
+          description: Paged list of Resources.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ResourceListResponse" }
+    post:
+      tags: [Resource]
+      operationId: createResource
+      summary: Register a new Resource under a Domain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateResourceRequest" }
+      responses:
+        "200":
+          description: Created Resource.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Resource" }
+        "400":
+          description: domainId does not exist (code `DOMAIN_NOT_FOUND`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "409":
+          description: resourceCode already taken within this Domain (code `RESOURCE_CODE_TAKEN`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /registry/resources/{id}:
+    parameters:
+      - $ref: "#/components/parameters/IdPathParam"
+    get:
+      tags: [Resource]
+      operationId: getResource
+      summary: Get Resource details (includes nested Domain preview)
+      responses:
+        "200":
+          description: Resource details.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Resource" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [Resource]
+      operationId: updateResource
+      summary: Update Resource fields
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateResourceRequest" }
+      responses:
+        "200":
+          description: Updated Resource.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Resource" }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: resourceCode already taken within this Domain (code `RESOURCE_CODE_TAKEN`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+    delete:
+      tags: [Resource]
+      operationId: deleteResource
+      summary: Delete a Resource
+      responses:
+        "204":
+          description: Deleted.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ─── AppServiceMapping ────────────────────────────────────────────────────
+  /registry/app-service-mappings:
+    get:
+      tags: [AppServiceMapping]
+      operationId: listAppServiceMappings
+      summary: List App-Service links
+      description: >
+        Supports search (across App/Service code+name) and filtering.
+        `filters[].field` accepts `appId` or `serviceId`.
+      parameters:
+        - $ref: "#/components/parameters/PageIndexParam"
+        - $ref: "#/components/parameters/PageSizeParam"
+        - $ref: "#/components/parameters/SearchTermParam"
+        - $ref: "#/components/parameters/FiltersParam"
+        - $ref: "#/components/parameters/SortsParam"
+      responses:
+        "200":
+          description: Paged list of App-Service links.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/AppServiceMappingListResponse" }
+    post:
+      tags: [AppServiceMapping]
+      operationId: assignServiceToApp
+      summary: Assign a Service to an App
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AssignServiceToAppRequest" }
+      responses:
+        "200":
+          description: Created link.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AppServiceMapping" }
+        "400":
+          description: appId or serviceId does not exist (code `APP_NOT_FOUND` / `SERVICE_NOT_FOUND`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "409":
+          description: (appId, serviceId) pair already assigned (code `MAPPING_TAKEN`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /registry/app-service-mappings/{id}:
+    delete:
+      tags: [AppServiceMapping]
+      operationId: unassignServiceFromApp
+      summary: Unassign a Service from an App
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      responses:
+        "204":
+          description: Deleted.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ─── Asset ────────────────────────────────────────────────────────────────
+  /registry/assets/upload:
+    post:
+      tags: [Asset]
+      operationId: uploadAsset
+      summary: Upload a file (e.g. App icon), forwarded to the Asset Service
+      description: >
+        PLM backend receives the file and forwards it to the external Asset
+        Service (AppCode AST) — see docs.business/external-services.yaml.
+        The frontend never calls Asset Service directly. The returned `url`
+        is stored by the caller into the owning entity's own field (e.g.
+        App.iconUrl) via a separate update call — this endpoint does not
+        associate the asset with any entity itself.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                category:
+                  type: string
+                  description: >
+                    Caller-defined tag for what this asset is used for, e.g.
+                    APP_ICON, ORGANIZATION_LOGO, BRANDING_LOGO, BRANDING_FAVICON.
+      responses:
+        "200":
+          description: Uploaded asset.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Asset" }
+        "400":
+          description: No file provided (code `FILE_REQUIRED`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT issued by IAM (see docs.business/external-services.yaml#iam).
+
+  parameters:
+    IdPathParam:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+    PageIndexParam:
+      name: pageIndex
+      in: query
+      description: 1-based page number. Defaults to 1 when omitted.
+      schema: { type: integer, minimum: 1, default: 1 }
+
+    PageSizeParam:
+      name: pageSize
+      in: query
+      description: Defaults to 20 when omitted.
+      schema: { type: integer, minimum: 1, default: 20 }
+
+    SearchTermParam:
+      name: searchTerm
+      in: query
+      schema: { type: string }
+
+    FiltersParam:
+      name: filters
+      in: query
+      style: deepObject
+      explode: true
+      description: >
+        Indexed bracket notation, e.g.
+        `filters[0].field=status&filters[0].operator=Equal&filters[0].value=Active`.
+        Supported field names differ per endpoint — see each operation's description.
+      schema:
+        type: array
+        items: { $ref: "#/components/schemas/FilterCondition" }
+
+    SortsParam:
+      name: sorts
+      in: query
+      style: deepObject
+      explode: true
+      description: >
+        Indexed bracket notation, e.g.
+        `sorts[0].field=createdOnUtc&sorts[0].direction=Descending`.
+        `direction` defaults to Descending when omitted.
+      schema:
+        type: array
+        items: { $ref: "#/components/schemas/SortCondition" }
+
+  responses:
+    NotFound:
+      description: Not found (code `NOT_FOUND`).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+
+    RegistryStatus:
+      type: string
+      enum: [Active, Inactive, Deprecated]
+      description: >
+        Shared status enum for App and Service. Domain/Resource do not have a
+        status field (deliberately removed — see project decisions).
+
+    FilterOperator:
+      type: string
+      enum:
+        [
+          Equal,
+          NotEqual,
+          GreaterThan,
+          GreaterThanOrEqual,
+          LessThan,
+          LessThanOrEqual,
+          Contains,
+          StartsWith,
+          EndsWith,
+          In,
+          NotIn,
+          Between,
+          IsNull,
+          IsNotNull,
+        ]
+
+    FilterCondition:
+      type: object
+      required: [field]
+      properties:
+        field: { type: string }
+        operator:
+          allOf: [{ $ref: "#/components/schemas/FilterOperator" }]
+          default: Equal
+        value: { type: string }
+        values: { type: array, items: { type: string } }
+
+    SortDirection:
+      type: string
+      enum: [Ascending, Descending]
+
+    SortCondition:
+      type: object
+      required: [field]
+      properties:
+        field: { type: string }
+        direction:
+          allOf: [{ $ref: "#/components/schemas/SortDirection" }]
+          default: Descending
+
+    AuditFields:
+      type: object
+      properties:
+        createdBy: { type: string, nullable: true }
+        createdOnUtc: { type: string, format: date-time, nullable: true }
+        modifiedBy: { type: string, nullable: true }
+        modifiedOnUtc: { type: string, format: date-time, nullable: true }
+
+    ListResponseBase:
+      type: object
+      properties:
+        pageIndex: { type: integer }
+        pageSize: { type: integer }
+        totalItems: { type: integer }
+        totalPages: { type: integer }
+        searchTerm:
+          type: string
+          description: Echoed back from the request (client-side convenience, not authoritative).
+        filters:
+          type: array
+          items: { $ref: "#/components/schemas/FilterCondition" }
+        sorts:
+          type: array
+          items: { $ref: "#/components/schemas/SortCondition" }
+
+    # ─── App ──────────────────────────────────────────────────────────────
+    AppPreview:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        appCode: { type: string }
+        name: { type: string }
+        status: { $ref: "#/components/schemas/RegistryStatus" }
+
+    App:
+      allOf:
+        - $ref: "#/components/schemas/AuditFields"
+        - type: object
+          required: [id, appCode, name, status]
+          properties:
+            id: { type: string, format: uuid }
+            appCode:
+              type: string
+              description: >
+                UPPER_SNAKE_CASE, unique platform-wide. e.g. FTM, IAM, WATS.
+            name: { type: string }
+            description: { type: string, nullable: true }
+            version: { type: string, nullable: true }
+            status: { $ref: "#/components/schemas/RegistryStatus" }
+            url:
+              type: string
+              nullable: true
+              description: Link to the app itself.
+            iconUrl:
+              type: string
+              nullable: true
+              description: >
+                URL of the uploaded icon — populated via POST
+                /registry/assets/upload, not typed directly by the client.
+            tags:
+              type: array
+              items: { type: string }
+              nullable: true
+              description: Free-form tags for categorization/search.
+            metadata:
+              type: string
+              nullable: true
+              description: Free-form JSON, stored as a string with no fixed schema.
+
+    CreateAppRequest:
+      type: object
+      required: [appCode, name]
+      properties:
+        appCode: { type: string }
+        name: { type: string }
+        description: { type: string }
+        version: { type: string }
+        status:
+          allOf: [{ $ref: "#/components/schemas/RegistryStatus" }]
+          description: Defaults to Active if omitted.
+        url: { type: string }
+        iconUrl: { type: string }
+        tags: { type: array, items: { type: string } }
+        metadata: { type: string }
+
+    UpdateAppRequest:
+      description: Partial update — only fields present are changed.
+      type: object
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        appCode: { type: string }
+        name: { type: string }
+        description: { type: string }
+        version: { type: string }
+        status: { $ref: "#/components/schemas/RegistryStatus" }
+        url: { type: string }
+        iconUrl: { type: string }
+        tags: { type: array, items: { type: string } }
+        metadata: { type: string }
+
+    AppListResponse:
+      allOf:
+        - $ref: "#/components/schemas/ListResponseBase"
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: "#/components/schemas/App" }
+
+    # ─── Service ──────────────────────────────────────────────────────────
+    ServicePreview:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        serviceCode: { type: string }
+        name: { type: string }
+        status: { $ref: "#/components/schemas/RegistryStatus" }
+
+    Service:
+      allOf:
+        - $ref: "#/components/schemas/AuditFields"
+        - type: object
+          required: [id, serviceCode, name, status]
+          properties:
+            id: { type: string, format: uuid }
+            serviceCode:
+              type: string
+              description: >
+                UPPER_SNAKE_CASE, unique platform-wide. e.g. HRM_EM, FLEET_MNG.
+            name: { type: string }
+            description: { type: string, nullable: true }
+            version: { type: string, nullable: true }
+            status: { $ref: "#/components/schemas/RegistryStatus" }
+            metadata: { type: string, nullable: true }
+
+    CreateServiceRequest:
+      type: object
+      required: [serviceCode, name]
+      properties:
+        serviceCode: { type: string }
+        name: { type: string }
+        description: { type: string }
+        version: { type: string }
+        status:
+          allOf: [{ $ref: "#/components/schemas/RegistryStatus" }]
+          description: Defaults to Active if omitted.
+        metadata: { type: string }
+
+    UpdateServiceRequest:
+      description: Partial update — only fields present are changed.
+      type: object
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        serviceCode: { type: string }
+        name: { type: string }
+        description: { type: string }
+        version: { type: string }
+        status: { $ref: "#/components/schemas/RegistryStatus" }
+        metadata: { type: string }
+
+    ServiceListResponse:
+      allOf:
+        - $ref: "#/components/schemas/ListResponseBase"
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: "#/components/schemas/Service" }
+
+    # ─── Domain ───────────────────────────────────────────────────────────
+    DomainPreview:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        domainCode: { type: string }
+        name: { type: string }
+        serviceId: { type: string, format: uuid }
+
+    Domain:
+      allOf:
+        - $ref: "#/components/schemas/AuditFields"
+        - type: object
+          required: [id, serviceId, domainCode, name]
+          properties:
+            id: { type: string, format: uuid }
+            serviceId: { type: string, format: uuid }
+            domainCode:
+              type: string
+              description: >
+                UPPER_SNAKE_CASE, unique within serviceId (not platform-wide).
+                e.g. FUEL_ENTRY, EMPLOYEE.
+            name: { type: string }
+            description: { type: string, nullable: true }
+            service:
+              allOf: [{ $ref: "#/components/schemas/ServicePreview" }]
+              nullable: true
+              description: Response-only nested preview of the owning Service.
+
+    CreateDomainRequest:
+      type: object
+      required: [serviceId, domainCode, name]
+      properties:
+        serviceId: { type: string, format: uuid }
+        domainCode: { type: string }
+        name: { type: string }
+        description: { type: string }
+
+    UpdateDomainRequest:
+      description: Partial update — only fields present are changed.
+      type: object
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        serviceId: { type: string, format: uuid }
+        domainCode: { type: string }
+        name: { type: string }
+        description: { type: string }
+
+    DomainListResponse:
+      allOf:
+        - $ref: "#/components/schemas/ListResponseBase"
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: "#/components/schemas/Domain" }
+
+    # ─── Resource ─────────────────────────────────────────────────────────
+    Resource:
+      allOf:
+        - $ref: "#/components/schemas/AuditFields"
+        - type: object
+          required: [id, domainId, resourceCode, name]
+          properties:
+            id: { type: string, format: uuid }
+            domainId: { type: string, format: uuid }
+            resourceCode:
+              type: string
+              description: >
+                UPPER_SNAKE_CASE, unique within domainId. Used in the
+                cross-service reference standard (ReferenceService/
+                ReferenceDomain/ReferenceResource). e.g. EMPLOYEE, VEHICLE.
+            name: { type: string }
+            description: { type: string, nullable: true }
+            domain:
+              allOf: [{ $ref: "#/components/schemas/DomainPreview" }]
+              nullable: true
+              description: Response-only nested preview of the owning Domain.
+
+    CreateResourceRequest:
+      type: object
+      required: [domainId, resourceCode, name]
+      properties:
+        domainId: { type: string, format: uuid }
+        resourceCode: { type: string }
+        name: { type: string }
+        description: { type: string }
+
+    UpdateResourceRequest:
+      description: Partial update — only fields present are changed.
+      type: object
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        domainId: { type: string, format: uuid }
+        resourceCode: { type: string }
+        name: { type: string }
+        description: { type: string }
+
+    ResourceListResponse:
+      allOf:
+        - $ref: "#/components/schemas/ListResponseBase"
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: "#/components/schemas/Resource" }
+
+    # ─── AppServiceMapping ──────────────────────────────────────────────────
+    AppServiceMapping:
+      allOf:
+        - $ref: "#/components/schemas/AuditFields"
+        - type: object
+          required: [id, appId, serviceId]
+          properties:
+            id: { type: string, format: uuid }
+            appId: { type: string, format: uuid }
+            serviceId: { type: string, format: uuid }
+            app:
+              allOf: [{ $ref: "#/components/schemas/AppPreview" }]
+              nullable: true
+              description: Response-only nested preview.
+            service:
+              allOf: [{ $ref: "#/components/schemas/ServicePreview" }]
+              nullable: true
+              description: Response-only nested preview.
+
+    AssignServiceToAppRequest:
+      type: object
+      required: [appId, serviceId]
+      properties:
+        appId: { type: string, format: uuid }
+        serviceId: { type: string, format: uuid }
+
+    AppServiceMappingListResponse:
+      allOf:
+        - $ref: "#/components/schemas/ListResponseBase"
+        - type: object
+          properties:
+            items:
+              type: array
+              items: { $ref: "#/components/schemas/AppServiceMapping" }
+
+    # ─── Asset ────────────────────────────────────────────────────────────
+    Asset:
+      type: object
+      required: [id, fileName, mimeType, fileSize, url, status]
+      properties:
+        id: { type: string, format: uuid }
+        fileName: { type: string }
+        mimeType: { type: string }
+        fileSize: { type: integer, description: Size in bytes. }
+        url:
+          type: string
+          description: Public URL to display the uploaded file.
+        status: { type: string }

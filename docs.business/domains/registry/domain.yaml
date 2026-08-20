@@ -35,7 +35,7 @@ entities:
       version: string?                     # version hiện đang triển khai, ví dụ 1.4.0
       status: enum(registry_status)
       url: string?                         # đường dẫn truy cập ứng dụng
-      iconUrl: string?                     # đường dẫn icon hiển thị của ứng dụng
+      iconUrl: string?                     # url icon hiển thị của ứng dụng, có được từ flow upload_app_icon (không nhập tay)
       tags: string[]?                      # nhãn tự do phục vụ phân loại/tìm kiếm
       metadata: json?                      # thông tin mở rộng tuỳ app, không có schema cố định
 
@@ -133,6 +133,23 @@ flows:
       - metadata            # optional
     output:
       - app
+
+  - name: upload_app_icon
+    description: >
+      Upload file icon cho App. Frontend gọi endpoint này của PLM backend (không gọi trực tiếp
+      Asset Service) — PLM forward file lên Asset Service (AppCode AST, xem
+      docs.business/external-services.yaml), nhận về Asset object rồi trả url cho frontend để
+      lưu vào App.iconUrl qua flow update_app.
+    actor: platform_admin
+    permission: PLM.REGISTRY.APP.UPDATE
+    api:
+      method: POST
+      path: /registry/assets/upload
+    input:
+      - file                # binary, multipart/form-data
+      - category             # optional, cố định "APP_ICON" cho use-case này
+    output:
+      - asset                # { id, fileName, mimeType, fileSize, url, status } — xem external-services.yaml#asset
 
   - name: update_app
     description: Cập nhật metadata App
@@ -580,6 +597,7 @@ features:
       - PLM.REGISTRY.APP.CREATE
     flows:
       - create_app
+      - upload_app_icon
 
   - name: update_app
     type: action
@@ -588,6 +606,7 @@ features:
       - PLM.REGISTRY.APP.UPDATE
     flows:
       - update_app
+      - upload_app_icon
 
   - name: delete_app
     type: action

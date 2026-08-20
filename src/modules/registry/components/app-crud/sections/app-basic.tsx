@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { useAppCRUDContext } from '../context';
+import IconUploadField from './icon-upload-field';
 import { CONST_APP_STATUS } from '@/modules/registry/constants/app';
 import FieldInputConstant from '@/shared/components/form/field-input-constant';
 import FieldInputJson from '@/shared/components/form/field-input-json';
@@ -86,9 +87,8 @@ export default function AppBasic() {
             clearable
           />
 
-          <FieldInputText
+          <IconUploadField
             label={t('registry.app.fields.iconUrl')}
-            placeholder={t('registry.app.fields.iconUrl')}
             form={form}
             name="iconUrl"
             mode={fieldMode}
