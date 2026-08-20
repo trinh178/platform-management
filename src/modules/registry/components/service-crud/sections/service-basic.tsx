@@ -104,18 +104,6 @@ export default function ServiceBasic() {
               rows={6}
               clearable
             />
-
-            <FieldInputTextArea
-              label={t('registry.service.fields.note')}
-              placeholder={t('registry.service.fields.note')}
-              form={form}
-              name="note"
-              mode={fieldMode}
-              loading={updateLoading && editingFieldName === 'note'}
-              inlineEdit={inlineEdit}
-              onInlineSave={(name, value) => update(name, value)}
-              clearable
-            />
           </FieldGroup>
         </SubSection>
       </div>

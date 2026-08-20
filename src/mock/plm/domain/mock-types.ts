@@ -4,8 +4,6 @@ export interface DomainMock {
   domainCode: string;
   name: string;
   description?: string;
-  status: 'Active' | 'Inactive' | 'Deprecated';
-  note?: string;
   createdBy?: string;
   createdOnUtc?: string;
   modifiedBy?: string | null;

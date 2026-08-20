@@ -37,7 +37,6 @@ export function createMappingFromBody(
     modifiedOnUtc: nowIso,
     appId: typeof body.appId === 'string' ? body.appId : '',
     serviceId: typeof body.serviceId === 'string' ? body.serviceId : '',
-    note: typeof body.note === 'string' ? body.note : undefined,
   };
 
   appServiceMappingStore.unshift(mapping);

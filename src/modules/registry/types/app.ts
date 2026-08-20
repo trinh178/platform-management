@@ -10,8 +10,10 @@ export type App = AuditFields & {
   description?: string;
   version?: string;
   status: AppStatus;
+  url?: string;
+  iconUrl?: string;
+  tags?: string[];
   metadata?: string;
-  note?: string;
 };
 
 // Shape rút gọn dùng cho nested response (AppServiceMapping.app) hoặc danh

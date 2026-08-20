@@ -21,13 +21,7 @@ import { serviceStore } from '@/mock/plm/service/stores';
 function searchMapping(mapping: AppServiceMappingMock, searchTerm: string) {
   const app = appStore.find(a => a.id === mapping.appId);
   const service = serviceStore.find(s => s.id === mapping.serviceId);
-  return [
-    app?.appCode,
-    app?.name,
-    service?.serviceCode,
-    service?.name,
-    mapping.note,
-  ]
+  return [app?.appCode, app?.name, service?.serviceCode, service?.name]
     .filter(Boolean)
     .some(value => value!.toLowerCase().includes(searchTerm));
 }

@@ -29,8 +29,6 @@ function searchDomain(domain: DomainMock, searchTerm: string) {
 function filterDomain(domain: DomainMock, filter: MockListFilter) {
   if (filter.field === 'domainCode')
     return matchFilterOperator(domain.domainCode, filter);
-  if (filter.field === 'status')
-    return matchFilterOperator(domain.status, filter);
   if (filter.field === 'serviceId')
     return matchFilterOperator(domain.serviceId, filter);
   return true;
@@ -64,7 +62,6 @@ plmHttpRequest.addMockRoute({
     const serviceId = sp.get('serviceId') || undefined;
     const keyword = sp.get('keyword')?.trim().toLowerCase();
     const items = domainStore
-      .filter(d => d.status === 'Active')
       .filter(d => !serviceId || d.serviceId === serviceId)
       .filter(
         d =>

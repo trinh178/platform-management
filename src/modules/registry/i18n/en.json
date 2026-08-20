@@ -15,12 +15,15 @@
         "description": "Description",
         "version": "Version",
         "status": "Status",
+        "url": "App URL",
+        "iconUrl": "Icon URL",
+        "tags": "Tags",
         "metadata": "Metadata",
-        "note": "Note",
         "createdOnUtc": "Created on"
       },
       "placeholder": {
-        "version": "e.g. 1.4.0"
+        "version": "e.g. 1.4.0",
+        "tags": "Type a tag and press Enter..."
       },
       "tooltip": {
         "appCode": "Unique identifier of the app across the whole platform, upper snake case. e.g. FTM, HRM_EM.",
@@ -64,7 +67,6 @@
         "version": "Version",
         "status": "Status",
         "metadata": "Metadata",
-        "note": "Note",
         "createdOnUtc": "Created on"
       },
       "placeholder": {
@@ -110,26 +112,16 @@
         "domainCode": "Domain code",
         "name": "Domain name",
         "description": "Description",
-        "status": "Status",
-        "note": "Note",
         "createdOnUtc": "Created on"
       },
       "tooltip": {
         "serviceId": "The Service that owns this domain. Only Active services are shown for selection.",
         "domainCode": "Unique identifier of the domain within the selected Service, upper snake case. e.g. FUEL_ENTRY, EMPLOYEE."
       },
-      "constants": {
-        "status": {
-          "active": "Active",
-          "inactive": "Inactive",
-          "deprecated": "Deprecated"
-        }
-      },
       "sections": {
         "basic": {
           "title": "Domain information",
-          "general": "General",
-          "advanced": "Additional information"
+          "general": "General"
         }
       },
       "validation": {
@@ -154,26 +146,16 @@
         "resourceCode": "Resource code",
         "name": "Resource name",
         "description": "Description",
-        "status": "Status",
-        "note": "Note",
         "createdOnUtc": "Created on"
       },
       "tooltip": {
-        "domainId": "The Domain that owns this resource. Only Active domains are shown for selection.",
+        "domainId": "The Domain that owns this resource.",
         "resourceCode": "Unique identifier of the resource within the selected Domain, upper snake case. Used in the cross-service reference standard. e.g. EMPLOYEE, VEHICLE."
-      },
-      "constants": {
-        "status": {
-          "active": "Active",
-          "inactive": "Inactive",
-          "deprecated": "Deprecated"
-        }
       },
       "sections": {
         "basic": {
           "title": "Resource information",
-          "general": "General",
-          "advanced": "Additional information"
+          "general": "General"
         }
       },
       "validation": {
@@ -194,7 +176,6 @@
       "fields": {
         "appId": "App",
         "serviceId": "Service",
-        "note": "Note",
         "createdOnUtc": "Created on"
       },
       "assignDialog": {
@@ -204,6 +185,12 @@
         "title": "Unassign",
         "description": "Are you sure you want to remove this app-service link?"
       }
+    },
+    "structure": {
+      "title": "Service Structure",
+      "searchPlaceholder": "Search services...",
+      "empty": "No items yet",
+      "emptySelection": "Select a Service, Domain or Resource on the left to view details, or click \"+\" to add a new one."
     }
   }
 }

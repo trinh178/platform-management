@@ -6,7 +6,6 @@ export interface ServiceMock {
   version?: string;
   status: 'Active' | 'Inactive' | 'Deprecated';
   metadata?: string;
-  note?: string;
   createdBy?: string;
   createdOnUtc?: string;
   modifiedBy?: string | null;

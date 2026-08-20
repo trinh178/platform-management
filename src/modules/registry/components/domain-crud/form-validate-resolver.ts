@@ -15,7 +15,6 @@ const formValidateResolver = createFormValidateResolverWithTranslations<Domain>(
       t('registry.domain.validation.domainCodeFormat'),
     ),
     name: stringRequired(t),
-    status: stringRequired(t),
   }),
 );
 

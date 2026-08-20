@@ -64,11 +64,6 @@ export function createDomainFromBody(
     name: typeof body.name === 'string' ? body.name : '',
     description:
       typeof body.description === 'string' ? body.description : undefined,
-    status:
-      body.status === 'Inactive' || body.status === 'Deprecated'
-        ? body.status
-        : 'Active',
-    note: typeof body.note === 'string' ? body.note : undefined,
   };
 
   domainStore.unshift(domain);

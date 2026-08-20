@@ -52,7 +52,6 @@ export function createServiceFromBody(
         ? body.status
         : 'Active',
     metadata: typeof body.metadata === 'string' ? body.metadata : undefined,
-    note: typeof body.note === 'string' ? body.note : undefined,
   };
 
   serviceStore.unshift(service);

@@ -47,8 +47,12 @@ export function createAppFromBody(body: Record<string, unknown>): AppMock {
       body.status === 'Inactive' || body.status === 'Deprecated'
         ? body.status
         : 'Active',
+    url: typeof body.url === 'string' ? body.url : undefined,
+    iconUrl: typeof body.iconUrl === 'string' ? body.iconUrl : undefined,
+    tags: Array.isArray(body.tags)
+      ? body.tags.filter((tag): tag is string => typeof tag === 'string')
+      : undefined,
     metadata: typeof body.metadata === 'string' ? body.metadata : undefined,
-    note: typeof body.note === 'string' ? body.note : undefined,
   };
 
   appStore.unshift(app);

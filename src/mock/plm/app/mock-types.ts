@@ -5,8 +5,10 @@ export interface AppMock {
   description?: string;
   version?: string;
   status: 'Active' | 'Inactive' | 'Deprecated';
+  url?: string;
+  iconUrl?: string;
+  tags?: string[];
   metadata?: string;
-  note?: string;
   createdBy?: string;
   createdOnUtc?: string;
   modifiedBy?: string | null;

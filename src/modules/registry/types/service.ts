@@ -11,7 +11,6 @@ export type Service = AuditFields & {
   version?: string;
   status: ServiceStatus;
   metadata?: string;
-  note?: string;
 };
 
 // Shape rút gọn dùng cho nested response (Domain.service) hoặc danh sách lựa

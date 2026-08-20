@@ -1,8 +1,6 @@
 import type { ServicePreview } from './service';
 import type { AuditFields } from '@/shared/types/audit';
 
-export type DomainStatus = 'Active' | 'Inactive' | 'Deprecated';
-
 export type Domain = AuditFields & {
   id: string;
 
@@ -10,8 +8,6 @@ export type Domain = AuditFields & {
   domainCode: string;
   name: string;
   description?: string;
-  status: DomainStatus;
-  note?: string;
 
   // Response-only nested preview — xem shared/entities.yaml#ServicePreview.
   service?: ServicePreview;

@@ -15,12 +15,15 @@
         "description": "Mô tả",
         "version": "Phiên bản",
         "status": "Trạng thái",
+        "url": "Đường dẫn ứng dụng",
+        "iconUrl": "Đường dẫn icon",
+        "tags": "Thẻ",
         "metadata": "Metadata",
-        "note": "Ghi chú",
         "createdOnUtc": "Ngày tạo"
       },
       "placeholder": {
-        "version": "VD: 1.4.0"
+        "version": "VD: 1.4.0",
+        "tags": "Nhập thẻ rồi Enter..."
       },
       "tooltip": {
         "appCode": "Định danh duy nhất của ứng dụng trong toàn platform, viết hoa và nối bằng dấu gạch dưới. VD: FTM, HRM_EM.",
@@ -64,7 +67,6 @@
         "version": "Phiên bản",
         "status": "Trạng thái",
         "metadata": "Metadata",
-        "note": "Ghi chú",
         "createdOnUtc": "Ngày tạo"
       },
       "placeholder": {
@@ -110,26 +112,16 @@
         "domainCode": "Mã domain",
         "name": "Tên domain",
         "description": "Mô tả",
-        "status": "Trạng thái",
-        "note": "Ghi chú",
         "createdOnUtc": "Ngày tạo"
       },
       "tooltip": {
         "serviceId": "Service sở hữu domain này. Chỉ hiển thị Service đang Active để chọn.",
         "domainCode": "Định danh duy nhất của domain trong phạm vi Service đã chọn, viết hoa và nối bằng dấu gạch dưới. VD: FUEL_ENTRY, EMPLOYEE."
       },
-      "constants": {
-        "status": {
-          "active": "Đang hoạt động",
-          "inactive": "Ngừng hoạt động",
-          "deprecated": "Sắp ngừng dùng"
-        }
-      },
       "sections": {
         "basic": {
           "title": "Thông tin domain",
-          "general": "Thông tin chung",
-          "advanced": "Thông tin bổ sung"
+          "general": "Thông tin chung"
         }
       },
       "validation": {
@@ -154,26 +146,16 @@
         "resourceCode": "Mã resource",
         "name": "Tên resource",
         "description": "Mô tả",
-        "status": "Trạng thái",
-        "note": "Ghi chú",
         "createdOnUtc": "Ngày tạo"
       },
       "tooltip": {
-        "domainId": "Domain sở hữu resource này. Chỉ hiển thị Domain đang Active để chọn.",
+        "domainId": "Domain sở hữu resource này.",
         "resourceCode": "Định danh duy nhất của resource trong phạm vi Domain đã chọn, viết hoa và nối bằng dấu gạch dưới. Dùng trong chuẩn cross-service reference. VD: EMPLOYEE, VEHICLE."
-      },
-      "constants": {
-        "status": {
-          "active": "Đang hoạt động",
-          "inactive": "Ngừng hoạt động",
-          "deprecated": "Sắp ngừng dùng"
-        }
       },
       "sections": {
         "basic": {
           "title": "Thông tin resource",
-          "general": "Thông tin chung",
-          "advanced": "Thông tin bổ sung"
+          "general": "Thông tin chung"
         }
       },
       "validation": {
@@ -194,7 +176,6 @@
       "fields": {
         "appId": "Ứng dụng",
         "serviceId": "Service",
-        "note": "Ghi chú",
         "createdOnUtc": "Ngày tạo"
       },
       "assignDialog": {
@@ -204,6 +185,12 @@
         "title": "Gỡ liên kết",
         "description": "Bạn có chắc chắn muốn gỡ liên kết giữa ứng dụng và service này không?"
       }
+    },
+    "structure": {
+      "title": "Cấu trúc Service",
+      "searchPlaceholder": "Tìm service...",
+      "empty": "Chưa có mục nào",
+      "emptySelection": "Chọn một Service, Domain hoặc Resource ở bên trái để xem chi tiết, hoặc bấm \"+\" để thêm mới."
     }
   }
 }

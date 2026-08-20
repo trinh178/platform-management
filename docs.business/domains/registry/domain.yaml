@@ -34,8 +34,10 @@ entities:
       description: string?
       version: string?                     # version hiện đang triển khai, ví dụ 1.4.0
       status: enum(registry_status)
+      url: string?                         # đường dẫn truy cập ứng dụng
+      iconUrl: string?                     # đường dẫn icon hiển thị của ứng dụng
+      tags: string[]?                      # nhãn tự do phục vụ phân loại/tìm kiếm
       metadata: json?                      # thông tin mở rộng tuỳ app, không có schema cố định
-      note: string?
 
     constraints:
       - appCode unique
@@ -53,7 +55,6 @@ entities:
       version: string?
       status: enum(registry_status)
       metadata: json?
-      note: string?
 
     constraints:
       - serviceCode unique
@@ -68,7 +69,6 @@ entities:
       id: uuid
       appId: uuid
       serviceId: uuid
-      note: string?
 
       app: object(AppPreview)?             # response-only, see shared/entities.yaml
       service: object(ServicePreview)?     # response-only, see shared/entities.yaml
@@ -87,8 +87,6 @@ entities:
       domainCode: string                   # UPPER_SNAKE_CASE, duy nhất trong phạm vi serviceId, ví dụ FUEL_ENTRY
       name: string
       description: string?
-      status: enum(registry_status)
-      note: string?
 
       service: object(ServicePreview)?     # response-only, see shared/entities.yaml
 
@@ -107,8 +105,6 @@ entities:
       resourceCode: string                 # UPPER_SNAKE_CASE, duy nhất trong phạm vi domainId, ví dụ EMPLOYEE
       name: string
       description: string?
-      status: enum(registry_status)
-      note: string?
 
       domain: object(DomainPreview)?       # response-only, see shared/entities.yaml
 
@@ -131,8 +127,10 @@ flows:
       - description       # optional
       - version            # optional
       - status              # default Active nếu không truyền
+      - url                  # optional
+      - iconUrl              # optional
+      - tags                 # optional
       - metadata            # optional
-      - note                 # optional
     output:
       - app
 
@@ -211,7 +209,6 @@ flows:
       - version             # optional
       - status               # default Active nếu không truyền
       - metadata              # optional
-      - note                   # optional
     output:
       - service
 
@@ -288,7 +285,6 @@ flows:
     input:
       - appId
       - serviceId
-      - note              # optional
     output:
       - app_service_mapping
 
@@ -329,8 +325,6 @@ flows:
       - domainCode
       - name
       - description       # optional
-      - status              # default Active nếu không truyền
-      - note                 # optional
     output:
       - domain
 
@@ -371,7 +365,7 @@ flows:
       - domain
 
   - name: list_domains
-    description: Danh sách Domain, có search theo domainCode/tên và filter theo serviceId/trạng thái
+    description: Danh sách Domain, có search theo domainCode/tên và filter theo serviceId
     actor: platform_viewer
     permission: PLM.REGISTRY.DOMAIN.VIEW
     api:
@@ -383,7 +377,7 @@ flows:
       - list_response
 
   - name: list_domain_options
-    description: Danh sách Domain Active rút gọn thuộc một Service, phục vụ chọn nhanh khi tạo Resource
+    description: Danh sách Domain rút gọn thuộc một Service, phục vụ chọn nhanh khi tạo Resource
     actor: platform_viewer
     permission: PLM.REGISTRY.DOMAIN.VIEW
     api:
@@ -393,7 +387,7 @@ flows:
       - serviceId
       - keyword          # optional
     output:
-      - domain_options     # danh sách Domain rút gọn: id, domainCode, name, status
+      - domain_options     # danh sách Domain rút gọn: id, domainCode, name, serviceId
 
   # Resource
   - name: create_resource
@@ -408,8 +402,6 @@ flows:
       - resourceCode
       - name
       - description       # optional
-      - status              # default Active nếu không truyền
-      - note                 # optional
     output:
       - resource
 
@@ -449,7 +441,7 @@ flows:
       - resource
 
   - name: list_resources
-    description: Danh sách Resource, có search theo resourceCode/tên và filter theo domainId/trạng thái
+    description: Danh sách Resource, có search theo resourceCode/tên và filter theo domainId
     actor: platform_viewer
     permission: PLM.REGISTRY.RESOURCE.VIEW
     api:
@@ -477,7 +469,7 @@ flows:
       - referenceDomain      # = Domain.domainCode
       - referenceResource    # = Resource.resourceCode
     output:
-      - reference_metadata   # { service, domain, resource } - mỗi phần tử gồm code/name/status
+      - reference_metadata   # { service, domain, resource } - service gồm code/name/status; domain/resource gồm code/name (không có status)
 
 rules:
   - name: app_code_unique_and_format
@@ -534,10 +526,11 @@ rules:
 
   - name: only_active_selectable_for_new_links
     description: >
-      Khi tạo liên kết mới (AppServiceMapping, Domain, Resource), danh sách chọn (options) chỉ hiển thị
-      App/Service/Domain đang Active. Bản ghi Inactive/Deprecated vẫn xem được ở trang chi tiết
-      nhưng không dùng để tạo liên kết mới.
-    condition: list_app_options / list_service_options / list_domain_options only return status = Active
+      Khi tạo liên kết mới (AppServiceMapping, Domain), danh sách chọn (options) chỉ hiển thị
+      App/Service đang Active. Bản ghi Inactive/Deprecated vẫn xem được ở trang chi tiết
+      nhưng không dùng để tạo liên kết mới. Domain và Resource không còn field status nên
+      list_domain_options trả về toàn bộ Domain thuộc Service, không filter theo trạng thái.
+    condition: list_app_options / list_service_options only return status = Active
     on_violation: exclude non-Active record from options list
 
   - name: registry_owns_metadata_only

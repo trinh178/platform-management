@@ -3,7 +3,7 @@ import type { AppServiceMapping } from '../types/app-service-mapping';
 export default function AppServiceMappingUnassignConfirmContent({
   mapping,
 }: {
-  mapping: Pick<AppServiceMapping, 'app' | 'service' | 'note'>;
+  mapping: Pick<AppServiceMapping, 'app' | 'service'>;
 }) {
   return (
     <div className="flex items-center gap-3 rounded-md border bg-muted/30 p-3">
@@ -15,12 +15,6 @@ export default function AppServiceMappingUnassignConfirmContent({
           <span>{mapping.app?.name}</span>
           <span className="text-border">|</span>
           <span>{mapping.service?.name}</span>
-          {mapping.note && (
-            <>
-              <span className="text-border">|</span>
-              <span className="truncate">{mapping.note}</span>
-            </>
-          )}
         </div>
       </div>
     </div>

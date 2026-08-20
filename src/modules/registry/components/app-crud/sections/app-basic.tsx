@@ -3,6 +3,7 @@ import { useAppCRUDContext } from '../context';
 import { CONST_APP_STATUS } from '@/modules/registry/constants/app';
 import FieldInputConstant from '@/shared/components/form/field-input-constant';
 import FieldInputJson from '@/shared/components/form/field-input-json';
+import FieldInputMultiCombobox from '@/shared/components/form/field-input-multi-combobox';
 import FieldInputText from '@/shared/components/form/field-input-text';
 import FieldInputTextArea from '@/shared/components/form/field-input-textarea';
 import SectionPanel from '@/shared/components/layout/section-panel';
@@ -75,6 +76,30 @@ export default function AppBasic() {
               clearable
             />
 
+            <FieldInputText
+              label={t('registry.app.fields.url')}
+              placeholder={t('registry.app.fields.url')}
+              form={form}
+              name="url"
+              mode={fieldMode}
+              loading={updateLoading && editingFieldName === 'url'}
+              inlineEdit={inlineEdit}
+              onInlineSave={(name, value) => update(name, value)}
+              clearable
+            />
+
+            <FieldInputText
+              label={t('registry.app.fields.iconUrl')}
+              placeholder={t('registry.app.fields.iconUrl')}
+              form={form}
+              name="iconUrl"
+              mode={fieldMode}
+              loading={updateLoading && editingFieldName === 'iconUrl'}
+              inlineEdit={inlineEdit}
+              onInlineSave={(name, value) => update(name, value)}
+              clearable
+            />
+
             <FieldInputTextArea
               className="col-span-2 2xl:col-span-3"
               label={t('registry.app.fields.description')}
@@ -85,6 +110,21 @@ export default function AppBasic() {
               loading={updateLoading && editingFieldName === 'description'}
               inlineEdit={inlineEdit}
               onInlineSave={(name, value) => update(name, value)}
+              clearable
+            />
+
+            <FieldInputMultiCombobox
+              className="col-span-2 2xl:col-span-3"
+              label={t('registry.app.fields.tags')}
+              placeholder={t('registry.app.placeholder.tags')}
+              form={form}
+              name="tags"
+              mode={fieldMode}
+              loading={updateLoading && editingFieldName === 'tags'}
+              inlineEdit={inlineEdit}
+              onInlineSave={(name, value) => update(name, value)}
+              options={[]}
+              allowCustom
               clearable
             />
           </FieldGroup>
@@ -102,18 +142,6 @@ export default function AppBasic() {
               inlineEdit={inlineEdit}
               onInlineSave={(name, value) => update(name, value)}
               rows={6}
-              clearable
-            />
-
-            <FieldInputTextArea
-              label={t('registry.app.fields.note')}
-              placeholder={t('registry.app.fields.note')}
-              form={form}
-              name="note"
-              mode={fieldMode}
-              loading={updateLoading && editingFieldName === 'note'}
-              inlineEdit={inlineEdit}
-              onInlineSave={(name, value) => update(name, value)}
               clearable
             />
           </FieldGroup>

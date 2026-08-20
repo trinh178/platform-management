@@ -2,13 +2,11 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { useResourceCRUDContext } from '../context';
 import queryClient from '@/core/query/query-client';
-import { CONST_RESOURCE_STATUS } from '@/modules/registry/constants/resource';
 import {
   useDomainDetails,
   useDomainOptions,
 } from '@/modules/registry/services/domain.queries';
 import FieldInputAsyncSelect from '@/shared/components/form/field-input-async-select';
-import FieldInputConstant from '@/shared/components/form/field-input-constant';
 import FieldInputText from '@/shared/components/form/field-input-text';
 import FieldInputTextArea from '@/shared/components/form/field-input-textarea';
 import SectionPanel from '@/shared/components/layout/section-panel';
@@ -83,20 +81,6 @@ export default function ResourceBasic() {
               clearable
             />
 
-            <FieldInputConstant
-              label={t('registry.resource.fields.status')}
-              placeholder={t('registry.resource.fields.status')}
-              required
-              form={form}
-              name="status"
-              mode={fieldMode}
-              loading={updateLoading && editingFieldName === 'status'}
-              inlineEdit={inlineEdit}
-              onInlineSave={(name, value) => update(name, value!)}
-              constOptions={CONST_RESOURCE_STATUS}
-              clearable
-            />
-
             <FieldInputTextArea
               className="col-span-2 2xl:col-span-3"
               label={t('registry.resource.fields.description')}
@@ -105,22 +89,6 @@ export default function ResourceBasic() {
               name="description"
               mode={fieldMode}
               loading={updateLoading && editingFieldName === 'description'}
-              inlineEdit={inlineEdit}
-              onInlineSave={(name, value) => update(name, value)}
-              clearable
-            />
-          </FieldGroup>
-        </SubSection>
-
-        <SubSection title={t('registry.resource.sections.basic.advanced')}>
-          <FieldGroup className="grid grid-cols-1">
-            <FieldInputTextArea
-              label={t('registry.resource.fields.note')}
-              placeholder={t('registry.resource.fields.note')}
-              form={form}
-              name="note"
-              mode={fieldMode}
-              loading={updateLoading && editingFieldName === 'note'}
               inlineEdit={inlineEdit}
               onInlineSave={(name, value) => update(name, value)}
               clearable

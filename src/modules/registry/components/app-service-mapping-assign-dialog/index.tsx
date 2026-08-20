@@ -19,7 +19,6 @@ import {
   useServiceOptions,
 } from '@/modules/registry/services/service.queries';
 import FieldInputAsyncSelect from '@/shared/components/form/field-input-async-select';
-import FieldInputTextArea from '@/shared/components/form/field-input-textarea';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -133,15 +132,6 @@ export default function AssignDialog(props: AssignDialogProps) {
               disabled={assign.isPending}
               loadOptions={loadServiceOptions}
               loadOption={loadServiceOption}
-              clearable
-            />
-
-            <FieldInputTextArea
-              label={t('registry.appServiceMapping.fields.note')}
-              placeholder={t('registry.appServiceMapping.fields.note')}
-              form={form}
-              name="note"
-              disabled={assign.isPending}
               clearable
             />
           </FieldGroup>

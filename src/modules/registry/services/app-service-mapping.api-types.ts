@@ -8,7 +8,7 @@ export type ListAppServiceMappingsResponse = ListResponse<AppServiceMapping>;
 // POST /registry/app-service-mappings
 export type AssignServiceToAppRequest = Pick<
   AppServiceMapping,
-  'appId' | 'serviceId' | 'note'
+  'appId' | 'serviceId'
 >;
 export type AssignServiceToAppResponse = AppServiceMapping;
 

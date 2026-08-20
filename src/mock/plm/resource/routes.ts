@@ -28,8 +28,6 @@ function searchResource(resource: ResourceMock, searchTerm: string) {
 function filterResource(resource: ResourceMock, filter: MockListFilter) {
   if (filter.field === 'resourceCode')
     return matchFilterOperator(resource.resourceCode, filter);
-  if (filter.field === 'status')
-    return matchFilterOperator(resource.status, filter);
   if (filter.field === 'domainId')
     return matchFilterOperator(resource.domainId, filter);
   return true;

@@ -7,7 +7,6 @@ export type AppServiceMapping = AuditFields & {
 
   appId: string;
   serviceId: string;
-  note?: string;
 
   // Response-only nested previews — xem shared/entities.yaml#AppPreview / #ServicePreview.
   app?: AppPreview;

@@ -15,7 +15,6 @@ const formValidateResolver =
       t('registry.resource.validation.resourceCodeFormat'),
     ),
     name: stringRequired(t),
-    status: stringRequired(t),
   }));
 
 export default formValidateResolver;

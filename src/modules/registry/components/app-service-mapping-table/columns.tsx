@@ -41,7 +41,7 @@ const columns = [
     cell: ({ row }) =>
       row.original.service ? (
         <AppLink
-          href={routePaths.servicesDetails}
+          href={routePaths.serviceStructure}
           params={{ id: row.original.serviceId }}
           className="text-foreground w-fit px-0 text-left underline-offset-4 hover:underline"
         >
@@ -50,10 +50,6 @@ const columns = [
       ) : (
         '-'
       ),
-  }),
-
-  columnHelper.accessor('note', {
-    header: 'registry.appServiceMapping.fields.note' satisfies TranslationsKey,
   }),
 
   createDateColumn<AppServiceMapping>({
