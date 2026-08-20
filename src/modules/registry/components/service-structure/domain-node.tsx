@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ChevronRight, Plus } from 'lucide-react';
+import { ChevronRight, Folder, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Domain } from '../../types/domain';
 import ResourceList from './resource-list';
@@ -54,6 +54,8 @@ export default function DomainNode({
             )}
           />
         </button>
+
+        <Folder className="size-3.5 shrink-0 text-orange-600 dark:text-orange-400" />
 
         <span className="min-w-0 flex-1 truncate">
           <span className="font-medium">{domain.domainCode}</span>{' '}

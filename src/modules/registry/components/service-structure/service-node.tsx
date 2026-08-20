@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ChevronRight, Plus } from 'lucide-react';
+import { ChevronRight, Plus, Server } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Service } from '../../types/service';
 import DomainList from './domain-list';
@@ -56,10 +56,12 @@ export default function ServiceNode({
           />
         </button>
 
+        <Server className="size-4 shrink-0 text-blue-600 dark:text-blue-400" />
+
         <StatusDot status={service.status} />
 
         <span className="min-w-0 flex-1 truncate">
-          <span className="font-medium">{service.serviceCode}</span>{' '}
+          <span className="font-semibold">{service.serviceCode}</span>{' '}
           <span className="text-muted-foreground">{service.name}</span>
         </span>
 
