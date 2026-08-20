@@ -9,7 +9,6 @@ import {
 import FieldInputAsyncSelect from '@/shared/components/form/field-input-async-select';
 import FieldInputText from '@/shared/components/form/field-input-text';
 import FieldInputTextArea from '@/shared/components/form/field-input-textarea';
-import SectionPanel from '@/shared/components/layout/section-panel';
 import SubSection from '@/shared/components/layout/sub-section';
 import { FieldGroup } from '@/shared/components/ui/field';
 
@@ -33,69 +32,67 @@ export default function ResourceBasic() {
   }, []);
 
   return (
-    <SectionPanel title={t('registry.resource.sections.basic.title')}>
-      <div className="space-y-4">
-        <SubSection title={t('registry.resource.sections.basic.general')}>
-          <FieldGroup className="grid grid-cols-2 2xl:grid-cols-3">
-            <FieldInputAsyncSelect
-              label={t('registry.resource.fields.domainId')}
-              placeholder={t('registry.resource.fields.domainId')}
-              searchPlaceholder={t('common.control.search')}
-              tooltip={t('registry.resource.tooltip.domainId')}
-              required
-              form={form}
-              name="domainId"
-              mode={fieldMode}
-              loading={updateLoading && editingFieldName === 'domainId'}
-              inlineEdit={inlineEdit}
-              onInlineSave={(name, value) => update(name, value!)}
-              loadOptions={loadDomainOptions}
-              loadOption={loadDomainOption}
-              clearable
-            />
+    <div className="space-y-4">
+      <SubSection title={t('registry.resource.sections.basic.general')}>
+        <FieldGroup className="grid grid-cols-2 2xl:grid-cols-3">
+          <FieldInputAsyncSelect
+            label={t('registry.resource.fields.domainId')}
+            placeholder={t('registry.resource.fields.domainId')}
+            searchPlaceholder={t('common.control.search')}
+            tooltip={t('registry.resource.tooltip.domainId')}
+            required
+            form={form}
+            name="domainId"
+            mode={fieldMode}
+            loading={updateLoading && editingFieldName === 'domainId'}
+            inlineEdit={inlineEdit}
+            onInlineSave={(name, value) => update(name, value!)}
+            loadOptions={loadDomainOptions}
+            loadOption={loadDomainOption}
+            clearable
+          />
 
-            <FieldInputText
-              label={t('registry.resource.fields.resourceCode')}
-              placeholder={t('registry.resource.fields.resourceCode')}
-              tooltip={t('registry.resource.tooltip.resourceCode')}
-              required
-              form={form}
-              name="resourceCode"
-              mode={fieldMode}
-              loading={updateLoading && editingFieldName === 'resourceCode'}
-              inlineEdit={inlineEdit}
-              onInlineSave={(name, value) => update(name, value!)}
-              clearable
-            />
+          <FieldInputText
+            label={t('registry.resource.fields.resourceCode')}
+            placeholder={t('registry.resource.fields.resourceCode')}
+            tooltip={t('registry.resource.tooltip.resourceCode')}
+            required
+            form={form}
+            name="resourceCode"
+            mode={fieldMode}
+            loading={updateLoading && editingFieldName === 'resourceCode'}
+            inlineEdit={inlineEdit}
+            onInlineSave={(name, value) => update(name, value!)}
+            clearable
+          />
 
-            <FieldInputText
-              label={t('registry.resource.fields.name')}
-              placeholder={t('registry.resource.fields.name')}
-              required
-              form={form}
-              name="name"
-              mode={fieldMode}
-              loading={updateLoading && editingFieldName === 'name'}
-              inlineEdit={inlineEdit}
-              onInlineSave={(name, value) => update(name, value!)}
-              clearable
-            />
+          <FieldInputText
+            label={t('registry.resource.fields.name')}
+            placeholder={t('registry.resource.fields.name')}
+            required
+            form={form}
+            name="name"
+            mode={fieldMode}
+            loading={updateLoading && editingFieldName === 'name'}
+            inlineEdit={inlineEdit}
+            onInlineSave={(name, value) => update(name, value!)}
+            clearable
+          />
 
-            <FieldInputTextArea
-              className="col-span-2 2xl:col-span-3"
-              label={t('registry.resource.fields.description')}
-              placeholder={t('registry.resource.fields.description')}
-              form={form}
-              name="description"
-              mode={fieldMode}
-              loading={updateLoading && editingFieldName === 'description'}
-              inlineEdit={inlineEdit}
-              onInlineSave={(name, value) => update(name, value)}
-              clearable
-            />
-          </FieldGroup>
-        </SubSection>
-      </div>
-    </SectionPanel>
+          <FieldInputTextArea
+            className="col-span-2 2xl:col-span-3"
+            label={t('registry.resource.fields.description')}
+            placeholder={t('registry.resource.fields.description')}
+            form={form}
+            name="description"
+            mode={fieldMode}
+            loading={updateLoading && editingFieldName === 'description'}
+            inlineEdit={inlineEdit}
+            onInlineSave={(name, value) => update(name, value)}
+            clearable
+          />
+        </FieldGroup>
+      </SubSection>
+    </div>
   );
 }

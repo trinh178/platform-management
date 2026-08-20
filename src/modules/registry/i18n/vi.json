@@ -53,6 +53,7 @@
     },
     "service": {
       "title": "Service",
+      "badge": "Service",
       "page": {
         "create": "Đăng ký service",
         "details": "Chi tiết service"
@@ -100,6 +101,7 @@
     },
     "domain": {
       "title": "Domain",
+      "badge": "Domain",
       "page": {
         "create": "Đăng ký domain",
         "details": "Chi tiết domain"
@@ -134,6 +136,7 @@
     },
     "resource": {
       "title": "Resource",
+      "badge": "Resource",
       "page": {
         "create": "Đăng ký resource",
         "details": "Chi tiết resource"
@@ -184,6 +187,14 @@
       "unassignConfirm": {
         "title": "Gỡ liên kết",
         "description": "Bạn có chắc chắn muốn gỡ liên kết giữa ứng dụng và service này không?"
+      },
+      "linkedServices": {
+        "title": "Service liên kết",
+        "empty": "Chưa liên kết Service nào"
+      },
+      "linkedApps": {
+        "title": "Ứng dụng liên kết",
+        "empty": "Chưa có ứng dụng nào liên kết"
       }
     },
     "structure": {

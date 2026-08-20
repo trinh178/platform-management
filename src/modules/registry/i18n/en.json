@@ -53,6 +53,7 @@
     },
     "service": {
       "title": "Services",
+      "badge": "Service",
       "page": {
         "create": "Register service",
         "details": "Service details"
@@ -100,6 +101,7 @@
     },
     "domain": {
       "title": "Domains",
+      "badge": "Domain",
       "page": {
         "create": "Register domain",
         "details": "Domain details"
@@ -134,6 +136,7 @@
     },
     "resource": {
       "title": "Resources",
+      "badge": "Resource",
       "page": {
         "create": "Register resource",
         "details": "Resource details"
@@ -184,6 +187,14 @@
       "unassignConfirm": {
         "title": "Unassign",
         "description": "Are you sure you want to remove this app-service link?"
+      },
+      "linkedServices": {
+        "title": "Linked Services",
+        "empty": "No linked services yet"
+      },
+      "linkedApps": {
+        "title": "Linked Apps",
+        "empty": "No linked apps yet"
       }
     },
     "structure": {

@@ -29,6 +29,7 @@ import {
 } from '@/modules/registry/services/resource.mutation';
 import { useResourceDetails } from '@/modules/registry/services/resource.queries';
 import { Resource } from '@/modules/registry/types/resource';
+import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 
 interface ResourcePanelProps {
@@ -157,17 +158,25 @@ export default function ResourcePanel({
         className="flex h-full flex-col"
       >
         <div className="flex items-center justify-between gap-2 border-b bg-muted/20 px-4 py-3">
-          <div className="min-w-0 truncate font-semibold">
-            {mode === 'CREATE' ? (
-              t('registry.resource.page.create')
-            ) : (
-              <>
-                <span>{read.data?.name}</span>{' '}
-                <span className="font-normal text-muted-foreground">
-                  {read.data?.resourceCode}
-                </span>
-              </>
-            )}
+          <div className="flex min-w-0 items-center gap-2">
+            <Badge
+              variant="outline"
+              className="shrink-0 border-violet-500/20 bg-violet-500/10 text-violet-700 dark:text-violet-400"
+            >
+              {t('registry.resource.badge')}
+            </Badge>
+            <div className="min-w-0 truncate font-semibold">
+              {mode === 'CREATE' ? (
+                t('registry.resource.page.create')
+              ) : (
+                <>
+                  <span>{read.data?.name}</span>{' '}
+                  <span className="font-normal text-muted-foreground">
+                    {read.data?.resourceCode}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <div className="flex shrink-0 gap-2">
             {mode === 'CREATE' && (

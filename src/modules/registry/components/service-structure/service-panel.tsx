@@ -18,6 +18,7 @@ import formValidateResolver from '../service-crud/form-validate-resolver';
 import ServiceBasic from '../service-crud/sections/service-basic';
 import transformCreateData from '../service-crud/transform-create-data';
 import ServiceDeleteConfirmContent from '../service-delete-confirm-content';
+import ServiceLinkedApps from './service-linked-apps';
 import { useHasPermissions } from '@/core/auth/useHasPermissions';
 import { useConfirm } from '@/core/confirmation/confirm-provider';
 import { useFormValidateResolver } from '@/core/form';
@@ -29,6 +30,7 @@ import {
 } from '@/modules/registry/services/service.mutation';
 import { useServiceDetails } from '@/modules/registry/services/service.queries';
 import { Service } from '@/modules/registry/types/service';
+import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 
 interface ServicePanelProps {
@@ -155,17 +157,25 @@ export default function ServicePanel({
         className="flex h-full flex-col"
       >
         <div className="flex items-center justify-between gap-2 border-b bg-muted/20 px-4 py-3">
-          <div className="min-w-0 truncate font-semibold">
-            {mode === 'CREATE' ? (
-              t('registry.service.page.create')
-            ) : (
-              <>
-                <span>{read.data?.name}</span>{' '}
-                <span className="font-normal text-muted-foreground">
-                  {read.data?.serviceCode}
-                </span>
-              </>
-            )}
+          <div className="flex min-w-0 items-center gap-2">
+            <Badge
+              variant="outline"
+              className="shrink-0 border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-400"
+            >
+              {t('registry.service.badge')}
+            </Badge>
+            <div className="min-w-0 truncate font-semibold">
+              {mode === 'CREATE' ? (
+                t('registry.service.page.create')
+              ) : (
+                <>
+                  <span>{read.data?.name}</span>{' '}
+                  <span className="font-normal text-muted-foreground">
+                    {read.data?.serviceCode}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <div className="flex shrink-0 gap-2">
             {mode === 'CREATE' && (
@@ -194,8 +204,11 @@ export default function ServicePanel({
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
           <ServiceBasic />
+          {mode !== 'CREATE' && read.data?.id && (
+            <ServiceLinkedApps serviceId={read.data.id} />
+          )}
         </div>
       </form>
     </ServiceCRUDContext.Provider>

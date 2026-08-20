@@ -29,6 +29,7 @@ import {
 } from '@/modules/registry/services/domain.mutation';
 import { useDomainDetails } from '@/modules/registry/services/domain.queries';
 import { Domain } from '@/modules/registry/types/domain';
+import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 
 interface DomainPanelProps {
@@ -157,17 +158,25 @@ export default function DomainPanel({
         className="flex h-full flex-col"
       >
         <div className="flex items-center justify-between gap-2 border-b bg-muted/20 px-4 py-3">
-          <div className="min-w-0 truncate font-semibold">
-            {mode === 'CREATE' ? (
-              t('registry.domain.page.create')
-            ) : (
-              <>
-                <span>{read.data?.name}</span>{' '}
-                <span className="font-normal text-muted-foreground">
-                  {read.data?.domainCode}
-                </span>
-              </>
-            )}
+          <div className="flex min-w-0 items-center gap-2">
+            <Badge
+              variant="outline"
+              className="shrink-0 border-orange-500/20 bg-orange-500/10 text-orange-700 dark:text-orange-400"
+            >
+              {t('registry.domain.badge')}
+            </Badge>
+            <div className="min-w-0 truncate font-semibold">
+              {mode === 'CREATE' ? (
+                t('registry.domain.page.create')
+              ) : (
+                <>
+                  <span>{read.data?.name}</span>{' '}
+                  <span className="font-normal text-muted-foreground">
+                    {read.data?.domainCode}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <div className="flex shrink-0 gap-2">
             {mode === 'CREATE' && (

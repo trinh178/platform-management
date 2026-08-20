@@ -29,9 +29,16 @@ import {
 } from '@/shared/components/ui/dialog';
 import { FieldGroup } from '@/shared/components/ui/field';
 
-type AssignDialogProps = React.ComponentProps<typeof Dialog>;
+type AssignDialogProps = React.ComponentProps<typeof Dialog> & {
+  defaultAppId?: string;
+  defaultServiceId?: string;
+};
 
-export default function AssignDialog(props: AssignDialogProps) {
+export default function AssignDialog({
+  defaultAppId,
+  defaultServiceId,
+  ...props
+}: AssignDialogProps) {
   const t = useTranslations();
 
   /* Form */
@@ -59,10 +66,11 @@ export default function AssignDialog(props: AssignDialogProps) {
     [],
   );
 
-  /* Form reset khi mở dialog */
+  /* Form reset khi mở dialog — giữ sẵn phía cố định (App hoặc Service) nếu có */
   React.useEffect(() => {
-    if (props.open) form.reset({});
-  }, [props.open, form]);
+    if (props.open)
+      form.reset({ appId: defaultAppId, serviceId: defaultServiceId });
+  }, [props.open, defaultAppId, defaultServiceId, form]);
 
   const loadAppOptions = React.useCallback(async (keyword: string) => {
     const items = await useAppOptions.query(queryClient, keyword);
@@ -116,7 +124,7 @@ export default function AssignDialog(props: AssignDialogProps) {
               required
               form={form}
               name="appId"
-              disabled={assign.isPending}
+              disabled={assign.isPending || !!defaultAppId}
               loadOptions={loadAppOptions}
               loadOption={loadAppOption}
               clearable
@@ -129,7 +137,7 @@ export default function AssignDialog(props: AssignDialogProps) {
               required
               form={form}
               name="serviceId"
-              disabled={assign.isPending}
+              disabled={assign.isPending || !!defaultServiceId}
               loadOptions={loadServiceOptions}
               loadOption={loadServiceOption}
               clearable
