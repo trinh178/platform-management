@@ -8,6 +8,7 @@ import identityModule from './foundation/identity';
 import sharedComponentsModule from './foundation/shared-components';
 import validationModule from './foundation/validation';
 import registryModule from './registry';
+import settingsModule from './settings';
 import { AppModuleProps } from '@/types/core.types';
 
 const modules: AppModuleProps[] = [
@@ -19,6 +20,7 @@ const modules: AppModuleProps[] = [
   validationModule,
   employeeModule,
   registryModule,
+  settingsModule,
   ...(process.env.NODE_ENV === 'development'
     ? [formGuideModule, datatableGuideModule]
     : []),

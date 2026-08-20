@@ -136,15 +136,17 @@ flows:
 
   - name: upload_app_icon
     description: >
-      Upload file icon cho App. Frontend gọi endpoint này của PLM backend (không gọi trực tiếp
-      Asset Service) — PLM forward file lên Asset Service (AppCode AST, xem
-      docs.business/external-services.yaml), nhận về Asset object rồi trả url cho frontend để
-      lưu vào App.iconUrl qua flow update_app.
+      Upload file icon cho App. Frontend gọi endpoint upload dùng chung của PLM backend
+      (POST /assets/upload — không gọi trực tiếp Asset Service, không thuộc riêng REGISTRY,
+      Settings cũng dùng chung endpoint này cho logo/favicon, xem
+      docs.business/domains/settings/domain.yaml). PLM forward file lên Asset Service
+      (AppCode AST, xem docs.business/external-services.yaml), nhận về Asset object rồi trả
+      url cho frontend để lưu vào App.iconUrl qua flow update_app.
     actor: platform_admin
     permission: PLM.REGISTRY.APP.UPDATE
     api:
       method: POST
-      path: /registry/assets/upload
+      path: /assets/upload
     input:
       - file                # binary, multipart/form-data
       - category             # optional, cố định "APP_ICON" cho use-case này

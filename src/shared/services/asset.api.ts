@@ -17,7 +17,7 @@ function upload({ file, category }: UploadAssetRequest) {
 
   return plmHttpRequest.request<UploadAssetResponse>({
     method: 'POST',
-    url: '/registry/assets/upload',
+    url: '/assets/upload',
     data: formData,
   });
 }

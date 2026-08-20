@@ -4,6 +4,7 @@ import formGuide from './form-guide/route-paths';
 import appShell from './foundation/app-shell/route-paths';
 import identity from './foundation/identity/route-paths';
 import registry from './registry/route-paths';
+import settings from './settings/route-paths';
 
 const routePaths = {
   ...identity,
@@ -12,6 +13,7 @@ const routePaths = {
   ...datatableGuide,
   ...employee,
   ...registry,
+  ...settings,
 };
 
 export default routePaths;

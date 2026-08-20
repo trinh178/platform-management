@@ -1,0 +1,111 @@
+{
+  "settings": {
+    "title": "Cấu hình",
+    "common": {
+      "controls": {
+        "uploadAsset": "Tải file lên"
+      },
+      "validation": {
+        "assetTooLarge": "Kích thước file tối đa 2MB"
+      }
+    },
+    "organization": {
+      "title": "Thông tin tổ chức",
+      "fields": {
+        "name": "Tên tổ chức",
+        "legalName": "Tên pháp lý",
+        "logo": "Logo",
+        "website": "Website",
+        "contactEmail": "Email liên hệ",
+        "contactPhone": "Số điện thoại liên hệ",
+        "address": "Địa chỉ",
+        "note": "Ghi chú"
+      },
+      "sections": {
+        "basic": {
+          "title": "Thông tin tổ chức",
+          "general": "Thông tin chung",
+          "contact": "Liên hệ",
+          "advanced": "Thông tin bổ sung"
+        }
+      }
+    },
+    "general": {
+      "title": "Giá trị mặc định hệ thống",
+      "fields": {
+        "defaultTimezone": "Múi giờ mặc định",
+        "defaultCurrency": "Đơn vị tiền tệ mặc định",
+        "note": "Ghi chú"
+      },
+      "placeholder": {
+        "defaultTimezone": "VD: Asia/Ho_Chi_Minh",
+        "defaultCurrency": "VD: VND"
+      },
+      "tooltip": {
+        "defaultTimezone": "Tên timezone theo chuẩn IANA, ví dụ Asia/Ho_Chi_Minh.",
+        "defaultCurrency": "Mã tiền tệ theo chuẩn ISO 4217, ví dụ VND."
+      },
+      "sections": {
+        "basic": {
+          "title": "Giá trị mặc định hệ thống",
+          "general": "Cấu hình",
+          "advanced": "Thông tin bổ sung"
+        }
+      }
+    },
+    "localization": {
+      "title": "Ngôn ngữ và định dạng hiển thị",
+      "fields": {
+        "supportedLanguages": "Ngôn ngữ hỗ trợ",
+        "defaultLanguage": "Ngôn ngữ mặc định",
+        "dateFormat": "Định dạng ngày",
+        "timeFormat": "Định dạng giờ",
+        "numberFormat": "Định dạng số",
+        "currencyFormat": "Định dạng tiền tệ",
+        "note": "Ghi chú"
+      },
+      "placeholder": {
+        "supportedLanguages": "Nhập mã ngôn ngữ rồi Enter...",
+        "dateFormat": "VD: DD/MM/YYYY",
+        "timeFormat": "VD: HH:mm",
+        "numberFormat": "VD: #,##0.##",
+        "currencyFormat": "VD: #,##0 ₫"
+      },
+      "tooltip": {
+        "defaultLanguage": "Phải nằm trong danh sách Ngôn ngữ hỗ trợ."
+      },
+      "sections": {
+        "basic": {
+          "title": "Ngôn ngữ và định dạng hiển thị",
+          "language": "Ngôn ngữ",
+          "format": "Định dạng hiển thị",
+          "advanced": "Thông tin bổ sung"
+        }
+      },
+      "validation": {
+        "defaultLanguageNotSupported": "Ngôn ngữ mặc định phải nằm trong danh sách Ngôn ngữ hỗ trợ"
+      }
+    },
+    "branding": {
+      "title": "Thương hiệu",
+      "fields": {
+        "platformName": "Tên hiển thị platform",
+        "logo": "Logo",
+        "favicon": "Favicon",
+        "brandConfig": "Cấu hình mở rộng",
+        "note": "Ghi chú"
+      },
+      "tooltip": {
+        "logo": "Nếu để trống, giao diện dùng logo của Thông tin tổ chức.",
+        "brandConfig": "Cấu hình mở rộng dạng JSON như bảng màu/theme, không có schema cố định."
+      },
+      "sections": {
+        "basic": {
+          "title": "Thương hiệu",
+          "identity": "Nhận diện",
+          "advanced": "Thông tin bổ sung"
+        }
+      }
+    }
+  }
+}

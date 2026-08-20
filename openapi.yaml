@@ -8,14 +8,16 @@ info:
     registered in src/core/network/service-registry.ts).
 
     Generated directly from the frontend's own contract files —
-    `src/modules/registry/services/{app,service,domain,resource,app-service-mapping,asset}.api.ts`
-    and their `*.api-types.ts` — so it reflects the real request/response shapes the
-    frontend already sends and expects, not an independently authored business spec.
+    `src/modules/registry/services/{app,service,domain,resource,app-service-mapping}.api.ts`,
+    `src/modules/settings/services/{organization,general,localization,branding}.api.ts`,
+    `src/shared/services/asset.api.ts`, and their `*.api-types.ts` — so it reflects the
+    real request/response shapes the frontend already sends and expects, not an
+    independently authored business spec.
 
     Business rules (uniqueness, cascading-delete guards, Active-only options
-    filtering, ...) are cross-referenced against
-    `docs.business/domains/registry/domain.yaml` and `docs.business/external-services.yaml`
-    where relevant.
+    filtering, singleton Settings semantics, ...) are cross-referenced against
+    `docs.business/domains/registry/domain.yaml`, `docs.business/domains/settings/domain.yaml`,
+    and `docs.business/external-services.yaml` where relevant.
 
 servers:
   - url: "https://apigateway.hvanexus.trinhpb.site/{plmPrefix}"
@@ -45,7 +47,23 @@ tags:
     description: >
       File upload, forwarded by PLM backend to the external Asset Service
       (AppCode AST) — see docs.business/external-services.yaml. Frontend never
-      calls Asset Service directly.
+      calls Asset Service directly. Shared across Registry and Settings.
+  - name: OrganizationSetting
+    description: >
+      Settings — organization info. Singleton, seeded at first deploy — view
+      and update only, no create/delete.
+  - name: GeneralSetting
+    description: >
+      Settings — platform-level defaults (timezone, currency). Singleton,
+      seeded at first deploy — view and update only, no create/delete.
+  - name: LocalizationSetting
+    description: >
+      Settings — supported languages and display formats. Singleton, seeded
+      at first deploy — view and update only, no create/delete.
+  - name: BrandingSetting
+    description: >
+      Settings — platform branding (logo, favicon, brand config). Singleton,
+      seeded at first deploy — view and update only, no create/delete.
 
 paths:
   # ─── App ──────────────────────────────────────────────────────────────────
@@ -536,18 +554,20 @@ paths:
           $ref: "#/components/responses/NotFound"
 
   # ─── Asset ────────────────────────────────────────────────────────────────
-  /registry/assets/upload:
+  # Shared endpoint — used by both Registry (App icon) and Settings (Organization
+  # logo, Branding logo/favicon). Not scoped under /registry or /settings.
+  /assets/upload:
     post:
       tags: [Asset]
       operationId: uploadAsset
-      summary: Upload a file (e.g. App icon), forwarded to the Asset Service
+      summary: Upload a file (App icon, Organization/Branding logo, favicon, ...), forwarded to the Asset Service
       description: >
         PLM backend receives the file and forwards it to the external Asset
         Service (AppCode AST) — see docs.business/external-services.yaml.
-        The frontend never calls Asset Service directly. The returned `url`
+        The frontend never calls Asset Service directly. The returned `id`/`url`
         is stored by the caller into the owning entity's own field (e.g.
-        App.iconUrl) via a separate update call — this endpoint does not
-        associate the asset with any entity itself.
+        App.iconUrl, OrganizationSetting.logoAssetId) via a separate update
+        call — this endpoint does not associate the asset with any entity itself.
       requestBody:
         required: true
         content:
@@ -575,6 +595,134 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
+
+  # ─── OrganizationSetting ────────────────────────────────────────────────────
+  /settings/organization:
+    get:
+      tags: [OrganizationSetting]
+      operationId: getOrganizationSetting
+      summary: Get the organization info (singleton)
+      responses:
+        "200":
+          description: Organization setting.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OrganizationSetting" }
+    put:
+      tags: [OrganizationSetting]
+      operationId: updateOrganizationSetting
+      summary: Update the organization info (singleton — partial merge)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/UpdateOrganizationSettingRequest" }
+      responses:
+        "200":
+          description: Updated organization setting.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OrganizationSetting" }
+
+  # ─── GeneralSetting ─────────────────────────────────────────────────────────
+  /settings/general:
+    get:
+      tags: [GeneralSetting]
+      operationId: getGeneralSetting
+      summary: Get platform-level default values (singleton)
+      responses:
+        "200":
+          description: General setting.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GeneralSetting" }
+    put:
+      tags: [GeneralSetting]
+      operationId: updateGeneralSetting
+      summary: Update platform-level default values (singleton — partial merge)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/UpdateGeneralSettingRequest" }
+      responses:
+        "200":
+          description: Updated general setting.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GeneralSetting" }
+
+  # ─── LocalizationSetting ────────────────────────────────────────────────────
+  /settings/localization:
+    get:
+      tags: [LocalizationSetting]
+      operationId: getLocalizationSetting
+      summary: Get language and display format configuration (singleton)
+      responses:
+        "200":
+          description: Localization setting.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LocalizationSetting" }
+    put:
+      tags: [LocalizationSetting]
+      operationId: updateLocalizationSetting
+      summary: Update language and display format configuration (singleton — partial merge)
+      description: >
+        `defaultLanguage` must be one of `supportedLanguages` in the resulting
+        merged state — see docs.business/domains/settings/domain.yaml#default_language_must_be_supported.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              {
+                $ref: "#/components/schemas/UpdateLocalizationSettingRequest",
+              }
+      responses:
+        "200":
+          description: Updated localization setting.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LocalizationSetting" }
+        "400":
+          description: >
+            defaultLanguage not in supportedLanguages (code
+            `DEFAULT_LANGUAGE_NOT_SUPPORTED`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  # ─── BrandingSetting ────────────────────────────────────────────────────────
+  /settings/branding:
+    get:
+      tags: [BrandingSetting]
+      operationId: getBrandingSetting
+      summary: Get branding configuration (singleton)
+      responses:
+        "200":
+          description: Branding setting.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BrandingSetting" }
+    put:
+      tags: [BrandingSetting]
+      operationId: updateBrandingSetting
+      summary: Update branding configuration (singleton — partial merge)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/UpdateBrandingSettingRequest" }
+      responses:
+        "200":
+          description: Updated branding setting.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BrandingSetting" }
 
 components:
   securitySchemes:
@@ -757,8 +905,8 @@ components:
               type: string
               nullable: true
               description: >
-                URL of the uploaded icon — populated via POST
-                /registry/assets/upload, not typed directly by the client.
+                URL of the uploaded icon — populated via POST /assets/upload,
+                not typed directly by the client.
             tags:
               type: array
               items: { type: string }
@@ -1028,3 +1176,177 @@ components:
           type: string
           description: Public URL to display the uploaded file.
         status: { type: string }
+
+    AssetRef:
+      description: >
+        Metadata of an already-uploaded file — nested response-only preview
+        alongside a `*AssetId` field. See docs.business/shared/entities.yaml#AssetRef.
+      type: object
+      required: [assetId, fileName]
+      properties:
+        assetId: { type: string, format: uuid }
+        fileName: { type: string }
+        mimeType: { type: string, nullable: true }
+        url: { type: string, nullable: true }
+
+    # ─── OrganizationSetting ────────────────────────────────────────────────
+    OrganizationSetting:
+      description: Singleton — seeded at first deploy, no create/delete.
+      allOf:
+        - $ref: "#/components/schemas/AuditFields"
+        - type: object
+          required: [id, name]
+          properties:
+            id: { type: string, format: uuid }
+            name: { type: string }
+            legalName:
+              type: string
+              nullable: true
+              description: Full legal name, used for documents/contracts.
+            logoAssetId: { type: string, format: uuid, nullable: true }
+            website: { type: string, nullable: true }
+            contactEmail: { type: string, nullable: true }
+            contactPhone: { type: string, nullable: true }
+            address: { type: string, nullable: true }
+            note: { type: string, nullable: true }
+            logo:
+              allOf: [{ $ref: "#/components/schemas/AssetRef" }]
+              nullable: true
+              description: Response-only nested preview of logoAssetId.
+
+    UpdateOrganizationSettingRequest:
+      description: Partial update — only fields present are changed. No id (singleton).
+      type: object
+      properties:
+        name: { type: string }
+        legalName: { type: string }
+        logoAssetId:
+          type: string
+          format: uuid
+          description: >
+            Must be an assetId returned by POST /assets/upload — see
+            docs.business/domains/settings/domain.yaml#logo_upload_via_asset_service.
+        website: { type: string }
+        contactEmail: { type: string }
+        contactPhone: { type: string }
+        address: { type: string }
+        note: { type: string }
+
+    # ─── GeneralSetting ─────────────────────────────────────────────────────
+    GeneralSetting:
+      description: >
+        Singleton — seeded at first deploy, no create/delete. Deliberately
+        excludes defaultLanguage/dateFormat — see LocalizationSetting (single
+        source of truth for those).
+      allOf:
+        - $ref: "#/components/schemas/AuditFields"
+        - type: object
+          required: [id, defaultTimezone, defaultCurrency]
+          properties:
+            id: { type: string, format: uuid }
+            defaultTimezone:
+              type: string
+              description: IANA timezone name, e.g. Asia/Ho_Chi_Minh.
+            defaultCurrency:
+              type: string
+              description: ISO 4217 currency code, e.g. VND.
+            note: { type: string, nullable: true }
+
+    UpdateGeneralSettingRequest:
+      description: Partial update — only fields present are changed. No id (singleton).
+      type: object
+      properties:
+        defaultTimezone: { type: string }
+        defaultCurrency: { type: string }
+        note: { type: string }
+
+    # ─── LocalizationSetting ────────────────────────────────────────────────
+    LocalizationSetting:
+      description: Singleton — seeded at first deploy, no create/delete.
+      allOf:
+        - $ref: "#/components/schemas/AuditFields"
+        - type: object
+          required:
+            [
+              id,
+              supportedLanguages,
+              defaultLanguage,
+              dateFormat,
+              timeFormat,
+              numberFormat,
+              currencyFormat,
+            ]
+          properties:
+            id: { type: string, format: uuid }
+            supportedLanguages:
+              type: array
+              items: { type: string }
+              description: BCP-47/ISO 639-1 codes, e.g. [vi, en].
+            defaultLanguage:
+              type: string
+              description: Must be one of supportedLanguages.
+            dateFormat: { type: string, description: "e.g. DD/MM/YYYY" }
+            timeFormat: { type: string, description: "e.g. HH:mm" }
+            numberFormat: { type: string, description: "e.g. #,##0.##" }
+            currencyFormat: { type: string, description: "e.g. #,##0 ₫" }
+            note: { type: string, nullable: true }
+
+    UpdateLocalizationSettingRequest:
+      description: >
+        Partial update — only fields present are changed. No id (singleton).
+        If both supportedLanguages and defaultLanguage are omitted from a
+        request, the existing stored values are still cross-checked for the
+        default_language_must_be_supported rule.
+      type: object
+      properties:
+        supportedLanguages: { type: array, items: { type: string } }
+        defaultLanguage: { type: string }
+        dateFormat: { type: string }
+        timeFormat: { type: string }
+        numberFormat: { type: string }
+        currencyFormat: { type: string }
+        note: { type: string }
+
+    # ─── BrandingSetting ────────────────────────────────────────────────────
+    BrandingSetting:
+      description: Singleton — seeded at first deploy, no create/delete.
+      allOf:
+        - $ref: "#/components/schemas/AuditFields"
+        - type: object
+          required: [id, platformName]
+          properties:
+            id: { type: string, format: uuid }
+            platformName:
+              type: string
+              description: Display name of the platform on the UI, e.g. "HVA Nexus".
+            logoAssetId:
+              type: string
+              format: uuid
+              nullable: true
+              description: >
+                If empty, the UI falls back to OrganizationSetting.logoAssetId
+                — see docs.business/domains/settings/domain.yaml#branding_logo_fallback_to_organization.
+            faviconAssetId: { type: string, format: uuid, nullable: true }
+            brandConfig:
+              type: string
+              nullable: true
+              description: >
+                Free-form JSON (color palette/theme, ...), stored as a string
+                with no fixed schema.
+            note: { type: string, nullable: true }
+            logo:
+              allOf: [{ $ref: "#/components/schemas/AssetRef" }]
+              nullable: true
+            favicon:
+              allOf: [{ $ref: "#/components/schemas/AssetRef" }]
+              nullable: true
+
+    UpdateBrandingSettingRequest:
+      description: Partial update — only fields present are changed. No id (singleton).
+      type: object
+      properties:
+        platformName: { type: string }
+        logoAssetId: { type: string, format: uuid }
+        faviconAssetId: { type: string, format: uuid }
+        brandConfig: { type: string }
+        note: { type: string }

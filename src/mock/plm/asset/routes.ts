@@ -4,13 +4,14 @@ import { appfetch } from '@/core/network/appfetch';
 import { toUrl } from '@/core/network/mock-utils';
 import plmHttpRequest from '@/core/network/plm-http-request';
 
-// ─── POST /registry/assets/upload ──────────────────────────────────────────
+// ─── POST /assets/upload ────────────────────────────────────────────────────
 // PLM backend nhận file, forward lên Asset Service rồi trả về Asset object
 // (xem docs.business/external-services.yaml) — frontend không gọi Asset Service
-// trực tiếp. Mock dựng lại Request từ (input, init) để dùng `.formData()` có sẵn
-// (Content-Type/boundary do proxy route forward nguyên vẹn).
+// trực tiếp. Dùng chung cho mọi module cần upload (Registry App icon, Settings
+// logo/favicon, ...). Mock dựng lại Request từ (input, init) để dùng `.formData()`
+// có sẵn (Content-Type/boundary do proxy route forward nguyên vẹn).
 plmHttpRequest.addMockRoute({
-  url: /\/registry\/assets\/upload$/,
+  url: /\/assets\/upload$/,
   method: 'POST',
   handler: async (input, init) => {
     const request = new Request(toUrl(input), init);

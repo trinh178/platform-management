@@ -1,0 +1,111 @@
+{
+  "settings": {
+    "title": "Settings",
+    "common": {
+      "controls": {
+        "uploadAsset": "Upload file"
+      },
+      "validation": {
+        "assetTooLarge": "File must be at most 2MB"
+      }
+    },
+    "organization": {
+      "title": "Organization",
+      "fields": {
+        "name": "Organization name",
+        "legalName": "Legal name",
+        "logo": "Logo",
+        "website": "Website",
+        "contactEmail": "Contact email",
+        "contactPhone": "Contact phone",
+        "address": "Address",
+        "note": "Note"
+      },
+      "sections": {
+        "basic": {
+          "title": "Organization information",
+          "general": "General",
+          "contact": "Contact",
+          "advanced": "Additional information"
+        }
+      }
+    },
+    "general": {
+      "title": "General",
+      "fields": {
+        "defaultTimezone": "Default timezone",
+        "defaultCurrency": "Default currency",
+        "note": "Note"
+      },
+      "placeholder": {
+        "defaultTimezone": "e.g. Asia/Ho_Chi_Minh",
+        "defaultCurrency": "e.g. VND"
+      },
+      "tooltip": {
+        "defaultTimezone": "IANA timezone name, e.g. Asia/Ho_Chi_Minh.",
+        "defaultCurrency": "ISO 4217 currency code, e.g. VND."
+      },
+      "sections": {
+        "basic": {
+          "title": "Platform default values",
+          "general": "General",
+          "advanced": "Additional information"
+        }
+      }
+    },
+    "localization": {
+      "title": "Localization",
+      "fields": {
+        "supportedLanguages": "Supported languages",
+        "defaultLanguage": "Default language",
+        "dateFormat": "Date format",
+        "timeFormat": "Time format",
+        "numberFormat": "Number format",
+        "currencyFormat": "Currency format",
+        "note": "Note"
+      },
+      "placeholder": {
+        "supportedLanguages": "Type a language code and press Enter...",
+        "dateFormat": "e.g. DD/MM/YYYY",
+        "timeFormat": "e.g. HH:mm",
+        "numberFormat": "e.g. #,##0.##",
+        "currencyFormat": "e.g. #,##0 ₫"
+      },
+      "tooltip": {
+        "defaultLanguage": "Must be one of the Supported languages."
+      },
+      "sections": {
+        "basic": {
+          "title": "Language and display format",
+          "language": "Language",
+          "format": "Display format",
+          "advanced": "Additional information"
+        }
+      },
+      "validation": {
+        "defaultLanguageNotSupported": "Default language must be one of the Supported languages"
+      }
+    },
+    "branding": {
+      "title": "Branding",
+      "fields": {
+        "platformName": "Platform display name",
+        "logo": "Logo",
+        "favicon": "Favicon",
+        "brandConfig": "Extended configuration",
+        "note": "Note"
+      },
+      "tooltip": {
+        "logo": "If left empty, the UI falls back to the Organization's logo.",
+        "brandConfig": "Extended JSON configuration such as color palette/theme, with no fixed schema."
+      },
+      "sections": {
+        "basic": {
+          "title": "Branding",
+          "identity": "Identity",
+          "advanced": "Additional information"
+        }
+      }
+    }
+  }
+}

@@ -14,17 +14,28 @@ import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { useAssetUpload } from '@/shared/services/asset.mutation';
 
-const MAX_ICON_SIZE = 2 * 1024 * 1024; // 2MB
-const ICON_ACCEPT = 'image/png,image/jpeg,image/svg+xml,image/webp';
+const MAX_ASSET_SIZE = 2 * 1024 * 1024; // 2MB
+const IMAGE_ACCEPT =
+  'image/png,image/jpeg,image/svg+xml,image/webp,image/x-icon';
 
-export type IconUploadFieldProps<
+type AssetRefUploadFieldExtraProps = {
+  /** Category gửi kèm lên Asset Service, vd ORGANIZATION_LOGO, BRANDING_FAVICON. */
+  category: string;
+  /**
+   * URL preview hiện tại (resolve từ nested AssetRef trả về ở GET, vd
+   * `data.logo?.url`) — field chỉ lưu assetId, không lưu url.
+   */
+  previewUrl?: string;
+};
+
+export type AssetRefUploadFieldProps<
   TFieldValues extends FieldValues,
   TContext,
   TTransformedValues,
   TName extends FieldPath<TFieldValues>,
   TFieldPathValue extends FieldPathValue<TFieldValues, TName>,
 > = FieldInputBasePropsExceptRender<
-  object,
+  AssetRefUploadFieldExtraProps,
   TFieldValues,
   TContext,
   TTransformedValues,
@@ -32,17 +43,17 @@ export type IconUploadFieldProps<
   TFieldPathValue
 >;
 
-// Field upload icon cho App — thay vì nhập tay URL, ảnh được upload qua PLM
-// backend (forward lên Asset Service, xem docs.business/external-services.yaml)
-// và trả về url để lưu vào field `iconUrl` (string) như bình thường.
-export default function IconUploadField<
+// Field upload logo/favicon dùng chung cho Organization/Branding Settings — khác
+// với Registry's IconUploadField ở chỗ field chỉ lưu `assetId` (uuid), không lưu
+// url trực tiếp; xem docs.business/shared/entities.yaml#AssetRef.
+export default function AssetRefUploadField<
   TFieldValues extends FieldValues,
   TContext,
   TTransformedValues,
   TName extends FieldPath<TFieldValues>,
   TFieldPathValue extends FieldPathValue<TFieldValues, TName>,
 >(
-  props: IconUploadFieldProps<
+  props: AssetRefUploadFieldProps<
     TFieldValues,
     TContext,
     TTransformedValues,
@@ -57,9 +68,9 @@ export default function IconUploadField<
   const p = {
     ...props,
     clearValue,
-    RenderComponent: IconUploadRender,
+    RenderComponent: AssetRefUploadRender,
   } as FieldInputBaseProps<
-    object,
+    AssetRefUploadFieldExtraProps,
     TFieldValues,
     TContext,
     TTransformedValues,
@@ -70,13 +81,14 @@ export default function IconUploadField<
   return <FieldInputBase {...p} />;
 }
 
-function IconUploadRender<
+function AssetRefUploadRender<
   TFieldValues extends FieldValues,
   TContext,
   TTransformedValues,
   TName extends FieldPath<TFieldValues>,
   TFieldPathValue extends FieldPathValue<TFieldValues, TName>,
 >({
+  fieldInputProps: { category, previewUrl: knownPreviewUrl },
   currentValue,
   handleValueChange,
   readOnly,
@@ -86,7 +98,7 @@ function IconUploadRender<
   componentControlStyle,
   componentControlClassName,
 }: FieldInputRenderProps<
-  object,
+  AssetRefUploadFieldExtraProps,
   TFieldValues,
   TContext,
   TTransformedValues,
@@ -96,8 +108,13 @@ function IconUploadRender<
   const t = useTranslations();
   const inputRef = React.useRef<HTMLInputElement>(null);
   const upload = useAssetUpload();
+  const [uploadedPreviewUrl, setUploadedPreviewUrl] = React.useState<
+    string | undefined
+  >(undefined);
 
-  const iconUrl = typeof currentValue === 'string' ? currentValue : undefined;
+  const assetId = typeof currentValue === 'string' ? currentValue : undefined;
+  const previewUrl =
+    uploadedPreviewUrl ?? (assetId ? knownPreviewUrl : undefined);
   const isDisabled = readOnly || upload.isPending;
 
   const handleOpenFileDialog = React.useCallback(() => {
@@ -114,14 +131,15 @@ function IconUploadRender<
     event.target.value = '';
     if (!file) return;
 
-    if (file.size > MAX_ICON_SIZE) {
-      notify.error('registry.app.validation.iconTooLarge');
+    if (file.size > MAX_ASSET_SIZE) {
+      notify.error('settings.common.validation.assetTooLarge');
       return;
     }
 
     try {
-      const asset = await upload.mutateAsync({ file, category: 'APP_ICON' });
-      handleValueChange(asset.url as TFieldPathValue);
+      const asset = await upload.mutateAsync({ file, category });
+      setUploadedPreviewUrl(asset.url);
+      handleValueChange(asset.id as TFieldPathValue);
     } catch {
       notify.error('common.notify.error');
     }
@@ -141,7 +159,7 @@ function IconUploadRender<
       <input
         ref={inputRef}
         type="file"
-        accept={ICON_ACCEPT}
+        accept={IMAGE_ACCEPT}
         disabled={isDisabled}
         className="sr-only"
         onChange={handleChange}
@@ -159,10 +177,10 @@ function IconUploadRender<
           }
         }}
       >
-        {iconUrl ? (
+        {previewUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={iconUrl}
+            src={previewUrl}
             alt=""
             className="size-5 shrink-0 rounded-sm border object-cover"
           />
@@ -172,9 +190,9 @@ function IconUploadRender<
         <span className="min-w-0 flex-1 truncate text-muted-foreground">
           {upload.isPending
             ? t('common.notify.loading')
-            : iconUrl
-              ? iconUrl
-              : t('registry.app.controls.uploadIcon')}
+            : assetId
+              ? assetId
+              : t('settings.common.controls.uploadAsset')}
         </span>
       </div>
 
