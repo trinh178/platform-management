@@ -25,6 +25,7 @@ type FieldInputMultiComboboxExtendsProps<
   | 'emptyContent'
   | 'isOptionDisabled'
   | 'maxValues'
+  | 'normalizeValue'
   | 'onSearchChange'
   | 'openOnFocus'
   | 'openOnInput'
@@ -118,6 +119,7 @@ function FieldInputMultiComboboxRender<
     isOptionDisabled,
     loading,
     maxValues,
+    normalizeValue,
     onSearchChange,
     openOnFocus,
     openOnInput,
@@ -176,6 +178,7 @@ function FieldInputMultiComboboxRender<
       allowCustom={allowCustom}
       addOnBlur={addOnBlur}
       maxValues={maxValues}
+      normalizeValue={normalizeValue}
       searchManual={searchManual}
       onSearchChange={onSearchChange}
       openOnFocus={openOnFocus}

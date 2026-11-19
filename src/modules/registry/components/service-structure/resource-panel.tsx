@@ -9,6 +9,7 @@ import {
   SubmitHandler,
   useForm,
 } from 'react-hook-form';
+import DeleteImpactSummary from '../delete-impact-summary';
 import {
   ResourceCRUDContext,
   ResourceCRUDContextProps,
@@ -18,16 +19,21 @@ import formValidateResolver from '../resource-crud/form-validate-resolver';
 import ResourceBasic from '../resource-crud/sections/resource-basic';
 import transformCreateData from '../resource-crud/transform-create-data';
 import ResourceDeleteConfirmContent from '../resource-delete-confirm-content';
+import ResourcePermissionCodes from './resource-permission-codes';
 import { useHasPermissions } from '@/core/auth/useHasPermissions';
 import { useConfirm } from '@/core/confirmation/confirm-provider';
 import { useFormValidateResolver } from '@/core/form';
 import { notify } from '@/core/notification';
+import queryClient from '@/core/query/query-client';
 import {
   useResourceCreate,
   useResourceDelete,
   useResourceUpdate,
 } from '@/modules/registry/services/resource.mutation';
-import { useResourceDetails } from '@/modules/registry/services/resource.queries';
+import {
+  useResourceDeleteImpact,
+  useResourceDetails,
+} from '@/modules/registry/services/resource.queries';
 import { Resource } from '@/modules/registry/types/resource';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
@@ -56,7 +62,7 @@ export default function ResourcePanel({
   const form = useForm<Resource>({
     resolver,
     reValidateMode: 'onSubmit',
-    defaultValues: { domainId: defaultDomainId },
+    defaultValues: { domainId: defaultDomainId, actions: [] },
   });
 
   /* CREATE */
@@ -96,12 +102,28 @@ export default function ResourcePanel({
     [read.data, update],
   );
 
+  const [impactLoading, setImpactLoading] = React.useState(false);
+
   const handleDelete = async () => {
     if (!read.data?.id || !canDelete) return;
+
+    // Lấy số lượng action sẽ bị xoá kèm trước khi hỏi xác nhận (D12).
+    setImpactLoading(true);
+    const impact = await useResourceDeleteImpact
+      .query(queryClient, read.data.id)
+      .catch(() => undefined)
+      .finally(() => setImpactLoading(false));
+    if (!impact) return;
+
     const confirmed = await confirm({
       title: t('registry.resource.deleteConfirm.title'),
       description: t('registry.resource.deleteConfirm.description'),
-      content: <ResourceDeleteConfirmContent resource={read.data} />,
+      content: (
+        <div className="space-y-3">
+          <ResourceDeleteConfirmContent resource={read.data} />
+          <DeleteImpactSummary impact={impact} />
+        </div>
+      ),
       variant: 'danger',
       confirmText: t('common.control.delete'),
       cancelText: t('common.control.cancel'),
@@ -195,7 +217,7 @@ export default function ResourcePanel({
                 size="sm"
                 variant="outline"
                 className="text-destructive hover:text-destructive"
-                loading={remove.isPending}
+                loading={remove.isPending || impactLoading}
                 icon={<Trash2 />}
                 onClick={handleDelete}
               >
@@ -205,8 +227,11 @@ export default function ResourcePanel({
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
           <ResourceBasic />
+          {mode !== 'CREATE' && read.data && (
+            <ResourcePermissionCodes resource={read.data} />
+          )}
         </div>
       </form>
     </ResourceCRUDContext.Provider>

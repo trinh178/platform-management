@@ -1,9 +1,13 @@
 import type {
   CreateResourceRequest,
   CreateResourceResponse,
+  ListResourceOptionsRequest,
+  ListResourceOptionsResponse,
   ListResourcesRequest,
   ListResourcesResponse,
   RemoveResourceRequest,
+  ResourceDeleteImpactRequest,
+  ResourceDeleteImpactResponse,
   ResourceDetailsRequest,
   ResourceDetailsResponse,
   UpdateResourceRequest,
@@ -17,6 +21,8 @@ const resourceApi = {
   details,
   update,
   remove,
+  listOptions,
+  deleteImpact,
 };
 
 export default resourceApi;
@@ -70,5 +76,20 @@ function remove(id: RemoveResourceRequest) {
   return plmHttpRequest.request({
     method: 'DELETE',
     url: `/registry/resources/${id}`,
+  });
+}
+
+function listOptions(params: ListResourceOptionsRequest = {}) {
+  return plmHttpRequest.request<ListResourceOptionsResponse>({
+    method: 'GET',
+    url: '/registry/resources/options',
+    params,
+  });
+}
+
+function deleteImpact(id: ResourceDeleteImpactRequest) {
+  return plmHttpRequest.request<ResourceDeleteImpactResponse>({
+    method: 'GET',
+    url: `/registry/resources/${id}/delete-impact`,
   });
 }

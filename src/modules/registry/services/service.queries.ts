@@ -19,3 +19,10 @@ export const useServiceOptions = createUseQueryPlm<string | undefined>()(
     queryFn: () => serviceApi.listOptions(keyword),
   }),
 );
+
+// Luôn lấy số liệu mới nhất trước khi mở hộp xác nhận xoá.
+export const useServiceDeleteImpact = createUseQueryPlm<string>()(id => ({
+  queryKey: serviceKeys.deleteImpact(id),
+  queryFn: () => serviceApi.deleteImpact(id),
+  staleTime: 0,
+}));

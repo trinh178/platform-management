@@ -9,6 +9,7 @@ import {
   SubmitHandler,
   useForm,
 } from 'react-hook-form';
+import DeleteImpactSummary from '../delete-impact-summary';
 import {
   DomainCRUDContext,
   DomainCRUDContextProps,
@@ -22,12 +23,16 @@ import { useHasPermissions } from '@/core/auth/useHasPermissions';
 import { useConfirm } from '@/core/confirmation/confirm-provider';
 import { useFormValidateResolver } from '@/core/form';
 import { notify } from '@/core/notification';
+import queryClient from '@/core/query/query-client';
 import {
   useDomainCreate,
   useDomainDelete,
   useDomainUpdate,
 } from '@/modules/registry/services/domain.mutation';
-import { useDomainDetails } from '@/modules/registry/services/domain.queries';
+import {
+  useDomainDeleteImpact,
+  useDomainDetails,
+} from '@/modules/registry/services/domain.queries';
 import { Domain } from '@/modules/registry/types/domain';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
@@ -96,12 +101,28 @@ export default function DomainPanel({
     [read.data, update],
   );
 
+  const [impactLoading, setImpactLoading] = React.useState(false);
+
   const handleDelete = async () => {
     if (!read.data?.id || !canDelete) return;
+
+    // Lấy số lượng dữ liệu con sẽ bị xoá kèm trước khi hỏi xác nhận (D12).
+    setImpactLoading(true);
+    const impact = await useDomainDeleteImpact
+      .query(queryClient, read.data.id)
+      .catch(() => undefined)
+      .finally(() => setImpactLoading(false));
+    if (!impact) return;
+
     const confirmed = await confirm({
       title: t('registry.domain.deleteConfirm.title'),
       description: t('registry.domain.deleteConfirm.description'),
-      content: <DomainDeleteConfirmContent domain={read.data} />,
+      content: (
+        <div className="space-y-3">
+          <DomainDeleteConfirmContent domain={read.data} />
+          <DeleteImpactSummary impact={impact} />
+        </div>
+      ),
       variant: 'danger',
       confirmText: t('common.control.delete'),
       cancelText: t('common.control.cancel'),
@@ -195,7 +216,7 @@ export default function DomainPanel({
                 size="sm"
                 variant="outline"
                 className="text-destructive hover:text-destructive"
-                loading={remove.isPending}
+                loading={remove.isPending || impactLoading}
                 icon={<Trash2 />}
                 onClick={handleDelete}
               >

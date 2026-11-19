@@ -1,9 +1,12 @@
 import {
   buildResourceDetails,
+  buildResourcePreview,
   createResourceFromBody,
   getResourceOrNotFound,
+  invalidActionsError,
   isResourceCodeTaken,
   mergeResource,
+  parseActionsBody,
 } from './helpers';
 import type { ResourceMock } from './mock-types';
 import { resourceStore } from './stores';
@@ -52,6 +55,39 @@ plmHttpRequest.addMockRoute({
   },
 });
 
+// ─── GET /registry/resources/options (specific — must be BEFORE /:id) ──────
+plmHttpRequest.addMockRoute({
+  url: /\/registry\/resources\/options(\?.*)?$/,
+  method: 'GET',
+  handler: input => {
+    const sp = new URL(toUrl(input)).searchParams;
+    const domainId = sp.get('domainId') || undefined;
+    const keyword = sp.get('keyword')?.trim().toLowerCase();
+    const items = resourceStore
+      .filter(r => !domainId || r.domainId === domainId)
+      .filter(
+        r =>
+          !keyword ||
+          r.resourceCode.toLowerCase().includes(keyword) ||
+          r.name.toLowerCase().includes(keyword),
+      )
+      .map(buildResourcePreview);
+    return appfetch.json(items);
+  },
+});
+
+// ─── GET /registry/resources/:id/delete-impact ──────────────────────────────
+plmHttpRequest.addMockRoute({
+  url: /\/registry\/resources\/[^/?]+\/delete-impact$/,
+  method: 'GET',
+  handler: input => {
+    const id = extractIdFromUrl(toUrl(input), 'resources');
+    const resource = getResourceOrNotFound(id);
+    if (resource instanceof Response) return resource;
+    return appfetch.json({ actions: resource.actions.length });
+  },
+});
+
 // ─── GET /registry/resources/:id ─────────────────────────────────────────────
 plmHttpRequest.addMockRoute({
   url: /\/registry\/resources\/[^/?]+$/,
@@ -79,6 +115,9 @@ plmHttpRequest.addMockRoute({
         { code: 'DOMAIN_NOT_FOUND', message: 'Domain không tồn tại' },
         400,
       );
+    }
+    if (body.actions !== undefined && !parseActionsBody(body.actions)) {
+      return invalidActionsError();
     }
     if (resourceCode && isResourceCodeTaken(resourceCode, domainId)) {
       return appfetch.error(
@@ -118,6 +157,9 @@ plmHttpRequest.addMockRoute({
         400,
       );
     }
+    if (body.actions !== undefined && !parseActionsBody(body.actions)) {
+      return invalidActionsError();
+    }
     if (isResourceCodeTaken(resourceCode, domainId, resource.id)) {
       return appfetch.error(
         {
@@ -133,7 +175,7 @@ plmHttpRequest.addMockRoute({
   },
 });
 
-// ─── DELETE /registry/resources/:id ─────────────────────────────────────────────
+// ─── DELETE /registry/resources/:id — xoá kèm toàn bộ action ──────────────────
 plmHttpRequest.addMockRoute({
   url: /\/registry\/resources\/[^/?]+$/,
   method: 'DELETE',

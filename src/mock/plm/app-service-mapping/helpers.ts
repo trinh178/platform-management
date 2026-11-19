@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { AppServiceMappingMock } from './mock-types';
+import type { AppServiceMappingMock, AppServiceRoleMock } from './mock-types';
 import { appServiceMappingStore } from './stores';
 import { getCurrentUserId } from '@/mock/mock-context';
 import { buildAppPreview } from '@/mock/plm/app/helpers';
@@ -11,6 +11,10 @@ export function isMappingTaken(appId: string, serviceId: string) {
   return appServiceMappingStore.some(
     m => m.appId === appId && m.serviceId === serviceId,
   );
+}
+
+export function parseRole(value: unknown): AppServiceRoleMock | null {
+  return value === 'Primary' || value === 'Dependency' ? value : null;
 }
 
 export function buildMappingDetails(mapping: AppServiceMappingMock) {
@@ -37,6 +41,7 @@ export function createMappingFromBody(
     modifiedOnUtc: nowIso,
     appId: typeof body.appId === 'string' ? body.appId : '',
     serviceId: typeof body.serviceId === 'string' ? body.serviceId : '',
+    role: parseRole(body.role) ?? 'Dependency',
   };
 
   appServiceMappingStore.unshift(mapping);

@@ -20,3 +20,10 @@ export const useDomainOptions = createUseQueryPlm<
   queryKey: domainKeys.options(params),
   queryFn: () => domainApi.listOptions(params),
 }));
+
+// Luôn lấy số liệu mới nhất trước khi mở hộp xác nhận xoá.
+export const useDomainDeleteImpact = createUseQueryPlm<string>()(id => ({
+  queryKey: domainKeys.deleteImpact(id),
+  queryFn: () => domainApi.deleteImpact(id),
+  staleTime: 0,
+}));

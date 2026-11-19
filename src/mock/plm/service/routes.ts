@@ -1,6 +1,7 @@
 import {
   buildServicePreview,
   createServiceFromBody,
+  getServiceDeleteImpact,
   getServiceOrNotFound,
   isServiceCodeTaken,
   mergeService,
@@ -17,6 +18,7 @@ import {
   toUrl,
 } from '@/core/network/mock-utils';
 import plmHttpRequest from '@/core/network/plm-http-request';
+import { removeDomainsWhere } from '@/mock/plm/domain/helpers';
 
 function searchService(service: ServiceMock, searchTerm: string) {
   return [service.serviceCode, service.name, service.description]
@@ -144,7 +146,32 @@ plmHttpRequest.addMockRoute({
         404,
       );
     }
+    // Service còn được gán cho App thì chặn — phải gỡ mapping trước (D12).
+    if (getServiceDeleteImpact(serviceStore[index].id).mappings > 0) {
+      return appfetch.error(
+        {
+          code: 'SERVICE_HAS_MAPPINGS',
+          message:
+            'Service đang được gán cho ứng dụng, hãy gỡ liên kết trước khi xoá',
+        },
+        409,
+      );
+    }
+    // Xoá kèm toàn bộ domain/resource/action con.
+    removeDomainsWhere(d => d.serviceId === serviceStore[index].id);
     serviceStore.splice(index, 1);
     return appfetch.empty();
+  },
+});
+
+// ─── GET /registry/services/:id/delete-impact ─────────────────────────────────
+plmHttpRequest.addMockRoute({
+  url: /\/registry\/services\/[^/?]+\/delete-impact$/,
+  method: 'GET',
+  handler: input => {
+    const id = extractIdFromUrl(toUrl(input), 'services');
+    const service = getServiceOrNotFound(id);
+    if (service instanceof Response) return service;
+    return appfetch.json(getServiceDeleteImpact(service.id));
   },
 });

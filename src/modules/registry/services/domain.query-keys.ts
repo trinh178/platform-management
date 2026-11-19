@@ -10,6 +10,7 @@ const domainKeys = {
   details: (id?: string) => ['domain', 'details', id] as const,
   options: (params?: ListDomainOptionsRequest) =>
     ['domain', 'options', params] as const,
+  deleteImpact: (id?: string) => ['domain', 'delete-impact', id] as const,
 };
 
 export default domainKeys;

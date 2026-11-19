@@ -36,7 +36,7 @@ export default function ResourceCreateDialog({
   const form = useForm<Resource>({
     resolver,
     reValidateMode: 'onSubmit',
-    defaultValues: { domainId: defaultDomainId },
+    defaultValues: { domainId: defaultDomainId, actions: [] },
   });
 
   const create = useResourceCreate({
@@ -56,7 +56,7 @@ export default function ResourceCreateDialog({
   }, []);
 
   React.useEffect(() => {
-    if (props.open) form.reset({ domainId: defaultDomainId });
+    if (props.open) form.reset({ domainId: defaultDomainId, actions: [] });
   }, [props.open, defaultDomainId, form]);
 
   return (

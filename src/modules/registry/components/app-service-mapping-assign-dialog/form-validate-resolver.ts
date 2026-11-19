@@ -1,13 +1,20 @@
 import type { AppServiceMapping } from '../../types/app-service-mapping';
 import { createFormValidateResolverWithTranslations } from '@/core/form';
-import { guidRequired } from '@/modules/foundation/validation/rules';
+import {
+  guidRequired,
+  stringRequired,
+} from '@/modules/foundation/validation/rules';
 
-export type AssignFormValues = Pick<AppServiceMapping, 'appId' | 'serviceId'>;
+export type AssignFormValues = Pick<
+  AppServiceMapping,
+  'appId' | 'serviceId' | 'role'
+>;
 
 const formValidateResolver =
   createFormValidateResolverWithTranslations<AssignFormValues>(t => ({
     appId: guidRequired(t),
     serviceId: guidRequired(t),
+    role: stringRequired(t),
   }));
 
 export default formValidateResolver;

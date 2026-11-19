@@ -28,6 +28,8 @@ export interface MultiComboboxProps<T> {
   openOnInput?: boolean;
   addOnBlur?: boolean;
   maxValues?: number;
+  /** Normalize a custom (typed) value before adding it, e.g. uppercase. Return '' to skip. */
+  normalizeValue?: (value: string) => string;
   getOptionValue: (option: T) => string;
   getOptionLabel: (option: T) => string;
   renderOption?: (option: T) => React.ReactNode;
@@ -74,6 +76,7 @@ export function MultiCombobox<T>({
   openOnInput = true,
   addOnBlur = true,
   maxValues,
+  normalizeValue,
   getOptionValue,
   getOptionLabel,
   renderOption,
@@ -158,13 +161,25 @@ export function MultiCombobox<T>({
   const handleCommitCustomValue = React.useCallback(() => {
     if (!allowCustom || readOnly) return;
 
-    const nextValue = addUniqueValue(value, inputValue, maxValues);
+    const nextValue = addUniqueValue(
+      value,
+      normalizeValue ? normalizeValue(inputValue.trim()) : inputValue,
+      maxValues,
+    );
 
     if (nextValue === value) return;
 
     onValueChange(nextValue);
     setInputValue('');
-  }, [allowCustom, inputValue, maxValues, onValueChange, readOnly, value]);
+  }, [
+    allowCustom,
+    inputValue,
+    maxValues,
+    normalizeValue,
+    onValueChange,
+    readOnly,
+    value,
+  ]);
 
   const handleToggleOption = (option: T) => {
     if (readOnly) return;

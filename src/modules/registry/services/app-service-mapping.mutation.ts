@@ -10,6 +10,13 @@ export const useAppServiceMappingAssign = createUseMutationPlm({
   },
 });
 
+export const useAppServiceMappingUpdateRole = createUseMutationPlm({
+  mutationFn: appServiceMappingApi.updateRole,
+  onSuccess() {
+    queryClient.invalidateQueries({ queryKey: appServiceMappingKeys.list() });
+  },
+});
+
 export const useAppServiceMappingUnassign = createUseMutationPlm({
   mutationFn: appServiceMappingApi.unassign,
   onSuccess() {

@@ -4,6 +4,8 @@ import type {
   ListAppServiceMappingsRequest,
   ListAppServiceMappingsResponse,
   UnassignServiceFromAppRequest,
+  UpdateAppServiceMappingRoleRequest,
+  UpdateAppServiceMappingRoleResponse,
 } from './app-service-mapping.api-types';
 import plmHttpRequest from '@/core/network/plm-http-request';
 import { transformAuditFieldsList } from '@/shared/utils';
@@ -11,6 +13,7 @@ import { transformAuditFieldsList } from '@/shared/utils';
 const appServiceMappingApi = {
   list,
   assign,
+  updateRole,
   unassign,
 };
 
@@ -48,5 +51,13 @@ function unassign(id: UnassignServiceFromAppRequest) {
   return plmHttpRequest.request({
     method: 'DELETE',
     url: `/registry/app-service-mappings/${id}`,
+  });
+}
+
+function updateRole({ id, role }: UpdateAppServiceMappingRoleRequest) {
+  return plmHttpRequest.request<UpdateAppServiceMappingRoleResponse>({
+    method: 'PUT',
+    url: `/registry/app-service-mappings/${id}`,
+    data: { role },
   });
 }

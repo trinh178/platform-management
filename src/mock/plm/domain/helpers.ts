@@ -3,6 +3,7 @@ import type { DomainMock } from './mock-types';
 import { domainStore } from './stores';
 import { appfetch } from '@/core/network/appfetch';
 import { getCurrentUserId } from '@/mock/mock-context';
+import { resourceStore } from '@/mock/plm/resource/stores';
 import { buildServicePreview } from '@/mock/plm/service/helpers';
 import { serviceStore } from '@/mock/plm/service/stores';
 
@@ -75,4 +76,31 @@ export function mergeDomain(domain: DomainMock, body: Record<string, unknown>) {
   domain.modifiedOnUtc = new Date().toISOString();
   domain.modifiedBy = getCurrentUserId();
   return domain;
+}
+
+// Số lượng dữ liệu con sẽ bị xoá kèm Domain (D12).
+export function getDomainDeleteImpact(domainId: string) {
+  const resources = resourceStore.filter(r => r.domainId === domainId);
+  return {
+    resources: resources.length,
+    actions: resources.reduce((sum, r) => sum + r.actions.length, 0),
+  };
+}
+
+/** Xoá domain (kèm resource + action con) theo điều kiện. Trả về số đã xoá. */
+export function removeDomainsWhere(predicate: (d: DomainMock) => boolean) {
+  const result = { domains: 0, resources: 0, actions: 0 };
+  for (let i = domainStore.length - 1; i >= 0; i--) {
+    const domain = domainStore[i];
+    if (!predicate(domain)) continue;
+    for (let j = resourceStore.length - 1; j >= 0; j--) {
+      if (resourceStore[j].domainId !== domain.id) continue;
+      result.actions += resourceStore[j].actions.length;
+      result.resources += 1;
+      resourceStore.splice(j, 1);
+    }
+    result.domains += 1;
+    domainStore.splice(i, 1);
+  }
+  return result;
 }

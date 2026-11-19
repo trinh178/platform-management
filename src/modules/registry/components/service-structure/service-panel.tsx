@@ -9,6 +9,7 @@ import {
   SubmitHandler,
   useForm,
 } from 'react-hook-form';
+import DeleteImpactSummary from '../delete-impact-summary';
 import {
   ServiceCRUDContext,
   ServiceCRUDContextProps,
@@ -23,12 +24,16 @@ import { useHasPermissions } from '@/core/auth/useHasPermissions';
 import { useConfirm } from '@/core/confirmation/confirm-provider';
 import { useFormValidateResolver } from '@/core/form';
 import { notify } from '@/core/notification';
+import queryClient from '@/core/query/query-client';
 import {
   useServiceCreate,
   useServiceDelete,
   useServiceUpdate,
 } from '@/modules/registry/services/service.mutation';
-import { useServiceDetails } from '@/modules/registry/services/service.queries';
+import {
+  useServiceDeleteImpact,
+  useServiceDetails,
+} from '@/modules/registry/services/service.queries';
 import { Service } from '@/modules/registry/types/service';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
@@ -95,12 +100,46 @@ export default function ServicePanel({
     [read.data, update],
   );
 
+  const [impactLoading, setImpactLoading] = React.useState(false);
+
   const handleDelete = async () => {
     if (!read.data?.id || !canDelete) return;
+
+    // Lấy số lượng dữ liệu con sẽ bị xoá kèm trước khi hỏi xác nhận (D12).
+    setImpactLoading(true);
+    const impact = await useServiceDeleteImpact
+      .query(queryClient, read.data.id)
+      .catch(() => undefined)
+      .finally(() => setImpactLoading(false));
+    if (!impact) return;
+
+    // Service còn được gán cho App → không cho xoá, phải gỡ mapping trước.
+    if (impact.mappings > 0) {
+      await confirm({
+        title: t('registry.service.deleteBlocked.title'),
+        description: t('registry.service.deleteBlocked.description'),
+        content: (
+          <div className="space-y-3">
+            <ServiceDeleteConfirmContent service={read.data} />
+            <DeleteImpactSummary impact={impact} />
+          </div>
+        ),
+        variant: 'warning',
+        confirmText: t('registry.service.deleteBlocked.ok'),
+        cancelText: t('common.control.close'),
+      });
+      return;
+    }
+
     const confirmed = await confirm({
       title: t('registry.service.deleteConfirm.title'),
       description: t('registry.service.deleteConfirm.description'),
-      content: <ServiceDeleteConfirmContent service={read.data} />,
+      content: (
+        <div className="space-y-3">
+          <ServiceDeleteConfirmContent service={read.data} />
+          <DeleteImpactSummary impact={impact} />
+        </div>
+      ),
       variant: 'danger',
       confirmText: t('common.control.delete'),
       cancelText: t('common.control.cancel'),
@@ -194,7 +233,7 @@ export default function ServicePanel({
                 size="sm"
                 variant="outline"
                 className="text-destructive hover:text-destructive"
-                loading={remove.isPending}
+                loading={remove.isPending || impactLoading}
                 icon={<Trash2 />}
                 onClick={handleDelete}
               >

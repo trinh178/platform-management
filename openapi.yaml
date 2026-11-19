@@ -8,7 +8,7 @@ info:
     registered in src/core/network/service-registry.ts).
 
     Generated directly from the frontend's own contract files —
-    `src/modules/registry/services/{app,service,domain,resource,app-service-mapping}.api.ts`,
+    `src/modules/registry/services/{app,service,domain,resource,app-service-mapping,permission-catalog}.api.ts`,
     `src/modules/settings/services/{organization,general,localization,branding}.api.ts`,
     `src/shared/services/asset.api.ts`, and their `*.api-types.ts` — so it reflects the
     real request/response shapes the frontend already sends and expects, not an
@@ -42,7 +42,16 @@ tags:
   - name: Resource
     description: Registry — Resource entity, scoped to a Domain.
   - name: AppServiceMapping
-    description: Registry — many-to-many join between App and Service.
+    description: >
+      Registry — many-to-many join between App and Service, with a `role`
+      (Primary | Dependency). Primary services decide which users see the App
+      in the AppSwitcher (`GET /me/apps`).
+  - name: PermissionCatalog
+    description: >
+      Registry — flat permission catalog `<ServiceCode>.<DomainCode>.<ResourceCode>.<Action>`
+      derived from Service → Domain → Resource → Action. PLM is the single
+      source of truth; IAM syncs read-only from `GET /registry/permission-catalog`.
+      Import/export use the "Code list" TXT format (one code per line).
   - name: Asset
     description: >
       File upload, forwarded by PLM backend to the external Asset Service
@@ -274,11 +283,39 @@ paths:
     delete:
       tags: [Service]
       operationId: deleteService
-      summary: Delete a Service
-      description: Only allowed when the Service has no AppServiceMapping and no Domain left.
+      summary: Delete a Service together with all its Domains, Resources and Actions
+      description: >
+        Cascades to every child Domain/Resource/Action (use
+        `GET /registry/services/{id}/delete-impact` to preview the counts).
+        Blocked while the Service is still assigned to any App — unassign the
+        AppServiceMappings first. Permission: `PLM.REGISTRY.SERVICE.DELETE`.
       responses:
         "204":
-          description: Deleted.
+          description: Deleted (with all children).
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Service still has AppServiceMappings (code `SERVICE_HAS_MAPPINGS`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /registry/services/{id}/delete-impact:
+    parameters:
+      - $ref: "#/components/parameters/IdPathParam"
+    get:
+      tags: [Service]
+      operationId: getServiceDeleteImpact
+      summary: Count the child data that deleting this Service would remove
+      description: >
+        Used by the delete confirmation dialog. `mappings` > 0 means the
+        Service cannot be deleted yet. Permission: `PLM.REGISTRY.SERVICE.DELETE`.
+      responses:
+        "200":
+          description: Delete impact.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ServiceDeleteImpact" }
         "404":
           $ref: "#/components/responses/NotFound"
 
@@ -390,11 +427,31 @@ paths:
     delete:
       tags: [Domain]
       operationId: deleteDomain
-      summary: Delete a Domain
-      description: Only allowed when the Domain has no Resource left.
+      summary: Delete a Domain together with all its Resources and Actions
+      description: >
+        Cascades to every child Resource/Action (use
+        `GET /registry/domains/{id}/delete-impact` to preview the counts).
+        Permission: `PLM.REGISTRY.DOMAIN.DELETE`.
       responses:
         "204":
-          description: Deleted.
+          description: Deleted (with all children).
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /registry/domains/{id}/delete-impact:
+    parameters:
+      - $ref: "#/components/parameters/IdPathParam"
+    get:
+      tags: [Domain]
+      operationId: getDomainDeleteImpact
+      summary: Count the child data that deleting this Domain would remove
+      description: "Permission: `PLM.REGISTRY.DOMAIN.DELETE`."
+      responses:
+        "200":
+          description: Delete impact.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DomainDeleteImpact" }
         "404":
           $ref: "#/components/responses/NotFound"
 
@@ -423,6 +480,9 @@ paths:
       tags: [Resource]
       operationId: createResource
       summary: Register a new Resource under a Domain
+      description: >
+        `actions` (optional) creates one Action per entry; each Action yields
+        the permission code `<ServiceCode>.<DomainCode>.<ResourceCode>.<Action>`.
       requestBody:
         required: true
         content:
@@ -435,7 +495,9 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Resource" }
         "400":
-          description: domainId does not exist (code `DOMAIN_NOT_FOUND`).
+          description: >
+            domainId does not exist (code `DOMAIN_NOT_FOUND`) or an action is
+            not UPPER_SNAKE_CASE (code `INVALID_ACTION`).
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
@@ -444,6 +506,29 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
+
+  /registry/resources/options:
+    get:
+      tags: [Resource]
+      operationId: listResourceOptions
+      summary: List Resources (compact), for pickers
+      description: "Permission: `PLM.REGISTRY.RESOURCE.VIEW`."
+      parameters:
+        - name: domainId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: keyword
+          in: query
+          description: Matches resourceCode or name (case-insensitive).
+          schema: { type: string }
+      responses:
+        "200":
+          description: Compact list of Resources.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ResourcePreview" }
 
   /registry/resources/{id}:
     parameters:
@@ -464,6 +549,10 @@ paths:
       tags: [Resource]
       operationId: updateResource
       summary: Update Resource fields
+      description: >
+        When `actions` is present it **replaces** the whole action list:
+        missing actions are deleted, new ones created, unchanged actions keep
+        their `id` (IAM syncs permissions by that id).
       requestBody:
         required: true
         content:
@@ -485,10 +574,28 @@ paths:
     delete:
       tags: [Resource]
       operationId: deleteResource
-      summary: Delete a Resource
+      summary: Delete a Resource together with all its Actions
+      description: "Permission: `PLM.REGISTRY.RESOURCE.DELETE`."
       responses:
         "204":
-          description: Deleted.
+          description: Deleted (with all Actions).
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /registry/resources/{id}/delete-impact:
+    parameters:
+      - $ref: "#/components/parameters/IdPathParam"
+    get:
+      tags: [Resource]
+      operationId: getResourceDeleteImpact
+      summary: Count the Actions that deleting this Resource would remove
+      description: "Permission: `PLM.REGISTRY.RESOURCE.DELETE`."
+      responses:
+        "200":
+          description: Delete impact.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ResourceDeleteImpact" }
         "404":
           $ref: "#/components/responses/NotFound"
 
@@ -500,7 +607,8 @@ paths:
       summary: List App-Service links
       description: >
         Supports search (across App/Service code+name) and filtering.
-        `filters[].field` accepts `appId` or `serviceId`.
+        `filters[].field` accepts `appId`, `serviceId` or `role`; `role` is
+        also sortable.
       parameters:
         - $ref: "#/components/parameters/PageIndexParam"
         - $ref: "#/components/parameters/PageSizeParam"
@@ -541,6 +649,31 @@ paths:
               schema: { $ref: "#/components/schemas/Error" }
 
   /registry/app-service-mappings/{id}:
+    put:
+      tags: [AppServiceMapping]
+      operationId: updateAppServiceMappingRole
+      summary: Change the role of an App-Service link
+      description: "Permission: `PLM.REGISTRY.APP_SERVICE_MAPPING.ASSIGN`."
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateAppServiceMappingRequest" }
+      responses:
+        "200":
+          description: Updated link.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AppServiceMapping" }
+        "400":
+          description: role is not Primary/Dependency (code `INVALID_ROLE`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "404":
+          $ref: "#/components/responses/NotFound"
     delete:
       tags: [AppServiceMapping]
       operationId: unassignServiceFromApp
@@ -552,6 +685,87 @@ paths:
           description: Deleted.
         "404":
           $ref: "#/components/responses/NotFound"
+
+  # ─── PermissionCatalog ────────────────────────────────────────────────────
+  /registry/permission-catalog:
+    get:
+      tags: [PermissionCatalog]
+      operationId: getPermissionCatalog
+      summary: Flat permission catalog (one item per Resource Action)
+      description: >
+        Used by IAM `POST /permissions/sync` (IAM mirrors this list 100%, keyed
+        by the Action `id`) and by export. Without `serviceCode` returns the
+        whole catalog. Sorted by `code`. Permission: `PLM.REGISTRY.PERMISSION.VIEW`.
+      parameters:
+        - name: serviceCode
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Permission catalog.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/PermissionCatalogItem" }
+
+  /registry/permissions/import:
+    post:
+      tags: [PermissionCatalog]
+      operationId: importPermissions
+      summary: Import a Code list TXT (one permission code per line)
+      description: >
+        Blank lines and leading/trailing whitespace are ignored. Every code must
+        match `^[A-Z][A-Z0-9_]*(\.[A-Z][A-Z0-9_]*){3}$`. Add-only: missing
+        Services/Domains/Resources/Actions are created (`name` = code segment,
+        Service `status` = Active) in one transaction; existing codes are
+        skipped; nothing is updated or deleted. Idempotent. If any line has an
+        error, nothing is written and `applied` = false. One file may contain
+        several Services. Permission: `PLM.REGISTRY.PERMISSION.IMPORT`.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "`.txt`, max 1 MB."
+      responses:
+        "200":
+          description: Import report (always 200 once the file is readable).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PermissionImportResult" }
+        "400":
+          description: No file, or the file contains no code (code `FILE_REQUIRED`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /registry/permissions/export:
+    get:
+      tags: [PermissionCatalog]
+      operationId: exportPermissions
+      summary: Export the catalog as a Code list TXT
+      description: >
+        One code per line, sorted by code. Without `serviceCode` exports every
+        Service. Permission: `PLM.REGISTRY.PERMISSION.EXPORT`.
+      parameters:
+        - name: serviceCode
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: >
+            Code list file. Header
+            `Content-Disposition: attachment; filename="permissions-<serviceCode|all>.txt"`.
+          content:
+            text/plain; charset=utf-8:
+              schema: { type: string }
 
   # ─── Asset ────────────────────────────────────────────────────────────────
   # Shared endpoint — used by both Registry (App icon) and Settings (Organization
@@ -1094,10 +1308,30 @@ components:
                 ReferenceDomain/ReferenceResource). e.g. EMPLOYEE, VEHICLE.
             name: { type: string }
             description: { type: string, nullable: true }
+            actions:
+              type: array
+              description: >
+                Action codes (UPPER_SNAKE_CASE), sorted ascending. Each yields the
+                permission code `<ServiceCode>.<DomainCode>.<ResourceCode>.<Action>`.
+              items: { $ref: "#/components/schemas/ResourceActionCode" }
             domain:
               allOf: [{ $ref: "#/components/schemas/DomainPreview" }]
               nullable: true
               description: Response-only nested preview of the owning Domain.
+
+    ResourceActionCode:
+      type: string
+      pattern: "^[A-Z][A-Z0-9_]*$"
+      example: VIEW
+
+    ResourcePreview:
+      type: object
+      required: [id, resourceCode, name, domainId]
+      properties:
+        id: { type: string, format: uuid }
+        resourceCode: { type: string }
+        name: { type: string }
+        domainId: { type: string, format: uuid }
 
     CreateResourceRequest:
       type: object
@@ -1107,6 +1341,9 @@ components:
         resourceCode: { type: string }
         name: { type: string }
         description: { type: string }
+        actions:
+          type: array
+          items: { $ref: "#/components/schemas/ResourceActionCode" }
 
     UpdateResourceRequest:
       description: Partial update — only fields present are changed.
@@ -1118,6 +1355,10 @@ components:
         resourceCode: { type: string }
         name: { type: string }
         description: { type: string }
+        actions:
+          type: array
+          description: When present, replaces the whole action list (unchanged actions keep their id).
+          items: { $ref: "#/components/schemas/ResourceActionCode" }
 
     ResourceListResponse:
       allOf:
@@ -1128,16 +1369,42 @@ components:
               type: array
               items: { $ref: "#/components/schemas/Resource" }
 
+    # ─── Delete impact ──────────────────────────────────────────────────────
+    ServiceDeleteImpact:
+      type: object
+      required: [domains, resources, actions, mappings]
+      properties:
+        domains: { type: integer }
+        resources: { type: integer }
+        actions: { type: integer }
+        mappings:
+          type: integer
+          description: AppServiceMappings of this Service; > 0 blocks the delete.
+
+    DomainDeleteImpact:
+      type: object
+      required: [resources, actions]
+      properties:
+        resources: { type: integer }
+        actions: { type: integer }
+
+    ResourceDeleteImpact:
+      type: object
+      required: [actions]
+      properties:
+        actions: { type: integer }
+
     # ─── AppServiceMapping ──────────────────────────────────────────────────
     AppServiceMapping:
       allOf:
         - $ref: "#/components/schemas/AuditFields"
         - type: object
-          required: [id, appId, serviceId]
+          required: [id, appId, serviceId, role]
           properties:
             id: { type: string, format: uuid }
             appId: { type: string, format: uuid }
             serviceId: { type: string, format: uuid }
+            role: { $ref: "#/components/schemas/AppServiceRole" }
             app:
               allOf: [{ $ref: "#/components/schemas/AppPreview" }]
               nullable: true
@@ -1147,12 +1414,29 @@ components:
               nullable: true
               description: Response-only nested preview.
 
+    AppServiceRole:
+      type: string
+      enum: [Primary, Dependency]
+      description: >
+        Primary — the App's own service: a user sees the App when they hold at
+        least one permission of a Primary service (or `*`). Dependency — a
+        service the App calls.
+
     AssignServiceToAppRequest:
       type: object
       required: [appId, serviceId]
       properties:
         appId: { type: string, format: uuid }
         serviceId: { type: string, format: uuid }
+        role:
+          allOf: [{ $ref: "#/components/schemas/AppServiceRole" }]
+          default: Dependency
+
+    UpdateAppServiceMappingRequest:
+      type: object
+      required: [role]
+      properties:
+        role: { $ref: "#/components/schemas/AppServiceRole" }
 
     AppServiceMappingListResponse:
       allOf:
@@ -1162,6 +1446,54 @@ components:
             items:
               type: array
               items: { $ref: "#/components/schemas/AppServiceMapping" }
+
+    # ─── PermissionCatalog ──────────────────────────────────────────────────
+    PermissionCatalogItem:
+      type: object
+      required: [id, code, serviceCode, domainCode, resourceCode, action]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Id of the Resource Action in PLM (IAM `RegistryActionId`).
+        code:
+          type: string
+          pattern: "^[A-Z][A-Z0-9_]*(\\.[A-Z][A-Z0-9_]*){3}$"
+          example: FTM.DRIVER.DRIVER.VIEW
+        serviceCode: { type: string, example: FTM }
+        domainCode: { type: string, example: DRIVER }
+        resourceCode: { type: string, example: DRIVER }
+        action: { type: string, example: VIEW }
+
+    PermissionImportResult:
+      type: object
+      required: [applied, created, skipped, errors]
+      properties:
+        applied:
+          type: boolean
+          description: false when any line has an error — nothing was written.
+        created:
+          type: object
+          required: [services, domains, resources, actions]
+          properties:
+            services: { type: integer }
+            domains: { type: integer }
+            resources: { type: integer }
+            actions: { type: integer }
+        skipped:
+          type: integer
+          description: Codes that already existed.
+        errors:
+          type: array
+          items:
+            type: object
+            required: [line, code, reason]
+            properties:
+              line: { type: integer, description: 1-based line number in the file }
+              code: { type: string }
+              reason:
+                type: string
+                enum: [INVALID_FORMAT, DUPLICATE_IN_FILE]
 
     # ─── Asset ────────────────────────────────────────────────────────────
     Asset:

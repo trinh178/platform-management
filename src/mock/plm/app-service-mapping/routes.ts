@@ -2,6 +2,7 @@ import {
   buildMappingDetails,
   createMappingFromBody,
   isMappingTaken,
+  parseRole,
 } from './helpers';
 import type { AppServiceMappingMock } from './mock-types';
 import { appServiceMappingStore } from './stores';
@@ -15,6 +16,7 @@ import {
   toUrl,
 } from '@/core/network/mock-utils';
 import plmHttpRequest from '@/core/network/plm-http-request';
+import { getCurrentUserId } from '@/mock/mock-context';
 import { appStore } from '@/mock/plm/app/stores';
 import { serviceStore } from '@/mock/plm/service/stores';
 
@@ -31,6 +33,7 @@ function filterMapping(mapping: AppServiceMappingMock, filter: MockListFilter) {
     return matchFilterOperator(mapping.appId, filter);
   if (filter.field === 'serviceId')
     return matchFilterOperator(mapping.serviceId, filter);
+  if (filter.field === 'role') return matchFilterOperator(mapping.role, filter);
   return true;
 }
 
@@ -74,6 +77,15 @@ plmHttpRequest.addMockRoute({
         400,
       );
     }
+    if (body.role !== undefined && !parseRole(body.role)) {
+      return appfetch.error(
+        {
+          code: 'INVALID_ROLE',
+          message: 'Role phải là Primary hoặc Dependency',
+        },
+        400,
+      );
+    }
     if (isMappingTaken(appId, serviceId)) {
       return appfetch.error(
         {
@@ -85,6 +97,37 @@ plmHttpRequest.addMockRoute({
     }
 
     const mapping = createMappingFromBody(body);
+    return appfetch.json(buildMappingDetails(mapping));
+  },
+});
+
+// ─── PUT /registry/app-service-mappings/:id (đổi role) ──────────────────────
+plmHttpRequest.addMockRoute({
+  url: /\/registry\/app-service-mappings\/[^/?]+$/,
+  method: 'PUT',
+  handler: async (input, init) => {
+    const id = extractIdFromUrl(toUrl(input), 'app-service-mappings');
+    const mapping = appServiceMappingStore.find(m => m.id === id);
+    if (!mapping) {
+      return appfetch.error(
+        { code: 'NOT_FOUND', message: 'Không tìm thấy liên kết' },
+        404,
+      );
+    }
+    const body = await parseBody(input, init);
+    const role = parseRole(body.role);
+    if (!role) {
+      return appfetch.error(
+        {
+          code: 'INVALID_ROLE',
+          message: 'Role phải là Primary hoặc Dependency',
+        },
+        400,
+      );
+    }
+    mapping.role = role;
+    mapping.modifiedOnUtc = new Date().toISOString();
+    mapping.modifiedBy = getCurrentUserId();
     return appfetch.json(buildMappingDetails(mapping));
   },
 });

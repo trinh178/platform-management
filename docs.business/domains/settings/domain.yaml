@@ -195,6 +195,20 @@ flows:
     output:
       - branding_setting
 
+  - name: get_public_settings
+    description: >
+      Đọc cấu hình hiển thị dùng chung của platform để mọi app (kể cả trang đăng nhập, trước khi
+      người dùng đăng nhập) hiển thị đúng thương hiệu, ngôn ngữ và định dạng.
+    actor: anonymous_user
+    permission: none     # công khai - xem rule public_settings_display_only
+    api:
+      method: GET
+      path: /public/settings
+    output:
+      - public_settings   # platformName, organizationName, logo, favicon, brandConfig,
+                          # defaultLanguage, supportedLanguages, dateFormat, timeFormat,
+                          # numberFormat, currencyFormat, defaultTimezone, defaultCurrency
+
 rules:
   - name: settings_are_seeded_singletons
     description: >
@@ -252,6 +266,16 @@ rules:
     condition: logoAssetId/faviconAssetId reference an existing Asset uploaded via external-services.yaml#asset
     on_violation: reject request with unknown/unverified assetId
 
+  - name: public_settings_display_only
+    description: >
+      get_public_settings công khai không cần đăng nhập nên chỉ được chứa thông tin phục vụ hiển thị:
+      tên platform/tổ chức, logo, favicon, cấu hình thương hiệu, ngôn ngữ và định dạng, timezone và
+      tiền tệ mặc định. Không được chứa thông tin liên hệ (contactEmail, contactPhone, address),
+      tên pháp lý, website, ghi chú hay người tạo/sửa. Logo trả về đã áp dụng
+      branding_logo_fallback_to_organization.
+    condition: public_settings contains only display fields listed in get_public_settings output
+    on_violation: remove non-display field from public_settings
+
 features:
   - name: organization_setting
     type: page
@@ -300,6 +324,15 @@ features:
     flows:
       - view_branding_setting
       - update_branding_setting
+
+  - name: public_settings
+    type: action
+    description: >
+      Cấu hình hiển thị công khai dùng chung cho mọi app (trang đăng nhập, khởi tạo giao diện).
+      Không yêu cầu đăng nhập hay permission - xem rule public_settings_display_only.
+    permissions: []
+    flows:
+      - get_public_settings
 
 permissions:
   - key: PLM.SETTINGS.ORGANIZATION.VIEW

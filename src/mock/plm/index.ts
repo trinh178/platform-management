@@ -23,6 +23,7 @@ import './service';
 import './domain';
 import './resource';
 import './app-service-mapping';
+import './permission-catalog';
 import './asset';
 import './organization-setting';
 import './general-setting';

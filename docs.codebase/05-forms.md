@@ -714,7 +714,7 @@ import FieldInputMultiCombobox from '@/shared/components/form/field-input-multi-
 
 `clearValue` mặc định là `[]`. Mặc định `allowCustom=true`, `addOnBlur=true`, không tự mở popover khi gõ. Nếu muốn mở suggestion khi nhập, truyền `openOnInput`.
 
-Props thường dùng: `maxValues`, `searchManual`, `onSearchChange`, `debounceTime`, `emptyContent`, `renderOption`, `renderValue`, `isOptionDisabled`.
+Props thường dùng: `maxValues`, `normalizeValue` (chuẩn hoá giá trị nhập tự do trước khi thêm, vd uppercase), `searchManual`, `onSearchChange`, `debounceTime`, `emptyContent`, `renderOption`, `renderValue`, `isOptionDisabled`.
 
 ---
 

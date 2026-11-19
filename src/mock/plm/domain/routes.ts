@@ -2,9 +2,11 @@ import {
   buildDomainDetails,
   buildDomainPreview,
   createDomainFromBody,
+  getDomainDeleteImpact,
   getDomainOrNotFound,
   isDomainCodeTaken,
   mergeDomain,
+  removeDomainsWhere,
 } from './helpers';
 import type { DomainMock } from './mock-types';
 import { domainStore } from './stores';
@@ -159,14 +161,22 @@ plmHttpRequest.addMockRoute({
   method: 'DELETE',
   handler: input => {
     const id = extractIdFromUrl(toUrl(input), 'domains');
-    const index = domainStore.findIndex(d => d.id === id);
-    if (index === -1) {
-      return appfetch.error(
-        { code: 'NOT_FOUND', message: 'Không tìm thấy domain' },
-        404,
-      );
-    }
-    domainStore.splice(index, 1);
+    const domain = getDomainOrNotFound(id);
+    if (domain instanceof Response) return domain;
+    // Xoá kèm toàn bộ resource + action con (D12).
+    removeDomainsWhere(d => d.id === domain.id);
     return appfetch.empty();
+  },
+});
+
+// ─── GET /registry/domains/:id/delete-impact ──────────────────────────────────
+plmHttpRequest.addMockRoute({
+  url: /\/registry\/domains\/[^/?]+\/delete-impact$/,
+  method: 'GET',
+  handler: input => {
+    const id = extractIdFromUrl(toUrl(input), 'domains');
+    const domain = getDomainOrNotFound(id);
+    if (domain instanceof Response) return domain;
+    return appfetch.json(getDomainDeleteImpact(domain.id));
   },
 });

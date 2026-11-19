@@ -4,6 +4,7 @@ import React from 'react';
 import DomainCreateDialog from './domain-create-dialog';
 import DomainPanel from './domain-panel';
 import EmptyState from './empty-state';
+import PermissionCatalogActions from './permission-catalog-actions';
 import ResourceCreateDialog from './resource-create-dialog';
 import ResourcePanel from './resource-panel';
 import type { StructureSelection } from './selection';
@@ -33,40 +34,47 @@ export function ServiceStructure({
   };
 
   return (
-    <div className="flex min-h-0 flex-1 gap-4">
-      <div className="w-80 shrink-0 overflow-hidden rounded-lg border bg-card">
-        <ServiceStructureTree selected={selected} onSelect={handleSelect} />
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
+      {/* Thanh công cụ: Import/Export danh mục quyền dạng Code list TXT (D15) */}
+      <div className="flex items-center justify-end gap-2">
+        <PermissionCatalogActions selected={selected} />
       </div>
 
-      <div className="min-h-0 min-w-0 flex-1 overflow-hidden rounded-lg border bg-card">
-        {selected?.kind === 'service' && (
-          <ServicePanel
-            key={selected.id}
-            id={selected.id}
-            onCreated={() => {}}
-            onDeleted={() => setSelected(null)}
-          />
-        )}
+      <div className="flex min-h-0 flex-1 gap-4">
+        <div className="w-80 shrink-0 overflow-hidden rounded-lg border bg-card">
+          <ServiceStructureTree selected={selected} onSelect={handleSelect} />
+        </div>
 
-        {selected?.kind === 'domain' && (
-          <DomainPanel
-            key={selected.id}
-            id={selected.id}
-            onCreated={() => {}}
-            onDeleted={() => setSelected(null)}
-          />
-        )}
+        <div className="min-h-0 min-w-0 flex-1 overflow-hidden rounded-lg border bg-card">
+          {selected?.kind === 'service' && (
+            <ServicePanel
+              key={selected.id}
+              id={selected.id}
+              onCreated={() => {}}
+              onDeleted={() => setSelected(null)}
+            />
+          )}
 
-        {selected?.kind === 'resource' && (
-          <ResourcePanel
-            key={selected.id}
-            id={selected.id}
-            onCreated={() => {}}
-            onDeleted={() => setSelected(null)}
-          />
-        )}
+          {selected?.kind === 'domain' && (
+            <DomainPanel
+              key={selected.id}
+              id={selected.id}
+              onCreated={() => {}}
+              onDeleted={() => setSelected(null)}
+            />
+          )}
 
-        {!selected && <EmptyState />}
+          {selected?.kind === 'resource' && (
+            <ResourcePanel
+              key={selected.id}
+              id={selected.id}
+              onCreated={() => {}}
+              onDeleted={() => setSelected(null)}
+            />
+          )}
+
+          {!selected && <EmptyState />}
+        </div>
       </div>
 
       <ServiceCreateDialog

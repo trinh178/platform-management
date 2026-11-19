@@ -2,3 +2,5 @@ actors:
   - platform_admin
   - platform_viewer
   - external_application
+  - authenticated_user   # mọi người dùng đã đăng nhập HVA Nexus (không cần permission PLM)
+  - anonymous_user       # người chưa đăng nhập (ví dụ đang ở trang đăng nhập)

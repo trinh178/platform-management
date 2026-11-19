@@ -1,5 +1,10 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import {
+  RESOURCE_ACTION_PATTERN,
+  RESOURCE_ACTION_SUGGESTIONS,
+} from '../../../constants/resource';
+import { normalizeResourceActions } from '../../../utils/permission-code';
 import { useResourceCRUDContext } from '../context';
 import queryClient from '@/core/query/query-client';
 import {
@@ -7,10 +12,26 @@ import {
   useDomainOptions,
 } from '@/modules/registry/services/domain.queries';
 import FieldInputAsyncSelect from '@/shared/components/form/field-input-async-select';
+import FieldInputMultiCombobox from '@/shared/components/form/field-input-multi-combobox';
 import FieldInputText from '@/shared/components/form/field-input-text';
 import FieldInputTextArea from '@/shared/components/form/field-input-textarea';
 import SubSection from '@/shared/components/layout/sub-section';
 import { FieldGroup } from '@/shared/components/ui/field';
+
+const ACTION_OPTIONS = RESOURCE_ACTION_SUGGESTIONS.map(action => ({
+  label: action,
+  value: action,
+}));
+
+// Nhập tự do: uppercase, khoảng trắng/gạch ngang → '_'. Sai định dạng thì bỏ qua
+// (giữ nguyên text trong ô nhập để user sửa).
+function normalizeAction(value: string) {
+  const action = value
+    .trim()
+    .toUpperCase()
+    .replace(/[\s-]+/g, '_');
+  return RESOURCE_ACTION_PATTERN.test(action) ? action : '';
+}
 
 export default function ResourceBasic() {
   const t = useTranslations();
@@ -76,6 +97,25 @@ export default function ResourceBasic() {
             loading={updateLoading && editingFieldName === 'name'}
             inlineEdit={inlineEdit}
             onInlineSave={(name, value) => update(name, value!)}
+            clearable
+          />
+
+          <FieldInputMultiCombobox
+            className="col-span-2 2xl:col-span-3"
+            label={t('registry.resource.fields.actions')}
+            placeholder={t('registry.resource.placeholder.actions')}
+            tooltip={t('registry.resource.tooltip.actions')}
+            form={form}
+            name="actions"
+            mode={fieldMode}
+            loading={updateLoading && editingFieldName === 'actions'}
+            inlineEdit={inlineEdit}
+            onInlineSave={(name, value) =>
+              update(name, normalizeResourceActions(value))
+            }
+            options={ACTION_OPTIONS}
+            normalizeValue={normalizeAction}
+            openOnFocus
             clearable
           />
 

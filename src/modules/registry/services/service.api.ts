@@ -6,6 +6,8 @@ import type {
   ListServicesRequest,
   ListServicesResponse,
   RemoveServiceRequest,
+  ServiceDeleteImpactRequest,
+  ServiceDeleteImpactResponse,
   ServiceDetailsRequest,
   ServiceDetailsResponse,
   UpdateServiceRequest,
@@ -20,6 +22,7 @@ const serviceApi = {
   update,
   remove,
   listOptions,
+  deleteImpact,
 };
 
 export default serviceApi;
@@ -81,5 +84,12 @@ function listOptions(keyword?: ListServiceOptionsRequest) {
     method: 'GET',
     url: '/registry/services/options',
     params: { keyword },
+  });
+}
+
+function deleteImpact(id: ServiceDeleteImpactRequest) {
+  return plmHttpRequest.request<ServiceDeleteImpactResponse>({
+    method: 'GET',
+    url: `/registry/services/${id}/delete-impact`,
   });
 }

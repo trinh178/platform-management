@@ -1,4 +1,5 @@
 import type { DeepPartial } from 'react-hook-form';
+import type { DomainDeleteImpact } from '../types/delete-impact';
 import type { Domain, DomainPreview } from '../types/domain';
 import type { ListRequest, ListResponse } from '@/shared/types/pagination';
 
@@ -21,5 +22,9 @@ export type DomainDetailsResponse = Domain;
 // PUT /registry/domains/:id
 export type UpdateDomainRequest = Pick<Domain, 'id'> & DeepPartial<Domain>;
 
-// DELETE /registry/domains/:id
+// DELETE /registry/domains/:id — xoá kèm resource + action con.
 export type RemoveDomainRequest = Domain['id'];
+
+// GET /registry/domains/:id/delete-impact
+export type DomainDeleteImpactRequest = Domain['id'];
+export type DomainDeleteImpactResponse = DomainDeleteImpact;

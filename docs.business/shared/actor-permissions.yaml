@@ -19,6 +19,8 @@ actors:
       - PLM.REGISTRY.DOMAIN.VIEW
       - PLM.REGISTRY.RESOURCE.VIEW
       - PLM.REGISTRY.APP_SERVICE_MAPPING.VIEW
+      - PLM.REGISTRY.PERMISSION.VIEW
+      - PLM.REGISTRY.PERMISSION.EXPORT
       - PLM.SETTINGS.ORGANIZATION.VIEW
       - PLM.SETTINGS.GENERAL.VIEW
       - PLM.SETTINGS.LOCALIZATION.VIEW
@@ -34,7 +36,22 @@ actors:
       - PLM.REGISTRY.SERVICE.VIEW
       - PLM.REGISTRY.DOMAIN.VIEW
       - PLM.REGISTRY.RESOURCE.VIEW
+      - PLM.REGISTRY.PERMISSION.VIEW       # IAM đồng bộ danh mục quyền
       - PLM.SETTINGS.ORGANIZATION.VIEW
       - PLM.SETTINGS.GENERAL.VIEW
       - PLM.SETTINGS.LOCALIZATION.VIEW
       - PLM.SETTINGS.BRANDING.VIEW
+
+  # Hai actor dưới đây KHÔNG được gán permission PLM. Họ chỉ dùng các flow được đánh dấu
+  # "permission: none" - xem README.md mục 4.4 (Ngoại lệ không yêu cầu permission).
+  authenticated_user:
+    description: >
+      Mọi người dùng đã đăng nhập HVA Nexus, ở bất kỳ app nào. Chỉ đọc danh sách app mà chính
+      họ dùng được (list_my_apps) - kết quả được lọc theo permissions của chính user.
+    permissions: []
+
+  anonymous_user:
+    description: >
+      Người chưa đăng nhập (ví dụ đang ở trang đăng nhập). Chỉ đọc cấu hình hiển thị công khai
+      của platform (get_public_settings), không đọc được dữ liệu nào khác.
+    permissions: []

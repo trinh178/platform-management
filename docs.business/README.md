@@ -54,7 +54,14 @@ serviceCode: HRM_EM      # HR Management - Employee
 serviceCode: FLEET_MNG   # Fleet Management
 ```
 
-Permission của các app đó vẫn giữ AppCode riêng (`FTM.FUEL_ENTRY.FUEL_ENTRY.CREATE`, `IAM.USER.USER.CREATE`, ...) - PLM không sở hữu permission của app khác, chỉ lưu metadata định danh app/service đó trong Registry.
+Phân biệt **AppCode** và **ServiceCode**:
+
+* **AppCode** là mã của một app frontend hiển thị trong HVA Nexus (App Switcher, portal).
+* **ServiceCode** là mã của một service backend. Mã quyền dùng ServiceCode làm phần đầu (`FTM.FUEL_ENTRY.FUEL_ENTRY.CREATE`, `IAM.USER.USER.CREATE`, ...), vì quyền được kiểm tra ở backend và Domain/Resource thuộc về service.
+
+Một App liên kết với các Service qua App-Service Mapping. Service **Primary** là service chính của App; quyền thuộc Service Primary quyết định người dùng có thấy App hay không (xem rule `my_apps_filtered_by_app_permission`).
+
+PLM là **nơi duy nhất quản lý danh mục quyền** (Service → Domain → Resource → Action). IAM chỉ đồng bộ danh mục này về, không tự thêm/sửa/xoá permission; việc gán permission cho role vẫn thuộc IAM (xem mục 4.5).
 
 ---
 
@@ -170,6 +177,8 @@ Actor là thực thể thực hiện hành động trong hệ thống.
 | `platform_admin` | Quản trị nền tảng, toàn quyền Registry và Settings |
 | `platform_viewer` | Nhân sự nội bộ cần tra cứu Registry/Settings, chỉ đọc |
 | `external_application` | Ứng dụng/service khác trong HVA Nexus đọc registry metadata hoặc platform settings dùng chung |
+| `authenticated_user` | Mọi người dùng đã đăng nhập HVA Nexus, ở bất kỳ app nào - chỉ đọc danh sách app của chính mình |
+| `anonymous_user` | Người chưa đăng nhập (ví dụ trang đăng nhập) - chỉ đọc cấu hình hiển thị công khai |
 
 Source of truth: [`shared/actors.yaml`](./shared/actors.yaml).
 
@@ -177,13 +186,15 @@ Source of truth: [`shared/actors.yaml`](./shared/actors.yaml).
 
 ## 4. Permission Model
 
-Permission là cơ chế duy nhất để kiểm soát truy cập.
+Permission là cơ chế duy nhất để kiểm soát truy cập, trừ hai flow phục vụ mọi app được liệt kê ở mục 4.4.
 
 ### 4.1 Format
 
 ```text
-<AppCode>.<Domain>.<Resource>.<Action>
+<ServiceCode>.<Domain>.<Resource>.<Action>
 ```
+
+Mỗi phần theo `UPPER_SNAKE_CASE`. Mỗi Action khai báo trên một Resource trong Registry sinh ra đúng một mã quyền.
 
 Ví dụ:
 
@@ -202,6 +213,9 @@ Source of truth: [`shared/permissions.yaml`](./shared/permissions.yaml).
 | --- | --- |
 | CRUD | `CREATE`, `UPDATE`, `DELETE`, `VIEW` |
 | Quan hệ App-Service | `ASSIGN`, `UNASSIGN` |
+| Danh mục quyền | `IMPORT`, `EXPORT` |
+
+Danh sách trên là action **của chính PLM**. Action của Resource thuộc service khác không bắt buộc nằm trong danh sách này, chỉ cần đúng `UPPER_SNAKE_CASE`.
 
 ### 4.3 Nguyên tắc
 
@@ -211,6 +225,28 @@ Source of truth: [`shared/permissions.yaml`](./shared/permissions.yaml).
 * Actor được gán trực tiếp permission
 * Resource phải rõ ràng và thuộc domain sở hữu
 * Settings không có action `CREATE`/`DELETE` vì mỗi entity là singleton đã được seed sẵn
+
+### 4.4 Ngoại lệ không yêu cầu permission
+
+Một số dữ liệu cần cho **mọi** người dùng ở **mọi** app ngay khi mở app, nên không thể gắn với permission PLM. Cấp `PLM.*.VIEW` cho tất cả người dùng sẽ mở luôn trang quản trị và metadata nội bộ của PLM. Vì vậy các nhu cầu này dùng flow riêng, đánh dấu `permission: none`, với dữ liệu trả về được giới hạn bằng rule:
+
+| Flow | Actor | Điều kiện | Rule giới hạn dữ liệu |
+| --- | --- | --- | --- |
+| `list_my_apps` (REGISTRY) | `authenticated_user` | Đã đăng nhập | `my_apps_filtered_by_app_permission`: chỉ App Active mà người dùng có permission thuộc một Service Primary của App (App không có Service Primary thì ai cũng thấy) |
+| `get_public_settings` (SETTINGS) | `anonymous_user` | Không cần đăng nhập | `public_settings_display_only`: chỉ thông tin hiển thị, không có thông tin liên hệ/ghi chú/audit |
+
+Quy tắc khi thêm ngoại lệ mới:
+
+* Chỉ đọc, không có flow ghi nào được `permission: none`
+* Phải có rule giới hạn dữ liệu trả về; không dùng lại flow quản trị (ví dụ `list_apps`) để làm ngoại lệ
+* Ghi vào bảng trên và vào `shared/actor-permissions.yaml`
+
+### 4.5 Danh mục quyền và đồng bộ sang IAM
+
+* PLM quản lý danh mục quyền: thêm/sửa/xoá Action trên Resource, import và export danh sách mã (file Code list TXT, mỗi dòng một mã).
+* IAM lấy danh mục qua flow `get_permission_catalog` và đồng bộ khi quản trị viên bấm đồng bộ. Sau mỗi lần đồng bộ, danh mục ở IAM giống PLM 100%: mã mới được thêm, mã đã đổi được cập nhật, mã không còn trong PLM bị xoá cùng các gán role của nó.
+* IAM khớp theo **id của Action**, không theo mã. Đổi mã Service/Domain/Resource ở PLM thì mã ở IAM đổi theo và các gán role được giữ. Đổi mã Action được tính là xoá Action cũ và tạo Action mới.
+* Việc mã quyền có đang được kiểm tra trong code của các service hay không nằm ngoài phạm vi PLM; người quản trị chịu trách nhiệm giữ hai bên khớp nhau. Xem rule `iam_mirrors_registry_permissions`.
 
 ---
 
@@ -225,6 +261,8 @@ Tóm tắt scope:
 | `platform_admin` | Full access (`*`) |
 | `platform_viewer` | Xem toàn bộ Registry và Settings |
 | `external_application` | Đọc Registry metadata (resolve reference) và đọc Settings dùng chung cho UI của app khác |
+| `authenticated_user` | Không có permission PLM - chỉ dùng `list_my_apps` (xem mục 4.4) |
+| `anonymous_user` | Không có permission PLM - chỉ dùng `get_public_settings` (xem mục 4.4) |
 
 ---
 

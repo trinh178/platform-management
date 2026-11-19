@@ -15,3 +15,7 @@ actions:
   # Quan hệ App-Service
   - ASSIGN       # Gán Service cho App
   - UNASSIGN     # Gỡ Service khỏi App
+
+  # Danh mục quyền
+  - IMPORT       # Import danh mục quyền
+  - EXPORT       # Export danh mục quyền

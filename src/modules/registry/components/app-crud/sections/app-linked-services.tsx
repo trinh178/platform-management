@@ -5,6 +5,7 @@ import { Link2Off, Loader2, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import AppServiceMappingAssignDialog from '../../app-service-mapping-assign-dialog';
 import AppServiceMappingUnassignConfirmContent from '../../app-service-mapping-unassign-confirm-content';
+import AppServiceRoleBadge from '../../app-service-role-badge';
 import { useHasPermissions } from '@/core/auth/useHasPermissions';
 import { useConfirm } from '@/core/confirmation/confirm-provider';
 import { AppLink } from '@/core/router/next';
@@ -79,18 +80,21 @@ export default function AppLinkedServices({ appId }: { appId: string }) {
               key={mapping.id}
               className="flex items-center justify-between gap-2 py-2 first:pt-0 last:pb-0"
             >
-              <AppLink
-                href={routePaths.serviceStructure}
-                params={{ id: mapping.serviceId }}
-                className="min-w-0 truncate text-sm underline-offset-4 hover:underline"
-              >
-                <span className="font-medium">
-                  {mapping.service?.serviceCode}
-                </span>{' '}
-                <span className="text-muted-foreground">
-                  {mapping.service?.name}
-                </span>
-              </AppLink>
+              <div className="flex min-w-0 items-center gap-2">
+                <AppLink
+                  href={routePaths.serviceStructure}
+                  params={{ id: mapping.serviceId }}
+                  className="min-w-0 truncate text-sm underline-offset-4 hover:underline"
+                >
+                  <span className="font-medium">
+                    {mapping.service?.serviceCode}
+                  </span>{' '}
+                  <span className="text-muted-foreground">
+                    {mapping.service?.name}
+                  </span>
+                </AppLink>
+                <AppServiceRoleBadge role={mapping.role} />
+              </div>
 
               {canUnassign && (
                 <Button

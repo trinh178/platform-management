@@ -98,7 +98,12 @@
       },
       "deleteConfirm": {
         "title": "Xóa service",
-        "description": "Bạn có chắc chắn muốn xóa service này khỏi Registry không? Hành động này không thể hoàn tác."
+        "description": "Bạn có chắc chắn muốn xóa service này khỏi Registry không? Toàn bộ domain, resource và action con sẽ bị xóa kèm. Hành động này không thể hoàn tác."
+      },
+      "deleteBlocked": {
+        "title": "Không thể xóa service",
+        "description": "Service đang được gán cho ứng dụng. Hãy gỡ liên kết với ứng dụng trước khi xóa.",
+        "ok": "Đã hiểu"
       }
     },
     "domain": {
@@ -133,7 +138,7 @@
       },
       "deleteConfirm": {
         "title": "Xóa domain",
-        "description": "Bạn có chắc chắn muốn xóa domain này khỏi Registry không? Hành động này không thể hoàn tác."
+        "description": "Bạn có chắc chắn muốn xóa domain này khỏi Registry không? Toàn bộ resource và action con sẽ bị xóa kèm. Hành động này không thể hoàn tác."
       }
     },
     "resource": {
@@ -151,11 +156,13 @@
         "resourceCode": "Mã resource",
         "name": "Tên resource",
         "description": "Mô tả",
-        "createdOnUtc": "Ngày tạo"
+        "createdOnUtc": "Ngày tạo",
+        "actions": "Actions"
       },
       "tooltip": {
         "domainId": "Domain sở hữu resource này.",
-        "resourceCode": "Định danh duy nhất của resource trong phạm vi Domain đã chọn, viết hoa và nối bằng dấu gạch dưới. Dùng trong chuẩn cross-service reference. VD: EMPLOYEE, VEHICLE."
+        "resourceCode": "Định danh duy nhất của resource trong phạm vi Domain đã chọn, viết hoa và nối bằng dấu gạch dưới. Dùng trong chuẩn cross-service reference. VD: EMPLOYEE, VEHICLE.",
+        "actions": "Danh sách action của resource, viết hoa và nối bằng dấu gạch dưới (VD: VIEW, EXPORT_EXCEL). Mỗi action sinh ra một mã quyền <ServiceCode>.<DomainCode>.<ResourceCode>.<Action>."
       },
       "sections": {
         "basic": {
@@ -164,11 +171,20 @@
         }
       },
       "validation": {
-        "resourceCodeFormat": "Mã resource phải viết hoa, chỉ gồm chữ cái, số và dấu gạch dưới, bắt đầu bằng chữ cái. VD: EMPLOYEE, VEHICLE."
+        "resourceCodeFormat": "Mã resource phải viết hoa, chỉ gồm chữ cái, số và dấu gạch dưới, bắt đầu bằng chữ cái. VD: EMPLOYEE, VEHICLE.",
+        "actionFormat": "Action phải viết hoa, chỉ gồm chữ cái, số và dấu gạch dưới, bắt đầu bằng chữ cái. VD: VIEW, EXPORT_EXCEL."
       },
       "deleteConfirm": {
         "title": "Xóa resource",
-        "description": "Bạn có chắc chắn muốn xóa resource này khỏi Registry không? Hành động này không thể hoàn tác."
+        "description": "Bạn có chắc chắn muốn xóa resource này khỏi Registry không? Toàn bộ action (mã quyền) của resource sẽ bị xóa kèm. Hành động này không thể hoàn tác."
+      },
+      "placeholder": {
+        "actions": "Chọn hoặc nhập action rồi Enter..."
+      },
+      "permissionCodes": {
+        "title": "Mã quyền sinh ra",
+        "description": "IAM đồng bộ đúng các mã này từ PLM.",
+        "empty": "Resource chưa có action nào."
       }
     },
     "appServiceMapping": {
@@ -176,12 +192,14 @@
       "controls": {
         "search": "Tìm kiếm liên kết...",
         "assign": "Gán Service",
-        "unassign": "Gỡ liên kết"
+        "unassign": "Gỡ liên kết",
+        "changeRole": "Đổi vai trò"
       },
       "fields": {
         "appId": "Ứng dụng",
         "serviceId": "Service",
-        "createdOnUtc": "Ngày tạo"
+        "createdOnUtc": "Ngày tạo",
+        "role": "Vai trò"
       },
       "assignDialog": {
         "title": "Gán Service cho Ứng dụng"
@@ -197,6 +215,19 @@
       "linkedApps": {
         "title": "Ứng dụng liên kết",
         "empty": "Chưa có ứng dụng nào liên kết"
+      },
+      "tooltip": {
+        "role": "Primary: service chính của ứng dụng — user thấy ứng dụng khi có quyền thuộc service Primary. Dependency: service mà ứng dụng gọi tới."
+      },
+      "constants": {
+        "role": {
+          "primary": "Primary",
+          "dependency": "Dependency"
+        }
+      },
+      "changeRoleConfirm": {
+        "title": "Đổi vai trò service",
+        "description": "Vai trò Primary quyết định ứng dụng có hiển thị cho user hay không. Bạn có chắc chắn muốn đổi vai trò của liên kết này?"
       }
     },
     "structure": {
@@ -204,6 +235,55 @@
       "searchPlaceholder": "Tìm service...",
       "empty": "Chưa có mục nào",
       "emptySelection": "Chọn một Service, Domain hoặc Resource ở bên trái để xem chi tiết, hoặc bấm \"+\" để thêm mới."
+    },
+    "deleteImpact": {
+      "domains": "{count} domain",
+      "resources": "{count} resource",
+      "actions": "{count} action",
+      "cascade": "Sẽ xóa kèm {items}.",
+      "none": "Không có dữ liệu con nào bị xóa kèm.",
+      "hasMappings": "Service đang được gán cho {count} ứng dụng nên không thể xóa (SERVICE_HAS_MAPPINGS)."
+    },
+    "permissionCatalog": {
+      "template": "Tải file mẫu",
+      "export": {
+        "title": "Export",
+        "scope": "Xuất danh mục quyền (.txt)",
+        "current": "Service đang xem",
+        "currentRequired": "Chọn một Service/Domain/Resource trên cây",
+        "all": "Tất cả service"
+      },
+      "import": {
+        "title": "Import",
+        "dialogTitle": "Import danh mục quyền",
+        "submit": "Import",
+        "formatHint": "File .txt, mỗi dòng một mã <ServiceCode>.<DomainCode>.<ResourceCode>.<Action>. Dòng trống được bỏ qua. Import chỉ thêm mới Service/Domain/Resource/Action còn thiếu, không sửa hay xóa dữ liệu có sẵn.",
+        "hasErrors": "File có dòng lỗi. Sửa hoặc bỏ các dòng lỗi rồi chọn lại file để import.",
+        "empty": "File không có mã nào.",
+        "fileTooLarge": "File import tối đa 1 MB.",
+        "metrics": {
+          "total": "Tổng số mã",
+          "new": "Sẽ thêm mới",
+          "existing": "Đã có, bỏ qua",
+          "errors": "Lỗi"
+        }
+      },
+      "status": {
+        "VALID": "Hợp lệ",
+        "EXISTS": "Đã có, bỏ qua",
+        "INVALID_FORMAT": "Sai định dạng",
+        "DUPLICATE_IN_FILE": "Trùng trong file"
+      },
+      "report": {
+        "title": "Kết quả import",
+        "applied": "Import thành công.",
+        "notApplied": "File có lỗi nên không có dữ liệu nào được ghi.",
+        "services": "Service tạo mới",
+        "domains": "Domain tạo mới",
+        "resources": "Resource tạo mới",
+        "actions": "Action tạo mới",
+        "skipped": "Bỏ qua (đã có)"
+      }
     }
   }
 }

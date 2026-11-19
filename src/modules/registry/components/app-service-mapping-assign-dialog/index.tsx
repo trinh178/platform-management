@@ -9,6 +9,10 @@ import formValidateResolver, {
 import { useFormValidateResolver } from '@/core/form';
 import { notify } from '@/core/notification';
 import queryClient from '@/core/query/query-client';
+import {
+  CONST_APP_SERVICE_ROLE,
+  DEFAULT_APP_SERVICE_ROLE,
+} from '@/modules/registry/constants/app-service-mapping';
 import { useAppServiceMappingAssign } from '@/modules/registry/services/app-service-mapping.mutation';
 import {
   useAppDetails,
@@ -19,6 +23,7 @@ import {
   useServiceOptions,
 } from '@/modules/registry/services/service.queries';
 import FieldInputAsyncSelect from '@/shared/components/form/field-input-async-select';
+import FieldInputConstant from '@/shared/components/form/field-input-constant';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -69,7 +74,11 @@ export default function AssignDialog({
   /* Form reset khi mở dialog — giữ sẵn phía cố định (App hoặc Service) nếu có */
   React.useEffect(() => {
     if (props.open)
-      form.reset({ appId: defaultAppId, serviceId: defaultServiceId });
+      form.reset({
+        appId: defaultAppId,
+        serviceId: defaultServiceId,
+        role: DEFAULT_APP_SERVICE_ROLE,
+      });
   }, [props.open, defaultAppId, defaultServiceId, form]);
 
   const loadAppOptions = React.useCallback(async (keyword: string) => {
@@ -141,6 +150,17 @@ export default function AssignDialog({
               loadOptions={loadServiceOptions}
               loadOption={loadServiceOption}
               clearable
+            />
+
+            <FieldInputConstant
+              label={t('registry.appServiceMapping.fields.role')}
+              placeholder={t('registry.appServiceMapping.fields.role')}
+              tooltip={t('registry.appServiceMapping.tooltip.role')}
+              required
+              form={form}
+              name="role"
+              disabled={assign.isPending}
+              constOptions={CONST_APP_SERVICE_ROLE}
             />
           </FieldGroup>
 

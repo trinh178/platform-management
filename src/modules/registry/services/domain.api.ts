@@ -1,6 +1,8 @@
 import type {
   CreateDomainRequest,
   CreateDomainResponse,
+  DomainDeleteImpactRequest,
+  DomainDeleteImpactResponse,
   DomainDetailsRequest,
   DomainDetailsResponse,
   ListDomainOptionsRequest,
@@ -20,6 +22,7 @@ const domainApi = {
   update,
   remove,
   listOptions,
+  deleteImpact,
 };
 
 export default domainApi;
@@ -81,5 +84,12 @@ function listOptions(params: ListDomainOptionsRequest = {}) {
     method: 'GET',
     url: '/registry/domains/options',
     params,
+  });
+}
+
+function deleteImpact(id: DomainDeleteImpactRequest) {
+  return plmHttpRequest.request<DomainDeleteImpactResponse>({
+    method: 'GET',
+    url: `/registry/domains/${id}/delete-impact`,
   });
 }

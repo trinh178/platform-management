@@ -69,6 +69,7 @@ entities:
       id: uuid
       appId: uuid
       serviceId: uuid
+      role: enum(app_service_role)         # Primary = service chính của App; Dependency = service phụ trợ. Mặc định Dependency
 
       app: object(AppPreview)?             # response-only, see shared/entities.yaml
       service: object(ServicePreview)?     # response-only, see shared/entities.yaml
@@ -105,12 +106,27 @@ entities:
       resourceCode: string                 # UPPER_SNAKE_CASE, duy nhất trong phạm vi domainId, ví dụ EMPLOYEE
       name: string
       description: string?
+      actions: string[]                    # danh sách action, mỗi action sinh một mã quyền - xem ResourceAction
 
       domain: object(DomainPreview)?       # response-only, see shared/entities.yaml
 
     constraints:
       - resourceCode unique within domainId
       - resourceCode matches UPPER_SNAKE_CASE
+
+  ResourceAction:
+    description: >
+      Một hành động trên Resource. Mỗi ResourceAction sinh đúng một mã quyền
+      <ServiceCode>.<DomainCode>.<ResourceCode>.<Action>. Có id riêng để IAM đồng bộ theo id
+      (xem README.md mục 4.5). Được quản lý qua field actions của Resource, không có flow riêng.
+    fields:
+      id: uuid
+      resourceId: uuid
+      action: string                       # UPPER_SNAKE_CASE, ví dụ VIEW, CREATE, EXPORT
+
+    constraints:
+      - action unique within resourceId
+      - action matches UPPER_SNAKE_CASE
 
 flows:
   # App
@@ -213,6 +229,18 @@ flows:
     output:
       - app_options       # danh sách App rút gọn: id, appCode, name, status
 
+  - name: list_my_apps
+    description: >
+      Danh sách app mà người dùng hiện tại dùng được, phục vụ chuyển app (App Switcher) và
+      trang danh sách app của portal. Mọi người dùng đã đăng nhập đều gọi được, ở bất kỳ app nào.
+    actor: authenticated_user
+    permission: none     # chỉ cần đăng nhập - xem rule my_apps_filtered_by_app_permission
+    api:
+      method: GET
+      path: /me/apps
+    output:
+      - my_apps           # danh sách App rút gọn: id, appCode, name, description, version, url, iconUrl, tags, metadata
+
   # Service
   - name: create_service
     description: Đăng ký Service mới vào Registry
@@ -246,8 +274,8 @@ flows:
 
   - name: delete_service
     description: >
-      Xóa Service khỏi Registry theo id. Chỉ cho phép khi Service không còn AppServiceMapping
-      và không còn Domain nào.
+      Xóa Service khỏi Registry theo id, kèm toàn bộ Domain/Resource/Action bên dưới.
+      Chỉ chặn khi Service còn AppServiceMapping (phải gỡ liên kết với App trước).
     actor: platform_admin
     permission: PLM.REGISTRY.SERVICE.DELETE
     api:
@@ -304,6 +332,20 @@ flows:
     input:
       - appId
       - serviceId
+      - role             # optional, mặc định Dependency
+    output:
+      - app_service_mapping
+
+  - name: update_app_service_mapping_role
+    description: Đổi vai trò Primary/Dependency của một liên kết App-Service
+    actor: platform_admin
+    permission: PLM.REGISTRY.APP_SERVICE_MAPPING.ASSIGN
+    api:
+      method: PUT
+      path: /registry/app-service-mappings/:id
+    input:
+      - appServiceMappingId
+      - role
     output:
       - app_service_mapping
 
@@ -362,7 +404,7 @@ flows:
 
   - name: delete_domain
     description: >
-      Xóa Domain khỏi Registry theo id. Chỉ cho phép khi Domain không còn Resource nào.
+      Xóa Domain khỏi Registry theo id, kèm toàn bộ Resource/Action bên dưới.
     actor: platform_admin
     permission: PLM.REGISTRY.DOMAIN.DELETE
     api:
@@ -421,11 +463,12 @@ flows:
       - resourceCode
       - name
       - description       # optional
+      - actions           # optional
     output:
       - resource
 
   - name: update_resource
-    description: Cập nhật metadata Resource
+    description: Cập nhật metadata Resource; truyền actions thì thay toàn bộ danh sách action
     actor: platform_admin
     permission: PLM.REGISTRY.RESOURCE.UPDATE
     api:
@@ -437,8 +480,21 @@ flows:
     output:
       - resource
 
+  - name: list_resource_options
+    description: Danh sách Resource rút gọn thuộc một Domain, phục vụ chọn nhanh
+    actor: platform_viewer
+    permission: PLM.REGISTRY.RESOURCE.VIEW
+    api:
+      method: GET
+      path: /registry/resources/options
+    input:
+      - domainId         # optional
+      - keyword          # optional
+    output:
+      - resource_options  # id, resourceCode, name, domainId
+
   - name: delete_resource
-    description: Xóa Resource khỏi Registry theo id
+    description: Xóa Resource khỏi Registry theo id, kèm toàn bộ action của Resource
     actor: platform_admin
     permission: PLM.REGISTRY.RESOURCE.DELETE
     api:
@@ -470,6 +526,62 @@ flows:
       - list_request
     output:
       - list_response
+
+  # Xoá kèm dữ liệu con - xem trước số lượng
+  - name: get_delete_impact
+    description: >
+      Cho biết số bản ghi con sẽ bị xoá kèm khi xoá Service/Domain/Resource (domains, resources,
+      actions) và số App đang liên kết với Service (mappings - chặn việc xoá Service).
+    actor: platform_admin
+    permission: PLM.REGISTRY.SERVICE.DELETE | PLM.REGISTRY.DOMAIN.DELETE | PLM.REGISTRY.RESOURCE.DELETE   # theo loại bản ghi
+    api:
+      method: GET
+      path: /registry/{services|domains|resources}/:id/delete-impact
+    input:
+      - id
+    output:
+      - delete_impact
+
+  # Danh mục quyền
+  - name: get_permission_catalog
+    description: >
+      Danh mục mã quyền sinh ra từ Service → Domain → Resource → Action. Mỗi phần tử có id của
+      ResourceAction để IAM đồng bộ theo id. IAM gọi flow này khi quản trị viên bấm đồng bộ.
+    actor: external_application
+    permission: PLM.REGISTRY.PERMISSION.VIEW
+    api:
+      method: GET
+      path: /registry/permission-catalog
+    input:
+      - serviceCode      # optional
+    output:
+      - permission_catalog   # [{ id, code, serviceCode, domainCode, resourceCode, action }]
+
+  - name: import_permissions
+    description: >
+      Import danh mục quyền từ file Code list TXT (mỗi dòng một mã). Chỉ tạo Service/Domain/Resource/Action
+      còn thiếu, không sửa hay xoá. File có dòng sai định dạng hoặc trùng thì không ghi gì.
+    actor: platform_admin
+    permission: PLM.REGISTRY.PERMISSION.IMPORT
+    api:
+      method: POST
+      path: /registry/permissions/import
+    input:
+      - file             # .txt
+    output:
+      - import_report    # applied, created (services/domains/resources/actions), skipped, errors (line, code, reason)
+
+  - name: export_permissions
+    description: Export danh mục quyền ra file Code list TXT, theo một Service hoặc tất cả
+    actor: platform_viewer
+    permission: PLM.REGISTRY.PERMISSION.EXPORT
+    api:
+      method: GET
+      path: /registry/permissions/export
+    input:
+      - serviceCode      # optional
+    output:
+      - file             # .txt
 
   # Cross-service reference resolution
   - name: get_reference_metadata
@@ -533,15 +645,21 @@ rules:
     condition: Registry.domain.exists(domainId) = true
     on_violation: block create_resource
 
-  - name: delete_requires_no_dependents
+  - name: delete_cascades_children
     description: >
-      Không cho xóa một bản ghi Registry khi vẫn còn bản ghi con phụ thuộc:
-      App còn AppServiceMapping, Service còn AppServiceMapping hoặc Domain, Domain còn Resource.
+      Xóa Service/Domain/Resource xóa luôn toàn bộ bản ghi con trong cây
+      Service → Domain → Resource → ResourceAction. Giao diện phải hiển thị số lượng sẽ bị xóa
+      (get_delete_impact) và yêu cầu xác nhận trước khi xóa.
+    condition: delete_service / delete_domain / delete_resource
+    effect: delete all descendant Domain/Resource/ResourceAction
+
+  - name: delete_blocked_by_app_links
+    description: >
+      Không cho xóa App hoặc Service khi vẫn còn AppServiceMapping liên kết hai bên - phải gỡ liên kết trước.
     condition: >
       delete_app -> App has no AppServiceMapping;
-      delete_service -> Service has no AppServiceMapping AND Service has no Domain;
-      delete_domain -> Domain has no Resource
-    on_violation: block delete_app / delete_service / delete_domain
+      delete_service -> Service has no AppServiceMapping
+    on_violation: block delete_app / delete_service
 
   - name: only_active_selectable_for_new_links
     description: >
@@ -565,6 +683,42 @@ rules:
       dữ liệu tại ReferenceId - service gọi phải tự tra cứu dữ liệu đó từ service sở hữu.
     condition: get_reference_metadata response contains no field derived from ReferenceId
     on_violation: strip business data from response
+
+  - name: my_apps_filtered_by_app_permission
+    description: >
+      list_my_apps không yêu cầu permission PLM nhưng chỉ trả về App đang Active mà người dùng
+      có ít nhất một permission thuộc một Service Primary (đang Active) của App đó - permission bắt
+      đầu bằng "<ServiceCode>.", ví dụ FTM.FUEL_ENTRY.FUEL_ENTRY.VIEW → thấy App có Service Primary
+      FTM. Quyền của Service Dependency (IAM, AST...) không làm App hiện ra. App không có Service
+      Primary nào thì mọi người dùng đã đăng nhập đều thấy. Người dùng có wildcard "*" thấy mọi
+      App đang Active. Kết quả chỉ gồm thông tin cần để hiển thị và mở app, không gồm audit hay
+      App Inactive/Deprecated - danh sách đầy đủ vẫn thuộc list_apps (PLM.REGISTRY.APP.VIEW).
+      App.metadata được trả về vì là nơi khai báo cấu hình hiển thị của App (nhóm, thứ tự, màu...),
+      nên metadata được coi là thông tin mọi người dùng của App đó đều xem được - không lưu
+      thông tin nội bộ hay bí mật trong App.metadata.
+    condition: >
+      App.status = Active AND (App has no Primary service OR user has permission "*"
+      OR any user permission starts with <serviceCode>. of an Active Primary service of App)
+    on_violation: exclude App from list_my_apps response
+
+  - name: iam_mirrors_registry_permissions
+    description: >
+      Registry là nơi duy nhất quản lý danh mục quyền. IAM chỉ đồng bộ danh mục từ
+      get_permission_catalog, không tự thêm/sửa/xóa permission; sau mỗi lần đồng bộ danh mục ở IAM
+      giống Registry 100% (mã không còn trong Registry bị xóa ở IAM kèm các gán role). IAM khớp theo
+      id của ResourceAction nên đổi mã Service/Domain/Resource không làm mất gán role; đổi mã action
+      được tính là xóa action cũ và tạo action mới. Gán permission cho role vẫn do IAM quản lý.
+    condition: IAM permission catalog == get_permission_catalog after each sync
+    effect: create / update / delete IAM permissions by ResourceAction id
+
+  - name: permission_import_is_additive
+    description: >
+      import_permissions chỉ thêm Service/Domain/Resource/ResourceAction còn thiếu (tên mặc định = mã,
+      Service mới có status Active), chạy lại không sinh trùng, không sửa hay xóa dữ liệu có sẵn.
+      File có dòng sai định dạng <ServiceCode>.<Domain>.<Resource>.<Action> (UPPER_SNAKE_CASE) hoặc
+      trùng lặp thì không ghi gì.
+    condition: every non-empty line is a valid, unique permission code
+    on_violation: reject whole file with per-line errors
 
 features:
   - name: app_list
@@ -789,6 +943,35 @@ features:
     flows:
       - get_reference_metadata
 
+  - name: my_apps
+    type: action
+    description: >
+      Danh sách app của người dùng hiện tại, dùng chung cho mọi app trong HVA Nexus (App Switcher,
+      portal). Không yêu cầu permission PLM - xem rule my_apps_filtered_by_app_permission.
+    permissions: []
+    flows:
+      - list_my_apps
+
+  - name: permission_catalog_import_export
+    type: action
+    description: >
+      Import/Export danh mục quyền dạng Code list TXT, đặt trên trang cấu trúc Service
+      (không có trang riêng).
+    permissions:
+      - PLM.REGISTRY.PERMISSION.IMPORT
+      - PLM.REGISTRY.PERMISSION.EXPORT
+    flows:
+      - import_permissions
+      - export_permissions
+
+  - name: permission_catalog_sync_source
+    type: action
+    description: API cho IAM đồng bộ danh mục quyền
+    permissions:
+      - PLM.REGISTRY.PERMISSION.VIEW
+    flows:
+      - get_permission_catalog
+
 permissions:
   - key: PLM.REGISTRY.APP.CREATE
     description: Đăng ký App mới
@@ -846,3 +1029,12 @@ permissions:
 
   - key: PLM.REGISTRY.RESOURCE.VIEW
     description: Xem Resource / resolve cross-service reference metadata
+
+  - key: PLM.REGISTRY.PERMISSION.VIEW
+    description: Xem danh mục quyền (IAM dùng để đồng bộ)
+
+  - key: PLM.REGISTRY.PERMISSION.IMPORT
+    description: Import danh mục quyền từ file Code list TXT
+
+  - key: PLM.REGISTRY.PERMISSION.EXPORT
+    description: Export danh mục quyền ra file Code list TXT

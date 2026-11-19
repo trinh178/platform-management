@@ -98,7 +98,12 @@
       },
       "deleteConfirm": {
         "title": "Delete service",
-        "description": "Are you sure you want to remove this service from the Registry? This action cannot be undone."
+        "description": "Are you sure you want to delete this service from the Registry? All of its domains, resources and actions will be deleted too. This action cannot be undone."
+      },
+      "deleteBlocked": {
+        "title": "Cannot delete service",
+        "description": "This service is assigned to apps. Unassign it from those apps before deleting.",
+        "ok": "Got it"
       }
     },
     "domain": {
@@ -133,7 +138,7 @@
       },
       "deleteConfirm": {
         "title": "Delete domain",
-        "description": "Are you sure you want to remove this domain from the Registry? This action cannot be undone."
+        "description": "Are you sure you want to delete this domain from the Registry? All of its resources and actions will be deleted too. This action cannot be undone."
       }
     },
     "resource": {
@@ -151,11 +156,13 @@
         "resourceCode": "Resource code",
         "name": "Resource name",
         "description": "Description",
-        "createdOnUtc": "Created on"
+        "createdOnUtc": "Created on",
+        "actions": "Actions"
       },
       "tooltip": {
         "domainId": "The Domain that owns this resource.",
-        "resourceCode": "Unique identifier of the resource within the selected Domain, upper snake case. Used in the cross-service reference standard. e.g. EMPLOYEE, VEHICLE."
+        "resourceCode": "Unique identifier of the resource within the selected Domain, upper snake case. Used in the cross-service reference standard. e.g. EMPLOYEE, VEHICLE.",
+        "actions": "Actions of this resource, uppercase joined by underscores (e.g. VIEW, EXPORT_EXCEL). Each action generates a permission code <ServiceCode>.<DomainCode>.<ResourceCode>.<Action>."
       },
       "sections": {
         "basic": {
@@ -164,11 +171,20 @@
         }
       },
       "validation": {
-        "resourceCodeFormat": "Resource code must be upper snake case letters, digits and underscores, starting with a letter. e.g. EMPLOYEE, VEHICLE."
+        "resourceCodeFormat": "Resource code must be upper snake case letters, digits and underscores, starting with a letter. e.g. EMPLOYEE, VEHICLE.",
+        "actionFormat": "Action must be uppercase letters, digits and underscores, starting with a letter. E.g. VIEW, EXPORT_EXCEL."
       },
       "deleteConfirm": {
         "title": "Delete resource",
-        "description": "Are you sure you want to remove this resource from the Registry? This action cannot be undone."
+        "description": "Are you sure you want to delete this resource from the Registry? All of its actions (permission codes) will be deleted too. This action cannot be undone."
+      },
+      "placeholder": {
+        "actions": "Pick or type an action, then Enter..."
+      },
+      "permissionCodes": {
+        "title": "Generated permission codes",
+        "description": "IAM syncs exactly these codes from PLM.",
+        "empty": "This resource has no actions yet."
       }
     },
     "appServiceMapping": {
@@ -176,12 +192,14 @@
       "controls": {
         "search": "Search mappings...",
         "assign": "Assign Service",
-        "unassign": "Unassign"
+        "unassign": "Unassign",
+        "changeRole": "Change role"
       },
       "fields": {
         "appId": "App",
         "serviceId": "Service",
-        "createdOnUtc": "Created on"
+        "createdOnUtc": "Created on",
+        "role": "Role"
       },
       "assignDialog": {
         "title": "Assign Service to App"
@@ -197,6 +215,19 @@
       "linkedApps": {
         "title": "Linked Apps",
         "empty": "No linked apps yet"
+      },
+      "tooltip": {
+        "role": "Primary: the main service of the app — users see the app when they hold a permission of a Primary service. Dependency: a service the app calls."
+      },
+      "constants": {
+        "role": {
+          "primary": "Primary",
+          "dependency": "Dependency"
+        }
+      },
+      "changeRoleConfirm": {
+        "title": "Change service role",
+        "description": "The Primary role decides whether the app is visible to users. Are you sure you want to change the role of this link?"
       }
     },
     "structure": {
@@ -204,6 +235,55 @@
       "searchPlaceholder": "Search services...",
       "empty": "No items yet",
       "emptySelection": "Select a Service, Domain or Resource on the left to view details, or click \"+\" to add a new one."
+    },
+    "deleteImpact": {
+      "domains": "{count, plural, one {# domain} other {# domains}}",
+      "resources": "{count, plural, one {# resource} other {# resources}}",
+      "actions": "{count, plural, one {# action} other {# actions}}",
+      "cascade": "This will also delete {items}.",
+      "none": "No child data will be deleted.",
+      "hasMappings": "This service is assigned to {count, plural, one {# app} other {# apps}} and cannot be deleted (SERVICE_HAS_MAPPINGS)."
+    },
+    "permissionCatalog": {
+      "template": "Download template",
+      "export": {
+        "title": "Export",
+        "scope": "Export permission catalog (.txt)",
+        "current": "Current service",
+        "currentRequired": "Select a Service/Domain/Resource in the tree",
+        "all": "All services"
+      },
+      "import": {
+        "title": "Import",
+        "dialogTitle": "Import permission catalog",
+        "submit": "Import",
+        "formatHint": "A .txt file with one <ServiceCode>.<DomainCode>.<ResourceCode>.<Action> code per line. Blank lines are ignored. Import only adds missing Services/Domains/Resources/Actions; it never updates or deletes existing data.",
+        "hasErrors": "The file has invalid lines. Fix or remove them, then pick the file again.",
+        "empty": "The file contains no codes.",
+        "fileTooLarge": "Import file must be at most 1 MB.",
+        "metrics": {
+          "total": "Total codes",
+          "new": "Will be added",
+          "existing": "Already exists, skipped",
+          "errors": "Errors"
+        }
+      },
+      "status": {
+        "VALID": "Valid",
+        "EXISTS": "Exists, skipped",
+        "INVALID_FORMAT": "Invalid format",
+        "DUPLICATE_IN_FILE": "Duplicate in file"
+      },
+      "report": {
+        "title": "Import result",
+        "applied": "Import completed.",
+        "notApplied": "The file has errors, so nothing was written.",
+        "services": "Services created",
+        "domains": "Domains created",
+        "resources": "Resources created",
+        "actions": "Actions created",
+        "skipped": "Skipped (existing)"
+      }
     }
   }
 }

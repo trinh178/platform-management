@@ -4,11 +4,18 @@ import { useMemo, useState } from 'react';
 import type { Row } from '@tanstack/react-table';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useAppServiceMappingUnassign } from '../../services/app-service-mapping.mutation';
+import {
+  useAppServiceMappingUnassign,
+  useAppServiceMappingUpdateRole,
+} from '../../services/app-service-mapping.mutation';
 import { useAppServiceMappings } from '../../services/app-service-mapping.queries';
-import type { AppServiceMapping } from '../../types/app-service-mapping';
+import type {
+  AppServiceMapping,
+  AppServiceRole,
+} from '../../types/app-service-mapping';
 import AppServiceMappingAssignDialog from '../app-service-mapping-assign-dialog';
 import AppServiceMappingUnassignConfirmContent from '../app-service-mapping-unassign-confirm-content';
+import AppServiceRoleBadge from '../app-service-role-badge';
 import columns from './columns';
 import filterFields from './filter-fields';
 import { useHasPermissions } from '@/core/auth/useHasPermissions';
@@ -61,6 +68,39 @@ export function AppServiceMappingTable() {
     meta: { notifySuccess: 'common.notify.delete_success' },
   });
 
+  const updateRole = useAppServiceMappingUpdateRole({
+    meta: { notifySuccess: 'common.notify.update_success' },
+  });
+
+  // Chỉ có 2 role → "đổi role" là chuyển sang role còn lại.
+  const handleChangeRole = async (row: Row<AppServiceMapping>) => {
+    const mapping = row.original;
+    if (!mapping.id || !canAssign) return;
+    const nextRole: AppServiceRole =
+      mapping.role === 'Primary' ? 'Dependency' : 'Primary';
+
+    const confirmed = await confirm({
+      title: t('registry.appServiceMapping.changeRoleConfirm.title'),
+      description: t(
+        'registry.appServiceMapping.changeRoleConfirm.description',
+      ),
+      content: (
+        <div className="space-y-3">
+          <AppServiceMappingUnassignConfirmContent mapping={mapping} />
+          <div className="flex items-center gap-2 text-sm">
+            <AppServiceRoleBadge role={mapping.role} />
+            <span className="text-muted-foreground">→</span>
+            <AppServiceRoleBadge role={nextRole} />
+          </div>
+        </div>
+      ),
+      confirmText: t('registry.appServiceMapping.controls.changeRole'),
+      cancelText: t('common.control.cancel'),
+    });
+
+    if (confirmed) updateRole.mutate({ id: mapping.id, role: nextRole });
+  };
+
   const handleUnassign = async (row: Row<AppServiceMapping>) => {
     const mapping = row.original;
     if (!mapping.id || !canUnassign) return;
@@ -100,6 +140,7 @@ export function AppServiceMappingTable() {
           )
         }
         meta={{
+          onEdit: canAssign ? handleChangeRole : undefined,
           onDelete: canUnassign ? handleUnassign : undefined,
         }}
       />

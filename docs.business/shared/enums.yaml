@@ -8,3 +8,12 @@ registry_status:
     - Active
     - Inactive
     - Deprecated
+
+app_service_role:
+  description: >
+    Vai trò của Service đối với App trong AppServiceMapping. Primary là service chính của App -
+    quyền thuộc Service Primary quyết định App có hiện trong list_my_apps; Dependency là service
+    phụ trợ App có gọi tới (IAM, Asset Service...).
+  values:
+    - Primary
+    - Dependency

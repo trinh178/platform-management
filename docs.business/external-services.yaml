@@ -53,6 +53,22 @@ services:
           roles: string[]
           permissions: string[]           # VD: ["PLM.REGISTRY.APP.CREATE", ...]
 
+    inbound:
+      - method: GET
+        path: /registry/permission-catalog
+        caller: iam
+        description: >
+          IAM gọi PLM để đồng bộ danh mục quyền (read-only mirror) khi quản trị viên bấm
+          đồng bộ trên iam-web. IAM forward token của người bấm; người bấm cần
+          PLM.REGISTRY.PERMISSION.VIEW. Xem domains/registry/domain.yaml#iam_mirrors_registry_permissions.
+        response:
+          - id: uuid                      # id của ResourceAction - khoá đồng bộ
+            code: string                  # <ServiceCode>.<Domain>.<Resource>.<Action>
+            serviceCode: string
+            domainCode: string
+            resourceCode: string
+            action: string
+
   # ─── Asset Service ───────────────────────────────────────────────────────────
   asset:
     description: >

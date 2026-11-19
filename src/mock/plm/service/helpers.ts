@@ -3,6 +3,9 @@ import type { ServiceMock } from './mock-types';
 import { serviceStore } from './stores';
 import { appfetch } from '@/core/network/appfetch';
 import { getCurrentUserId } from '@/mock/mock-context';
+import { appServiceMappingStore } from '@/mock/plm/app-service-mapping/stores';
+import { domainStore } from '@/mock/plm/domain/stores';
+import { resourceStore } from '@/mock/plm/resource/stores';
 
 export function getServiceOrNotFound(id?: string | null) {
   const service = serviceStore.find(s => s.id === id);
@@ -66,4 +69,20 @@ export function mergeService(
   service.modifiedOnUtc = new Date().toISOString();
   service.modifiedBy = getCurrentUserId();
   return service;
+}
+
+// Số lượng dữ liệu con sẽ bị xoá kèm Service (D12). `mappings` > 0 thì không
+// được xoá (409 SERVICE_HAS_MAPPINGS).
+export function getServiceDeleteImpact(serviceId: string) {
+  const domainIds = new Set(
+    domainStore.filter(d => d.serviceId === serviceId).map(d => d.id),
+  );
+  const resources = resourceStore.filter(r => domainIds.has(r.domainId));
+  return {
+    domains: domainIds.size,
+    resources: resources.length,
+    actions: resources.reduce((sum, r) => sum + r.actions.length, 0),
+    mappings: appServiceMappingStore.filter(m => m.serviceId === serviceId)
+      .length,
+  };
 }
