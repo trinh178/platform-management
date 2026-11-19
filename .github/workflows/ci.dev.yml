@@ -7,9 +7,9 @@ on:
 
 env:
   IMAGE_NAME: hvanexus_platform_management_web
-  SERVICE_NAME: fuel_tracking_web
-  BUILD_ENV_FILE: /tmp/fuel-tracking-web-${{ github.run_id }}.env
-  NPMRC_FILE: /tmp/fuel-tracking-web-${{ github.run_id }}.npmrc
+  SERVICE_NAME: platform_management_web
+  BUILD_ENV_FILE: /tmp/platform-management-web-${{ github.run_id }}.env
+  NPMRC_FILE: /tmp/platform-management-web-${{ github.run_id }}.npmrc
   RUNTIME_ENV_FILE: /home/hvanexus-infras/apps/platform-management-web/.env
   DOCKER_COMPOSE_FILE: /home/hvanexus-infras/docker-compose.dev.yml
   DOCKER_BUILDKIT: '1'
@@ -31,6 +31,7 @@ jobs:
           NEXT_PUBLIC_APIGATEWAY_IAM=${{ vars.NEXT_PUBLIC_APIGATEWAY_IAM }}
           NEXT_PUBLIC_APIGATEWAY_HRM_EM=${{ vars.NEXT_PUBLIC_APIGATEWAY_HRM_EM }}
           NEXT_PUBLIC_APIGATEWAY_FTM=${{ vars.NEXT_PUBLIC_APIGATEWAY_FTM }}
+          NEXT_PUBLIC_APIGATEWAY_PLM=${{ vars.NEXT_PUBLIC_APIGATEWAY_PLM }}
           NEXT_PUBLIC_APIPROXY_BASE_URL=${{ vars.NEXT_PUBLIC_APIPROXY_BASE_URL }}
           NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
           NEXTAUTH_URL=${{ vars.NEXTAUTH_URL }}
