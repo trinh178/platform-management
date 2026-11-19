@@ -203,6 +203,7 @@ Qua gateway, các API PLM có prefix `/plm` (ví dụ `https://apigateway.hvanex
 - `GET /permissions/services` → `[{ serviceCode, permissionCount }]` (thay `/permissions/apps`).
 - Filter/sort field `appCode` → `serviceCode`.
 - `PUT /permissions/{id}/roles` body `{ roleIds: uuid[] }` → 200.
-- `POST /permissions/sync` → 200 `{ created, updated, deleted }`. PLM lỗi → 502 `PLM_UNAVAILABLE`; danh mục rỗng → 400 `PLM_CATALOG_EMPTY`. Permission tạo từ đồng bộ: `Name = Code`, `Description = ""`.
+- `POST /permissions/sync` → 200 `{ created, updated, deleted }`. PLM lỗi hoặc quá 8 giây → 503 `PlmServiceUnavailable`; danh mục rỗng → 400 `PlmCatalogEmpty` (mã lỗi PascalCase theo quy ước của iam-service). Permission tạo từ đồng bộ: `Name = Code`, `Description = ""`.
 - Bỏ: `POST /permissions`, `PUT /permissions/{id}`, `DELETE /permissions/{id}`, `DELETE /permissions/apps/{appCode}`, `POST /permissions/import`.
-- Cấu hình: `Plm:BaseUrl` (vd `https://apigateway.hvanexus.trinhpb.site/plm`), gọi `GET {Plm:BaseUrl}/registry/permission-catalog` với header `Authorization` của người bấm.
+- `PUT /permissions/{id}/roles` có role id không tồn tại → 404 `RoleNotFoundInList` (lỗi có sẵn của iam-service).
+- Cấu hình: biến môi trường `PLM_URI` (giống `HRM_URI`, vd `https://apigateway.hvanexus.trinhpb.site/plm`), gọi `GET {PLM_URI}/registry/permission-catalog` với token của người bấm. Chưa cấu hình thì sync trả 503, các API khác không bị ảnh hưởng.
